@@ -42,7 +42,7 @@ const Register = () => {
                             Sign up
                           </Typography>
                           <Typography variant="caption" fontSize="16px" textAlign={{ xs: 'center', md: 'inherit' }}>
-                            Enter your credentials to continue
+                            Enter your credentials to continue111
                           </Typography>
                         </Stack>
                       </Grid>

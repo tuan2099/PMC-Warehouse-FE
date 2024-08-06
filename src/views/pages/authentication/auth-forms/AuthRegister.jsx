@@ -23,7 +23,7 @@ import Typography from '@mui/material/Typography';
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
+import { omit } from 'lodash';
 // project imports
 import Google from 'assets/images/icons/social-google.svg';
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -32,6 +32,8 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { useMutation } from '@tanstack/react-query';
+import { registerAcc } from 'api/auth.api';
 
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
@@ -66,6 +68,10 @@ const AuthRegister = ({ ...others }) => {
   useEffect(() => {
     changePassword('123456');
   }, []);
+
+  const registerAccMutation = useMutation({
+    mutationFn: (body) => registerAcc(body)
+  });
 
   return (
     <>
@@ -130,6 +136,17 @@ const AuthRegister = ({ ...others }) => {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
+        onSubmit={(values, { setSubmitting }) => {
+          console.log(values);
+          registerAccMutation.mutate(values, {
+            onSuccess: (data) => {
+              console.log(data);
+            },
+            onError: (error) => {
+              console.error('Registration failed', error);
+            }
+          });
+        }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
