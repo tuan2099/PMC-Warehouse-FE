@@ -23,7 +23,6 @@ import Typography from '@mui/material/Typography';
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import { omit } from 'lodash';
 // project imports
 import Google from 'assets/images/icons/social-google.svg';
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -136,7 +135,7 @@ const AuthRegister = ({ ...others }) => {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
-        onSubmit={(values, { setSubmitting }) => {
+        onSubmit={(values) => {
           console.log(values);
           registerAccMutation.mutate(values, {
             onSuccess: (data) => {

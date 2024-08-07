@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -31,6 +32,9 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
+import { useMutation } from '@tanstack/react-query';
+import { loginAcc } from 'api/auth.api';
+import { isAxiosUnprocessableEntityError } from 'utils/utils';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -52,6 +56,10 @@ const AuthLogin = ({ ...others }) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const loginAccMutation = useMutation({
+    mutationFn: (body) => loginAcc(body)
+  });
 
   return (
     <>
@@ -124,6 +132,27 @@ const AuthLogin = ({ ...others }) => {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
+        onSubmit={(values) => {
+          loginAccMutation.mutate(values, {
+            onSuccess: (data) => {
+              console.log(data);
+            },
+            onError: (error) => {
+              if (isAxiosUnprocessableEntityError(error)) {
+                const formError = error.response?.data.data;
+                console.log(formError);
+                if (formError) {
+                  Object.keys(formError).forEach((key) => {
+                    setError(key, {
+                      message: formError[key],
+                      type: 'Server'
+                    });
+                  });
+                }
+              }
+            }
+          });
+        }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
