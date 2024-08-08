@@ -25,22 +25,19 @@ const pages = {
           id: 'login3',
           title: 'Login',
           type: 'item',
-          url: '/pages/login/login3',
-          target: true
+          url: '/pages/login/login3'
         },
         {
           id: 'register3',
           title: 'Register',
           type: 'item',
-          url: '/pages/register/register3',
-          target: true
+          url: '/pages/register/register3'
         },
         {
           id: 'register2223',
           title: 'Register ahihihi',
           type: 'item',
-          url: '/pages/register/register3',
-          target: true
+          url: '/pages/register/register3'
         }
       ]
     }
