@@ -38,6 +38,8 @@ const AuthLogin = ({ ...others }) => {
   const [checked, setChecked] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  // setting password input
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -46,6 +48,7 @@ const AuthLogin = ({ ...others }) => {
     event.preventDefault();
   };
 
+  // setting login
   const loginAccMutation = useMutation({
     mutationFn: (body) => loginAcc(body)
   });

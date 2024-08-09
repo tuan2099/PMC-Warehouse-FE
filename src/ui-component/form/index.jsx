@@ -8,10 +8,10 @@ function Formsetting({ open, onClose, UserForm }) {
   return (
     <div>
       <Dialog open={open} onClose={onClose}>
-        <AppBar sx={{ position: 'relative' }}>
+        <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
           <Toolbar>
             <IconButton edge="start" color="inherit" onClick={onClose} aria-label="close">
-              <CloseIcon />
+              <CloseIcon color="primary" />
             </IconButton>
           </Toolbar>
         </AppBar>

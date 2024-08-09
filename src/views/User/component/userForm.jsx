@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 // material-ui
@@ -29,12 +29,36 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-function UserForm({ onClose, ...others }) {
+// eslint-disable-next-line no-unused-vars
+function UserForm({ userDetail, handleDeleteUser, onClose, ...others }) {
   const theme = useTheme(); // theme setting
   const [strength, setStrength] = useState(0); // password setting
   const [checked, setChecked] = useState(true); // checkbox setting
   const [showPassword, setShowPassword] = useState(false); // password setting
+  const [formState, setFormState] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: ''
+  });
 
+  useEffect(() => {
+    if (userDetail) {
+      setFormState({
+        name: userDetail.name,
+        email: userDetail.email,
+        password: userDetail.email,
+        role: userDetail.role
+      });
+    } else {
+      setFormState({
+        name: '',
+        email: '',
+        password: '',
+        role: ''
+      });
+    }
+  }, [userDetail]);
   // setting passwords input
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -69,12 +93,8 @@ function UserForm({ onClose, ...others }) {
   return (
     <div>
       <Formik
-        initialValues={{
-          name: '',
-          email: '',
-          password: '',
-          role: ''
-        }}
+        initialValues={formState}
+        enableReinitialize
         // validation form
         validationSchema={Yup.object().shape({
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
@@ -96,14 +116,18 @@ function UserForm({ onClose, ...others }) {
               ]
             };
           };
-          addUserMutation.mutate(transformValuesToApiFormat(values), {
-            onSuccess: (values) => {
-              console.log(values);
-            },
-            onError: (error) => {
-              alert(error.message);
-            }
-          });
+          if (userDetail) {
+            console.log('update');
+          } else {
+            addUserMutation.mutate(transformValuesToApiFormat(values), {
+              onSuccess: (values) => {
+                console.log(values);
+              },
+              onError: (error) => {
+                alert(error.message);
+              }
+            });
+          }
           onClose();
         }}
       >
@@ -241,7 +265,7 @@ function UserForm({ onClose, ...others }) {
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Tạo người dùng
+                  {userDetail ? 'Cập nhật người dùng' : 'Tạo người dùng'}
                 </Button>
               </AnimateButton>
             </Box>
