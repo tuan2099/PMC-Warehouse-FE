@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /**
  * Color intention that you want to used in your theme
  * @param {JsonObject} theme Theme customization object
