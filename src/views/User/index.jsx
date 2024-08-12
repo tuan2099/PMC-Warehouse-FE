@@ -156,7 +156,6 @@ function User() {
       refetch();
     }
   });
-  console.log(isEdit);
   return (
     <MainCard title="Quản lý người dùng">
       <Button sx={{ mb: 2 }} onClick={() => handleOpenDialog('dialog1')} variant="outlined" startIcon={<AddIcon />}>

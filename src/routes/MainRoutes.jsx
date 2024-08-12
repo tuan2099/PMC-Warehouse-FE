@@ -14,6 +14,7 @@ const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
 const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const UserManager = Loadable(lazy(() => import('views/User/index')));
 const WarehouseManager = Loadable(lazy(() => import('views/warehouse/index')));
+const ProductsManager = Loadable(lazy(() => import('views/Products/index')));
 // const UtilsMaterialIcons = Loadable(lazy(() => import('views/utilities/MaterialIcons')));
 // const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons')));
 
@@ -66,7 +67,10 @@ const MainRoutes = {
         }
       ]
     },
-
+    {
+      path: 'products',
+      element: <ProductsManager />
+    },
     {
       path: 'users',
       element: <UserManager />

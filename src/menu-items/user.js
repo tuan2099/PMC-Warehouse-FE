@@ -27,6 +27,14 @@ const users = {
       url: '/warehouses',
       icon: icons.IconBuildingWarehouse,
       breadcrumbs: false
+    },
+    {
+      id: 'Products',
+      title: 'Danh sách biển bảng',
+      type: 'item',
+      url: '/products',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
     }
   ]
 };
