@@ -1,7 +1,9 @@
-import { IconKey } from '@tabler/icons-react';
-
+import { IconKey, IconUserBolt, IconBuildingWarehouse } from '@tabler/icons-react';
+// import PeopleIcon from '@mui/icons-material/People';
 const icons = {
-  IconKey
+  IconKey,
+  IconUserBolt,
+  IconBuildingWarehouse
 };
 
 const users = {
@@ -11,11 +13,19 @@ const users = {
   type: 'group',
   children: [
     {
-      id: 'default',
-      title: 'Default',
+      id: 'User',
+      title: 'Quản lý người dùng',
       type: 'item',
       url: '/users',
-      icon: icons.IconKey,
+      icon: icons.IconUserBolt,
+      breadcrumbs: false
+    },
+    {
+      id: 'Warehouse',
+      title: 'Quản lý Kho hàng',
+      type: 'item',
+      url: '/warehouses',
+      icon: icons.IconBuildingWarehouse,
       breadcrumbs: false
     }
   ]
