@@ -52,7 +52,11 @@
     background-color: transparent;
   }
 }
-
+.Form-add-warehouse {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
 // ==============================|| ANIMATION KEYFRAMES ||============================== //
 
 @keyframes wings {

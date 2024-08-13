@@ -1,24 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import MainCard from 'ui-component/cards/MainCard';
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  Toolbar,
-  AppBar,
-  Button,
-  IconButton,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  OutlinedInput,
-  useTheme,
-  TextField,
-  Autocomplete,
-  Grid,
-  Stack
-} from '@mui/material';
+import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
 import {
   Delete as DeleteIcon,
   Add as AddIcon,
@@ -30,18 +13,17 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import warehouseApi from '../../api/warehouse.api';
 import WarehouseForm from './components/WarehouseForm';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import AnimateButton from 'ui-component/extended/AnimateButton';
 
 function Warehouse() {
+  const [isEdit, setIsEdit] = useState();
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState({
     name: '',
     address: '',
-    note: ''
+    note: '',
+    type: '',
+    info: ''
   });
-  const theme = useTheme(); // theme setting
 
   // setting columns for table users
   const columns = [
@@ -60,7 +42,7 @@ function Warehouse() {
           <IconButton aria-label="delete" variant="contained" color="secondary" onClick={() => handleDeleteWarehouse(id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => handleUpdateUser(id)}>
+          <IconButton onClick={() => handleUpdateWarehouse(id)}>
             <ModeEditIcon />
           </IconButton>
           <IconButton onClick={() => console.log(123)}>
@@ -91,7 +73,21 @@ function Warehouse() {
       // Reset state cho dialog2 nếu cần
     }
   };
-
+  // get warehouse
+  const getWarehouseMutation = useMutation({
+    mutationFn: (body) => warehouseApi.getWarehouseById(body),
+    onSuccess: (warehouse) => {
+      const warehouseData = warehouse?.data?.warehouseDetail;
+      setIsEdit(warehouseData);
+      setFormState({
+        name: warehouseData.name,
+        address: warehouseData.address
+        // note: warehouseData.note,
+        // type: warehouseData.type,
+        // info: warehouseData.info
+      });
+    }
+  });
   // get api all warehouse
   const { data: WarehouseData, refetch } = useQuery({
     queryKey: ['warehouse'],
@@ -118,9 +114,34 @@ function Warehouse() {
   };
 
   // add new warehouse
-
+  const createWarehouseMutation = useMutation({
+    mutationFn: (body) => warehouseApi.addWarehouse(body),
+    onSuccess: (warehouse) => {
+      console.log(warehouse);
+      alert('Thêm kho thành công!');
+      refetch();
+    }
+  });
   // update warehouse
+  const handleUpdateWarehouse = (rowId) => {
+    getWarehouseMutation.mutate(rowId);
+    handleOpenDialog('dialog1');
+  };
 
+  const updateWarehouseMutaiton = useMutation({
+    mutationFn: ({ warehouseId, values }) => {
+      console.log(warehouseId, values);
+      if (!warehouseId) {
+        throw new Error('User ID is missing');
+      }
+      return warehouseApi.updateWarehouse(Number(warehouseId), values);
+    },
+    onSuccess: (warehouse) => {
+      console.log(warehouse);
+      alert('Cập nhật kho thành công!');
+      refetch();
+    }
+  });
   return (
     <>
       <MainCard title="Quản lý kho hàng">
@@ -144,191 +165,13 @@ function Warehouse() {
             </Toolbar>
           </AppBar>
           <DialogContent>
-            <Formik
-              initialValues={formState}
-              enableReinitialize
-              // validation form
-              validationSchema={Yup.object().shape({
-                // email: Yup.string().email('Must be a valid email').max(255).required('Email is required')
-                // password: Yup.string().max(255).required('Password is required')
-              })}
-              // setting submit
-              onSubmit={(values) => {
-                // convert data
-                //   const transformValuesToApiFormat = (values) => {
-                //     return {
-                //       users: [
-                //         {
-                //           name: values.name,
-                //           email: values.email,
-                //           date_of_birth: values.date_of_birth || '',
-                //           password: values.password,
-                //           role: values.role
-                //         }
-                //       ]
-                //     };
-                //   };
-                //   if (isEdit) {
-                //     updateUserMutation.mutate({ userId: isEdit?.id, values });
-                //   } else {
-                //     addUserMutation.mutate(transformValuesToApiFormat(values), {
-                //       onSuccess: (values) => {
-                //         console.log(values);
-                //       },
-                //       onError: (error) => {
-                //         alert(error.message);
-                //       }
-                //     });
-                //   }
-                console.log(values);
-                handleCloseDialog();
-              }}
-            >
-              {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-                <form noValidate onSubmit={handleSubmit}>
-                  <Grid container>
-                    <Grid xs={5}>
-                      <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
-                        <InputLabel htmlFor="outlined-adornment-name-register">Tên Kho</InputLabel>
-                        <OutlinedInput
-                          id="outlined-adornment-name-register"
-                          type="name"
-                          value={values.name}
-                          name="name"
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          inputProps={{}}
-                        />
-                        {touched.name && errors.name && (
-                          <FormHelperText error id="standard-weight-helper-text--register">
-                            {errors.name}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={5}>
-                      <FormControl fullWidth error={Boolean(touched.address && errors.address)} sx={{ ...theme.typography.customInput }}>
-                        <InputLabel htmlFor="outlined-adornment-address-register">Địa chỉ</InputLabel>
-                        <OutlinedInput
-                          id="outlined-adornment-address-register"
-                          type="address"
-                          value={values.address}
-                          name="address"
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          inputProps={{}}
-                        />
-                        {touched.address && errors.address && (
-                          <FormHelperText error id="standard-weight-helper-text--register">
-                            {errors.address}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={5}>
-                      <FormControl fullWidth error={Boolean(touched.note && errors.note)} sx={{ ...theme.typography.customInput }}>
-                        <InputLabel htmlFor="outlined-adornment-note-register">Ghi chú</InputLabel>
-                        <OutlinedInput
-                          id="outlined-adornment-note-register"
-                          type="note"
-                          value={values.note}
-                          name="note"
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          inputProps={{}}
-                        />
-                        {touched.note && errors.note && (
-                          <FormHelperText error id="standard-weight-helper-text--register">
-                            {errors.note}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={5}>
-                      <FormControl fullWidth error={Boolean(touched.note && errors.note)} sx={{ ...theme.typography.customInput }}>
-                        <InputLabel htmlFor="outlined-adornment-note-register">Loại hình kho</InputLabel>
-                        <OutlinedInput
-                          id="outlined-adornment-note-register"
-                          type="note"
-                          value={values.note}
-                          name="note"
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          inputProps={{}}
-                        />
-                        {touched.note && errors.note && (
-                          <FormHelperText error id="standard-weight-helper-text--register">
-                            {errors.note}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-
-                  <FormControl fullWidth error={Boolean(touched.note && errors.note)} sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor="outlined-adornment-note-register">Thông tin thêm</InputLabel>
-                    <OutlinedInput
-                      id="outlined-adornment-note-register"
-                      type="note"
-                      value={values.note}
-                      name="note"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      inputProps={{}}
-                    />
-                    {touched.note && errors.note && (
-                      <FormHelperText error id="standard-weight-helper-text--register">
-                        {errors.note}
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-
-                  <FormControl fullWidth error={Boolean(touched.note && errors.note)} sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor="outlined-adornment-note-register"></InputLabel>
-                    <Autocomplete
-                      fullWidth
-                      disablePortal
-                      value={values.note}
-                      id="combo-box-demo"
-                      options={[]}
-                      sx={{ width: 300 }}
-                      name="note"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      inputProps={{}}
-                      renderInput={(params) => <TextField {...params} label="Movie" />}
-                    />
-                    {touched.note && errors.note && (
-                      <FormHelperText error id="standard-weight-helper-text--register">
-                        {errors.note}
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-
-                  {errors.submit && (
-                    <Box sx={{ mt: 3 }}>
-                      <FormHelperText error>{errors.submit}</FormHelperText>
-                    </Box>
-                  )}
-
-                  <Box sx={{ mt: 2 }}>
-                    <AnimateButton>
-                      <Button
-                        disableElevation
-                        disabled={isSubmitting}
-                        fullWidth
-                        size="large"
-                        type="submit"
-                        variant="contained"
-                        color="secondary"
-                      >
-                        Tạo kho
-                      </Button>
-                    </AnimateButton>
-                  </Box>
-                </form>
-              )}
-            </Formik>
+            <WarehouseForm
+              updateWarehouseMutaiton={updateWarehouseMutaiton}
+              isEdit={isEdit}
+              formState={formState}
+              handleCloseDialog={handleCloseDialog}
+              createWarehouseMutation={createWarehouseMutation}
+            />
           </DialogContent>
         </Dialog>
 

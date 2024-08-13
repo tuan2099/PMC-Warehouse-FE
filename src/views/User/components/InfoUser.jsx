@@ -38,7 +38,7 @@ function InfoUser() {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          Kho đang quản lý
+          Thông tin cá nhân
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           Khách đang quản lý
@@ -47,13 +47,13 @@ function InfoUser() {
           Đơn hàng đã xuất
         </CustomTabPanel>
         <CustomTabPanel value={value} index={3}>
-          Đơn hàng đã xuất
+          Đơn hàng đã nhập
         </CustomTabPanel>
         <CustomTabPanel value={value} index={4}>
-          Đơn hàng đã xuất
+          Đơn đã chuyển
         </CustomTabPanel>
         <CustomTabPanel value={value} index={5}>
-          Đơn hàng đã xuất
+          Kho đang quản lý
         </CustomTabPanel>
       </Box>
     </>
