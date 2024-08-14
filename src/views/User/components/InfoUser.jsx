@@ -2,19 +2,22 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
+import UserCustomer from './UserCustomer';
+import InfoUserContent from './infoUserContent';
+import UserWarehouse from './UserWarehouse';
+import Userdispatch from './Userdispatch';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
-
   return (
     <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
-function InfoUser() {
+function InfoUser({ isEdit }) {
+  console.log(isEdit);
   const [value, setValue] = useState(0);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -38,13 +41,15 @@ function InfoUser() {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          Thông tin cá nhân
+          {/* thông tin cá nhân */}
+          <InfoUserContent dataUser={''} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          Khách đang quản lý
+          {/* khách quản lý  */}
+          <UserCustomer dataCustomer={isEdit.user_customers} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
-          Đơn hàng đã xuất
+          <Userdispatch dataWarehouseDispatch={isEdit.warehouse_dispatches} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={3}>
           Đơn hàng đã nhập
@@ -53,7 +58,7 @@ function InfoUser() {
           Đơn đã chuyển
         </CustomTabPanel>
         <CustomTabPanel value={value} index={5}>
-          Kho đang quản lý
+          <UserWarehouse dataWarehouse={isEdit.user_warehouses} />
         </CustomTabPanel>
       </Box>
     </>

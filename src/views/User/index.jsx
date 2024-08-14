@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import {
   Delete as DeleteIcon,
   Add as AddIcon,
@@ -19,7 +19,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import userApi from '../../api/auth.api';
 
 function User() {
-  const [isEdit, setIsEdit] = useState();
+  const [isEdit, setIsEdit] = useState([]);
   const [showPassword, setShowPassword] = useState(false); // password setting
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState({
@@ -48,7 +48,11 @@ function User() {
           <IconButton onClick={() => handleUpdateUser(id)}>
             <ModeEditIcon />
           </IconButton>
-          <IconButton onClick={() => handleOpenDialog('dialog2')}>
+          <IconButton
+            onClick={() => {
+              handleOpenDialog('dialog2'), handlegetUser(id);
+            }}
+          >
             <SearchIcon />
           </IconButton>
         </>
@@ -64,10 +68,14 @@ function User() {
     }
   });
 
+  const handlegetUser = (rowId) => {
+    getUserMutation.mutate(rowId);
+  };
+
   // Open & close ---> Dialog
-  const handleOpenDialog = (dialogId) => {
-    setOpenDialog(dialogId);
-    console.log(dialogId);
+  const handleOpenDialog = (DialogId) => {
+    handlegetUser();
+    setOpenDialog(DialogId);
   };
 
   const handleCloseDialog = (dialogId) => {
@@ -81,7 +89,13 @@ function User() {
       });
       setIsEdit(false);
     } else if (dialogId === 'dialog2') {
-      // Reset state cho dialog2 nếu cần
+      setFormState({
+        name: '',
+        email: '',
+        password: '',
+        role: ''
+      });
+      setIsEdit(false);
     }
   };
 
@@ -156,13 +170,22 @@ function User() {
       refetch();
     }
   });
+
   return (
     <MainCard title="Quản lý người dùng">
       <Button sx={{ mb: 2 }} onClick={() => handleOpenDialog('dialog1')} variant="outlined" startIcon={<AddIcon />}>
         Thêm người dùng
       </Button>
 
-      <Dialog onClose={() => handleCloseDialog('dialog1')} open={openDialog === 'dialog1'}>
+      <Dialog
+        onClose={() => handleCloseDialog('dialog1')}
+        open={openDialog === 'dialog1'}
+        sx={{
+          '& .MuiDialogContent-root': {
+            height: '400px' // Chiều cao cố định cho phần nội dung
+          }
+        }}
+      >
         <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
           <Toolbar>
             <IconButton edge="start" color="inherit" aria-label="close" onClick={handleCloseDialog}>
@@ -190,7 +213,12 @@ function User() {
         open={openDialog === 'dialog2'}
         maxWidth="xl"
         fullWidth
-        sx={{ height: '100%', width: '100%' }}
+        sx={{
+          '& .MuiDialogContent-root': {
+            height: '85%', // Chiều cao cố định cho phần nội dung
+            minHeight: '700px'
+          }
+        }}
       >
         <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
           <Toolbar>
@@ -199,12 +227,21 @@ function User() {
             </IconButton>
           </Toolbar>
         </AppBar>
-        <DialogContent>
-          <InfoUser />
-        </DialogContent>
+        <DialogContent>{isEdit && <InfoUser isEdit={isEdit} />}</DialogContent>
       </Dialog>
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataGrid rows={userData?.data?.data} columns={columns} pageSize={5} checkboxSelection />
+        <DataGrid
+          rows={userData?.data?.data}
+          columns={columns}
+          pageSize={5}
+          checkboxSelection
+          slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true
+            }
+          }}
+        />
       </Box>
     </MainCard>
   );
