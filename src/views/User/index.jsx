@@ -76,6 +76,7 @@ function User() {
   const handleOpenDialog = (DialogId) => {
     handlegetUser();
     setOpenDialog(DialogId);
+    setIsEdit([]);
   };
 
   const handleCloseDialog = (dialogId) => {
@@ -158,7 +159,6 @@ function User() {
 
   const updateUserMutation = useMutation({
     mutationFn: ({ userId, values }) => {
-      console.log(userId, values);
       if (!userId) {
         throw new Error('User ID is missing');
       }

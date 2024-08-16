@@ -31,8 +31,6 @@ import { useMutation } from '@tanstack/react-query';
 import { loginAcc } from 'api/auth.api';
 import { isAxiosUnprocessableEntityError } from 'utils/utils';
 
-// ============================|| FIREBASE - LOGIN ||============================ //
-
 const AuthLogin = ({ ...others }) => {
   const theme = useTheme();
   const [checked, setChecked] = useState(true);
@@ -65,17 +63,24 @@ const AuthLogin = ({ ...others }) => {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
-        onSubmit={(values) => {
+        onSubmit={(values, { setErrors, setSubmitting }) => {
           loginAccMutation.mutate(values, {
-            onSuccess: (data) => {
-              console.log(data);
+            onSuccess: () => {
               navigate('/dashboard/default');
             },
             onError: (error) => {
+              setSubmitting(false);
               if (isAxiosUnprocessableEntityError(error)) {
                 const formError = error.response?.data.message;
                 if (formError) {
-                  window.alert(formError);
+                  // Nếu lỗi liên quan đến email hoặc password, đặt vào errors của Formik
+                  if (formError.includes('email')) {
+                    setErrors({ email: formError });
+                  } else if (formError.includes('password')) {
+                    setErrors({ password: formError });
+                  } else {
+                    setErrors({ submit: formError });
+                  }
                 }
               }
             }
@@ -153,7 +158,7 @@ const AuthLogin = ({ ...others }) => {
 
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
+                <Button disableElevation fullWidth size="large" type="submit" variant="contained" color="secondary">
                   Sign in
                 </Button>
               </AnimateButton>

@@ -35,6 +35,14 @@ const users = {
       url: '/products',
       icon: icons.IconBuildingWarehouse,
       breadcrumbs: false
+    },
+    {
+      id: 'Warehouse-dispatch',
+      title: 'Xuất kho',
+      type: 'item',
+      url: '/warehouse-dispatch',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
     }
   ]
 };

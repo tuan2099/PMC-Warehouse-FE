@@ -16,7 +16,7 @@ function CustomTabPanel(props) {
   );
 }
 function InfoUser({ isEdit }) {
-  console.log(isEdit);
+  // console.log(isEdit);
   const [value, setValue] = useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);

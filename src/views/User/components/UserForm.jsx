@@ -15,7 +15,9 @@ import {
   Button,
   IconButton,
   Typography,
-  useTheme
+  useTheme,
+  Autocomplete,
+  TextField
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -36,6 +38,15 @@ function UserForm({
   const theme = useTheme(); // theme setting
   const [strength, setStrength] = useState(0); // password setting
   const [checked, setChecked] = useState(true); // checkbox setting
+  console.log(isEdit);
+  const aiOptions = [
+    { title: 'Admin', id: 1 },
+    { title: 'Editor', id: 2 },
+    { title: 'Viewer', id: 3 },
+    { title: 'Viewer', id: 4 },
+    { title: 'Viewer', id: 5 },
+    { title: 'Viewer', id: 6 }
+  ];
   return (
     <>
       <Formik
@@ -62,9 +73,7 @@ function UserForm({
               ]
             };
           };
-          if (isEdit) {
-            updateUserMutation.mutate({ userId: isEdit?.id, values });
-          } else {
+          if (isEdit.length === 0) {
             addUserMutation.mutate(transformValuesToApiFormat(values), {
               onSuccess: (values) => {
                 console.log(values);
@@ -73,11 +82,13 @@ function UserForm({
                 alert(error.message);
               }
             });
+          } else {
+            updateUserMutation.mutate({ userId: isEdit?.id, values });
           }
           handleCloseDialog();
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values, setFieldValue }) => (
           <form noValidate onSubmit={handleSubmit}>
             <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-name-register">Tên người dùng</InputLabel>
@@ -167,7 +178,32 @@ function UserForm({
                 </FormHelperText>
               )}
             </FormControl>
-
+            {isEdit.length === 0 ? (
+              ''
+            ) : (
+              <>
+                <FormControl fullWidth error={Boolean(touched.ai && errors.ai)} sx={{ ...theme.typography.customInput }}>
+                  <Autocomplete
+                    multiple
+                    options={aiOptions}
+                    getOptionLabel={(option) => option.title}
+                    onChange={(event, value) => setFieldValue('ai', value)}
+                    filterSelectedOptions
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Quyền hạn"
+                        variant="outlined"
+                        placeholder="Select ais"
+                        onBlur={handleBlur}
+                        error={Boolean(touched.ai && errors.ai)}
+                        helperText={touched.ai && errors.ai}
+                      />
+                    )}
+                  />
+                </FormControl>
+              </>
+            )}
             {strength !== 0 && (
               <FormControl fullWidth>
                 <Box sx={{ mb: 2 }}>
@@ -211,7 +247,7 @@ function UserForm({
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  {isEdit ? 'Cập nhật người dùng' : 'tạo người dùng'}
+                  {isEdit.length === 0 ? 'tạo người dùng' : 'Cập nhật người dùng'}
                 </Button>
               </AnimateButton>
             </Box>

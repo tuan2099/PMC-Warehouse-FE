@@ -32,12 +32,6 @@ const pages = {
           title: 'Register',
           type: 'item',
           url: '/pages/register/register3'
-        },
-        {
-          id: 'register2223',
-          title: 'Register ahihihi',
-          type: 'item',
-          url: '/pages/register/register3'
         }
       ]
     }
