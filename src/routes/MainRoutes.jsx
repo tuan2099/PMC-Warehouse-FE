@@ -12,7 +12,7 @@ const UserManager = Loadable(lazy(() => import('views/User/index')));
 const WarehouseManager = Loadable(lazy(() => import('views/warehouse/index')));
 const ProductsManager = Loadable(lazy(() => import('views/Products/index')));
 const WarehouseDispatch = Loadable(lazy(() => import('views/WarehouseDispatch/index')));
-
+import ProtectedRoute from './ProtectedRoute';
 // sample page routing
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -23,32 +23,52 @@ const MainRoutes = {
   children: [
     {
       path: '/',
-      element: <DashboardDefault />
+      element: (
+        <ProtectedRoute>
+          <DashboardDefault />
+        </ProtectedRoute>
+      )
     },
-    {
-      path: 'dashboard',
-      children: [
-        {
-          path: 'default',
-          element: <DashboardDefault />
-        }
-      ]
-    },
+    // {
+    //   path: 'dashboard',
+    //   children: [
+    //     {
+    //       path: 'default',
+    //       element: <DashboardDefault />
+    //     }
+    //   ]
+    // },
     {
       path: 'products',
-      element: <ProductsManager />
+      element: (
+        <ProtectedRoute>
+          <ProductsManager />
+        </ProtectedRoute>
+      )
     },
     {
       path: 'users',
-      element: <UserManager />
+      element: (
+        <ProtectedRoute>
+          <UserManager />
+        </ProtectedRoute>
+      )
     },
     {
       path: 'warehouses',
-      element: <WarehouseManager />
+      element: (
+        <ProtectedRoute>
+          <WarehouseManager />
+        </ProtectedRoute>
+      )
     },
     {
       path: 'warehouse-dispatch',
-      element: <WarehouseDispatch />
+      element: (
+        <ProtectedRoute>
+          <WarehouseDispatch />
+        </ProtectedRoute>
+      )
     }
   ]
 };

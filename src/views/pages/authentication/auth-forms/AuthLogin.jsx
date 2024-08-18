@@ -20,6 +20,7 @@ import Stack from '@mui/material/Stack';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 // project imports
 import AnimateButton from 'ui-component/extended/AnimateButton';
 
@@ -31,12 +32,14 @@ import { useMutation } from '@tanstack/react-query';
 import { loginAcc } from 'api/auth.api';
 import { isAxiosUnprocessableEntityError } from 'utils/utils';
 
+//
+
 const AuthLogin = ({ ...others }) => {
   const theme = useTheme();
   const [checked, setChecked] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   // setting password input
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -65,8 +68,13 @@ const AuthLogin = ({ ...others }) => {
         })}
         onSubmit={(values, { setErrors, setSubmitting }) => {
           loginAccMutation.mutate(values, {
-            onSuccess: () => {
-              navigate('/dashboard/default');
+            onSuccess: (data) => {
+              const token = data.data.token;
+              localStorage.setItem('auth_token', token);
+              // dispatch({
+              //   type: 'LOGIN_SUCCESS'
+              // });
+              navigate('/');
             },
             onError: (error) => {
               setSubmitting(false);

@@ -14,7 +14,6 @@ import InfoUser from './components/InfoUser';
 import UserForm from './components/UserForm';
 // third party
 import { useQuery, useMutation } from '@tanstack/react-query';
-
 // Api
 import userApi from '../../api/auth.api';
 
@@ -28,7 +27,7 @@ function User() {
     password: '',
     role: ''
   });
-
+  // const dispatch = useDispatch();
   // Setting columns for table users
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
