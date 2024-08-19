@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useState, useRef, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +28,7 @@ import Typography from '@mui/material/Typography';
 
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
-
+import { useDispatch } from 'react-redux';
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
@@ -41,6 +42,7 @@ import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons-re
 
 const ProfileSection = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const customization = useSelector((state) => state.customization);
   const navigate = useNavigate();
 
@@ -54,7 +56,11 @@ const ProfileSection = () => {
    * */
   const anchorRef = useRef(null);
   const handleLogout = async () => {
-    console.log('Logout');
+    localStorage.removeItem('auth_token');
+    dispatch({
+      type: 'LOGOUT'
+    });
+    navigate('/pages/login/login3');
   };
 
   const handleClose = (event) => {
@@ -289,7 +295,7 @@ const ProfileSection = () => {
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size="1.3rem" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
+                          <ListItemText primary={<Typography variant="body2">Đăng xuất</Typography>} />
                         </ListItemButton>
                       </List>
                     </Box>

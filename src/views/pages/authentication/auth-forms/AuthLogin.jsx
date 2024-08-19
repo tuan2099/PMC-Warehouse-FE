@@ -71,9 +71,9 @@ const AuthLogin = ({ ...others }) => {
             onSuccess: (data) => {
               const token = data.data.token;
               localStorage.setItem('auth_token', token);
-              // dispatch({
-              //   type: 'LOGIN_SUCCESS'
-              // });
+              dispatch({
+                type: 'LOGIN_SUCCESS'
+              });
               navigate('/');
             },
             onError: (error) => {
