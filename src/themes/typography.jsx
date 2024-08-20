@@ -65,6 +65,21 @@ export default function themeTypography(theme) {
     button: {
       textTransform: 'capitalize'
     },
+    customSelect: {
+      marginTop: 1,
+      marginBottom: 1,
+      '& > div > div': {
+        padding: '30.5px 14px 11.5px !important'
+      },
+      '& > label': {
+        top: 23,
+        left: 0,
+        color: theme.grey500,
+        '&[data-shrink="false"]': {
+          top: 5
+        }
+      }
+    },
     customInput: {
       marginTop: 1,
       marginBottom: 1,
