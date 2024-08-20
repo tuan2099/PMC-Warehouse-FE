@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import React from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -62,7 +63,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
           console.log(formattedData);
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Typography variant="h3" gutterBottom>
               Thông tin xuất kho
