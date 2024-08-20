@@ -21,6 +21,7 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+
 // project imports
 import AnimateButton from 'ui-component/extended/AnimateButton';
 
@@ -95,7 +96,7 @@ const AuthLogin = ({ ...others }) => {
           });
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
@@ -155,7 +156,7 @@ const AuthLogin = ({ ...others }) => {
                 label="Remember me"
               />
               <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
-                Forgot Password?
+                Quên mật khẩu
               </Typography>
             </Stack>
             {errors.submit && (
@@ -167,7 +168,7 @@ const AuthLogin = ({ ...others }) => {
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Sign in
+                  Đăng nhập
                 </Button>
               </AnimateButton>
             </Box>

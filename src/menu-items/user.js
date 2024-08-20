@@ -8,7 +8,7 @@ const icons = {
 
 const users = {
   id: 'pages',
-  title: 'a hih i',
+  title: 'Quản lý kho',
   caption: 'Pages Caption',
   type: 'group',
   children: [

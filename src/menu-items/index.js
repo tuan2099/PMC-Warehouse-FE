@@ -6,7 +6,7 @@ import users from './user';
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [dashboard, pages, other, users]
+  items: [dashboard, users]
 };
 
 export default menuItems;
