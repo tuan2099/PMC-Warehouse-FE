@@ -20,7 +20,6 @@ import Stack from '@mui/material/Stack';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 
 // project imports
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -40,7 +39,6 @@ const AuthLogin = ({ ...others }) => {
   const [checked, setChecked] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   // setting password input
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -71,10 +69,9 @@ const AuthLogin = ({ ...others }) => {
           loginAccMutation.mutate(values, {
             onSuccess: (data) => {
               const token = data.data.token;
+              const user = data.data.user;
               localStorage.setItem('auth_token', token);
-              dispatch({
-                type: 'LOGIN_SUCCESS'
-              });
+              localStorage.setItem('auth_user', JSON.stringify(user));
               navigate('/');
             },
             onError: (error) => {

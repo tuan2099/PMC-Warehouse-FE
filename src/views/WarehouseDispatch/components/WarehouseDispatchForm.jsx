@@ -22,10 +22,53 @@ import { useQuery } from '@tanstack/react-query';
 import userApi from 'api/auth.api';
 import warehouseApi from 'api/warehouse.api';
 import productsApi from 'api/product.api';
-function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
+function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLogin }) {
   const theme = useTheme(); // theme setting
-
   // id cho phiếu xuất
+
+  const transformUserData = (data) => {
+    // Lấy thông tin người dùng
+    const { id, name, email, role, avatar, user_warehouses } = data;
+
+    // Lấy thông tin kho và sản phẩm
+    const warehouses = user_warehouses.map((uw) => {
+      const { warehouse } = uw;
+      const { id: warehouseId, name: warehouseName, warehouse_inventories } = warehouse;
+
+      // Lấy thông tin sản phẩm từ kho
+      const products = warehouse_inventories.map((wi) => {
+        const { inventory } = wi;
+        const { product } = inventory;
+
+        return {
+          id: product.id,
+          name: product.name,
+          size: product.size,
+          quantityInStock: inventory.quantity,
+          purchasePrice: product.purchasePrice,
+          salePrice: product.salePrice
+        };
+      });
+
+      return {
+        warehouseId,
+        warehouseName,
+        products
+      };
+    });
+
+    return {
+      id,
+      name,
+      email,
+      role,
+      avatar,
+      warehouses
+    };
+  };
+
+  const result = transformUserData(userDataLogin);
+  console.log(result);
   const getCurrentDateTime = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -47,26 +90,12 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
       return total + Number(dispatch.quantity || 0);
     }, 0);
   };
-  // call api user
-  const { data: userData } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => {
-      return userApi.getAllUser();
-    }
-  });
-
-  // get api all warehouse
-  const { data: WarehouseData } = useQuery({
-    queryKey: ['warehouse'],
-    queryFn: () => {
-      return warehouseApi.getAllWarehouse();
-    }
-  });
   // get api product
   const { data: ProductsData } = useQuery({
     queryKey: ['products'],
     queryFn: async () => await productsApi.getAllProducts()
   });
+
   return (
     <>
       <Formik
@@ -96,7 +125,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
               totalAmount: values.totalAmount,
               exportDescription: values.exportDescription,
               recipient: values.recipient,
-              userID: values.userID,
+              userID: result.id,
               warehouseID: values.warehouseID,
               dispatches: values.dispatches.map((dispatch) => ({
                 quantity: dispatch.quantity,
@@ -104,16 +133,16 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
               }))
             }
           };
-          // createWarehouseMutation.mutate(formattedData, {
-          //   onSuccess: () => {
-          //     alert('Tạo phiếu xuất kho thành công!');
-          //   },
-          //   onError: (error) => {
-          //     alert(error.message);
-          //   }
-          // });
+          createWarehouseMutation.mutate(formattedData, {
+            onSuccess: () => {
+              alert('Tạo phiếu xuất kho thành công!');
+            },
+            onError: (error) => {
+              alert(error.message);
+            }
+          });
           // Log dữ liệu đã format để gửi lên server
-          console.log(formattedData);
+          // console.log(formattedData);
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, touched, values }) => (
@@ -264,27 +293,18 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
                 )}
               </FormControl>
 
-              <FormControl fullWidth error={Boolean(touched.userID && errors.userID)} sx={{ ...theme.typography.customSelect }}>
+              <FormControl fullWidth error={Boolean(touched.userID && errors.userID)} sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="outlined-adornment-userID">Người xuất kho</InputLabel>
-                <Select
-                  name="userID"
+                <OutlinedInput
+                  disabled
+                  id="outlined-adornment-recipient"
+                  type="text"
+                  value={result.name}
+                  name="recipient"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={values.userID}
-                  label="Age"
                   inputProps={{}}
-                >
-                  {userData &&
-                    userData?.data?.data.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
+                />
                 {touched.userID && errors.userID && (
                   <FormHelperText error id="standard-weight-helper-text--register">
                     {errors.userID}
@@ -292,8 +312,8 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
                 )}
               </FormControl>
 
-              <FormControl fullWidth error={Boolean(touched.warehouseID && errors.warehouseID)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-warehouseID">Warehouse ID</InputLabel>
+              <FormControl fullWidth error={Boolean(touched.warehouseID && errors.warehouseID)} sx={{ ...theme.typography.customSelect }}>
+                <InputLabel htmlFor="outlined-adornment-warehouseID">Chọn kho</InputLabel>
                 <Select
                   name="warehouseID"
                   onBlur={handleBlur}
@@ -304,11 +324,11 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
                   label="Age"
                   inputProps={{}}
                 >
-                  {WarehouseData &&
-                    WarehouseData?.data?.map((item) => {
+                  {result &&
+                    result?.warehouses?.map((item) => {
                       return (
-                        <MenuItem key={item.id} value={item.id}>
-                          {item.name}
+                        <MenuItem key={item.warehouseId} value={item.warehouseId}>
+                          {item.warehouseName}
                         </MenuItem>
                       );
                     })}
@@ -348,20 +368,6 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation }) {
                           )}
                         </FormControl>
                         <FormControl fullWidth error={Boolean(touched.dispatches?.[index]?.product && errors.dispatches?.[index]?.product)}>
-                          {/* <InputLabel htmlFor={`outlined-adornment-dispatch-product-${index}`}>Tên sản phẩm</InputLabel> */}
-                          {/* <Autocomplete
-                            id={`outlined-adornment-dispatch-product-${index}`}
-                            type="text"
-                            // value={dispatch.product}
-                            value={ProductsData?.data.find((option) => option.id).id}
-                            name={`dispatches.${index}.product`}
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            inputProps={{}}
-                            options={ProductsData?.data}
-                            getOptionLabel={(option) => option.name}
-                            renderInput={(params) => <TextField {...params} label="Tên sản phẩm" />}
-                          /> */}
                           <Autocomplete
                             id={`outlined-adornment-dispatch-product-${index}`}
                             value={ProductsData?.data.find((option) => option.id === dispatch.product) || null}

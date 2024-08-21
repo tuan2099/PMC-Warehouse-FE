@@ -1,19 +1,15 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Dialog, DialogContent, Toolbar, AppBar, IconButton } from '@mui/material';
 
 import { useMutation } from '@tanstack/react-query';
 import warehouseDispatchApi from '../../api/warehouseDispatch';
 import MainCard from 'ui-component/cards/MainCard';
-import {
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  ModeEdit as ModeEditIcon,
-  Close as CloseIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+import { Add as AddIcon, Close as CloseIcon } from '@mui/icons-material';
 import WarehouseDispatchForm from './components/WarehouseDispatchForm';
 function WarehouseDispatch() {
+  const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
+
   const [isEdit, setIsEdit] = useState();
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState({
@@ -33,7 +29,6 @@ function WarehouseDispatch() {
       }
     ]
   });
-
   const createWarehouseMutation = useMutation({
     mutationFn: (body) => warehouseDispatchApi.createWarehouseDispatch(body)
   });
@@ -80,7 +75,7 @@ function WarehouseDispatch() {
             </Toolbar>
           </AppBar>
           <DialogContent>
-            <WarehouseDispatchForm formState={formState} createWarehouseMutation={createWarehouseMutation} />
+            <WarehouseDispatchForm formState={formState} createWarehouseMutation={createWarehouseMutation} userDataLogin={userDataLogin} />
           </DialogContent>
         </Dialog>
       </MainCard>
