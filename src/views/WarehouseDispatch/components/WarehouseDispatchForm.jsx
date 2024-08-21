@@ -19,8 +19,7 @@ import {
   TextField
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import userApi from 'api/auth.api';
-import warehouseApi from 'api/warehouse.api';
+
 import productsApi from 'api/product.api';
 function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLogin }) {
   const theme = useTheme(); // theme setting
@@ -68,7 +67,6 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
   };
 
   const result = transformUserData(userDataLogin);
-  console.log(result);
   const getCurrentDateTime = () => {
     const now = new Date();
     const year = now.getFullYear();

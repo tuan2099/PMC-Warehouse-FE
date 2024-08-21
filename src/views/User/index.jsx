@@ -25,7 +25,8 @@ function User() {
     name: '',
     email: '',
     password: '',
-    role: ''
+    role: '',
+    warehouseId: []
   });
   // const dispatch = useDispatch();
   // Setting columns for table users
@@ -85,7 +86,8 @@ function User() {
         name: '',
         email: '',
         password: '',
-        role: ''
+        role: '',
+        warehouseId: []
       });
       setIsEdit(false);
     } else if (dialogId === 'dialog2') {
@@ -93,7 +95,8 @@ function User() {
         name: '',
         email: '',
         password: '',
-        role: ''
+        role: '',
+        warehouseId: []
       });
       setIsEdit(false);
     }
@@ -116,12 +119,14 @@ function User() {
   const getUserMutation = useMutation({
     mutationFn: userApi.getUserById,
     onSuccess: (data) => {
+      console.log(data);
       setIsEdit(data?.data?.data);
       setFormState({
         name: data?.data?.data?.name,
         email: data?.data?.data?.email,
         password: data?.data?.data?.password,
-        role: data?.data?.data?.role
+        role: data?.data?.data?.role,
+        warehouseId: []
       });
     }
   });

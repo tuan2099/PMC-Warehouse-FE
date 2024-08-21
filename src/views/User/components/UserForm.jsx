@@ -1,29 +1,25 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React from 'react';
 import { Formik } from 'formik';
 import {
   Box,
   FormControl,
-  FormControlLabel,
   FormHelperText,
-  Grid,
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  Checkbox,
   Button,
   IconButton,
-  Typography,
   useTheme,
-  Autocomplete,
-  TextField
+  Select,
+  MenuItem
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
-
+import warehouseApi from 'api/warehouse.api';
+import { useQuery } from '@tanstack/react-query';
 function UserForm({
   updateUserMutation,
   addUserMutation,
@@ -36,17 +32,14 @@ function UserForm({
   handleCloseDialog
 }) {
   const theme = useTheme(); // theme setting
-  const [strength, setStrength] = useState(0); // password setting
-  const [checked, setChecked] = useState(true); // checkbox setting
-  console.log(isEdit);
-  const aiOptions = [
-    { title: 'Admin', id: 1 },
-    { title: 'Editor', id: 2 },
-    { title: 'Viewer', id: 3 },
-    { title: 'Viewer', id: 4 },
-    { title: 'Viewer', id: 5 },
-    { title: 'Viewer', id: 6 }
-  ];
+  // get api all warehouse
+  const { data: WarehouseData } = useQuery({
+    queryKey: ['warehouse'],
+    queryFn: () => {
+      return warehouseApi.getAllWarehouse();
+    }
+  });
+  console.log(formState);
   return (
     <>
       <Formik
@@ -68,7 +61,8 @@ function UserForm({
                   email: values.email,
                   date_of_birth: values.date_of_birth || '',
                   password: values.password,
-                  role: values.role
+                  role: values.role,
+                  warehouseId: values.warehouseId
                 }
               ]
             };
@@ -88,7 +82,7 @@ function UserForm({
           handleCloseDialog();
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values, setFieldValue }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-name-register">Tên người dùng</InputLabel>
@@ -161,83 +155,52 @@ function UserForm({
               )}
             </FormControl>
 
-            <FormControl fullWidth error={Boolean(touched.role && errors.role)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-role-register">Quyền hạn</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-role-register"
-                type="role"
-                value={values.role}
-                name="role"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
-              />
-              {touched.role && errors.role && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.role}
-                </FormHelperText>
-              )}
-            </FormControl>
             {isEdit.length === 0 ? (
               ''
             ) : (
               <>
-                <FormControl fullWidth error={Boolean(touched.ai && errors.ai)} sx={{ ...theme.typography.customInput }}>
-                  <Autocomplete
+                <FormControl fullWidth error={Boolean(touched.role && errors.role)} sx={{ ...theme.typography.customSelect }}>
+                  <InputLabel htmlFor="outlined-adornment-password-register">Quyền hạn</InputLabel>
+                  <Select
+                    name="role"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={values.role}
+                    label="Age"
+                    inputProps={{}}
+                  >
+                    <MenuItem value={'ADMIN'}>ADMIN</MenuItem>
+                    <MenuItem value={'USER'}>USER</MenuItem>
+                    <MenuItem value={'SUPPER_ADMIN'}>SUPPER_ADMIN</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth error={Boolean(touched.warehouseId && errors.warehouseId)} sx={{ ...theme.typography.customSelect }}>
+                  <InputLabel htmlFor="outlined-adornment-password-register">Phân quyền kho</InputLabel>
+                  <Select
+                    name="warehouseId"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={values.warehouseId}
                     multiple
-                    options={aiOptions}
-                    getOptionLabel={(option) => option.title}
-                    onChange={(event, value) => setFieldValue('ai', value)}
-                    filterSelectedOptions
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Quyền hạn"
-                        variant="outlined"
-                        placeholder="Select ais"
-                        onBlur={handleBlur}
-                        error={Boolean(touched.ai && errors.ai)}
-                        helperText={touched.ai && errors.ai}
-                      />
-                    )}
-                  />
+                    label="Age"
+                    inputProps={{}}
+                  >
+                    {WarehouseData?.data?.map((item) => {
+                      return (
+                        <MenuItem key={item.id} value={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
                 </FormControl>
               </>
             )}
-            {strength !== 0 && (
-              <FormControl fullWidth>
-                <Box sx={{ mb: 2 }}>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item>
-                      <Box style={{ backgroundColor: level?.color }} sx={{ width: 85, height: 8, borderRadius: '7px' }} />
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="subtitle1" fontSize="0.75rem">
-                        {level?.label}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </FormControl>
-            )}
 
-            <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />
-                  }
-                  label={
-                    <Typography variant="subtitle1">
-                      Agree with &nbsp;
-                      <Typography variant="subtitle1" component={Link} to="#">
-                        Terms & Condition.
-                      </Typography>
-                    </Typography>
-                  }
-                />
-              </Grid>
-            </Grid>
             {errors.submit && (
               <Box sx={{ mt: 3 }}>
                 <FormHelperText error>{errors.submit}</FormHelperText>
