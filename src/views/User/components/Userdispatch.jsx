@@ -3,7 +3,6 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 function Userdispatch({ dataWarehouseDispatch }) {
-  console.log(dataWarehouseDispatch);
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'exportCode', headerName: 'Mã đơn', width: 150 },

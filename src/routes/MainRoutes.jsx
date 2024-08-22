@@ -12,6 +12,7 @@ const UserManager = Loadable(lazy(() => import('views/User/index')));
 const WarehouseManager = Loadable(lazy(() => import('views/warehouse/index')));
 const ProductsManager = Loadable(lazy(() => import('views/Products/index')));
 const WarehouseDispatch = Loadable(lazy(() => import('views/WarehouseDispatch/index')));
+const Customer = Loadable(lazy(() => import('views/customer/index')));
 import ProtectedRoute from './ProtectedRoute';
 // sample page routing
 
@@ -29,15 +30,6 @@ const MainRoutes = {
         </ProtectedRoute>
       )
     },
-    // {
-    //   path: 'dashboard',
-    //   children: [
-    //     {
-    //       path: 'default',
-    //       element: <DashboardDefault />
-    //     }
-    //   ]
-    // },
     {
       path: 'products',
       element: (
@@ -67,6 +59,14 @@ const MainRoutes = {
       element: (
         <ProtectedRoute>
           <WarehouseDispatch />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: 'customer',
+      element: (
+        <ProtectedRoute>
+          <Customer />
         </ProtectedRoute>
       )
     }

@@ -43,6 +43,14 @@ const users = {
       url: '/warehouse-dispatch',
       icon: icons.IconBuildingWarehouse,
       breadcrumbs: false
+    },
+    {
+      id: 'Customer',
+      title: 'Dự án',
+      type: 'item',
+      url: '/customer',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
     }
   ]
 };

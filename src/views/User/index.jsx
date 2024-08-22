@@ -119,7 +119,6 @@ function User() {
   const getUserMutation = useMutation({
     mutationFn: userApi.getUserById,
     onSuccess: (data) => {
-      console.log(data);
       setIsEdit(data?.data?.data);
       setFormState({
         name: data?.data?.data?.name,
@@ -154,8 +153,7 @@ function User() {
   // Add user logic
   const addUserMutation = useMutation({
     mutationFn: (body) => userApi.adduser(body),
-    onSuccess: (user) => {
-      console.log(user);
+    onSuccess: () => {
       alert('Thêm người dùng thành công!');
       refetch();
     }

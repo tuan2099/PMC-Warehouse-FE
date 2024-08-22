@@ -39,7 +39,6 @@ function UserForm({
       return warehouseApi.getAllWarehouse();
     }
   });
-  console.log(formState);
   return (
     <>
       <Formik
