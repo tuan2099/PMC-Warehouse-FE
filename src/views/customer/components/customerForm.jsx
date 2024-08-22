@@ -8,6 +8,7 @@ import { Box, FormControl, useTheme, InputLabel, OutlinedInput, FormHelperText, 
 
 function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updateCustomer }) {
   const theme = useTheme(); // theme setting
+  console.log(formState);
   return (
     <>
       <Formik
@@ -18,7 +19,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
         // setting submit
         onSubmit={(values) => {
           if (isEdit) {
-            updateCustomer.mutate({ customerId: isEdit?.id, values });
+            updateCustomer.mutate({ customerId: formState?.userId, values });
           } else {
             addCustomer.mutate(values);
           }

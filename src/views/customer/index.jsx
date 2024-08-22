@@ -16,13 +16,14 @@ import CustomerForm from './components/customerForm';
 import InfoCustomer from './components/InfoCustomer';
 function Customer() {
   const [openDialog, setOpenDialog] = useState();
-  const [isEdit, setIsEdit] = useState();
+  const [isEdit, setIsEdit] = useState(false);
   const [formState, setFormState] = useState({
+    userId: null,
     name: ''
   });
   // Open & close ---> Dialog
   const handleOpenDialog = (DialogId) => {
-    setIsEdit([]);
+    setIsEdit(false);
     setOpenDialog(DialogId);
   };
 
@@ -100,9 +101,9 @@ function Customer() {
   const getCustomerMutation = useMutation({
     mutationFn: customerApi.getCustomer,
     onSuccess: (data) => {
-      console.log(data);
-      setIsEdit(data?.data?.customerDetail);
+      setIsEdit(true);
       setFormState({
+        userId: data?.data?.customerDetail?.id,
         name: data?.data?.customerDetail?.name
       });
     }
