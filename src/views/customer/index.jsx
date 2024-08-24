@@ -19,8 +19,17 @@ function Customer() {
   const [isEdit, setIsEdit] = useState(false);
   const [formState, setFormState] = useState({
     userId: null,
-    name: ''
+    name: '',
+    pm: '',
+    location: '',
+    branch: '',
+    representative: '',
+    status: '',
+    phoneNumber: '',
+    note: ''
   });
+  const [userInfo, setUserInfo] = useState([]);
+
   // Open & close ---> Dialog
   const handleOpenDialog = (DialogId) => {
     setIsEdit(false);
@@ -43,13 +52,23 @@ function Customer() {
   const { data: customerData, refetch } = useQuery({
     queryKey: ['customer'],
     queryFn: async () => {
-      return customerApi.getAllCustomer();
-    }
+      const response = await customerApi.getAllCustomer();
+      return response;
+    },
+    keepPreviousData: true
   });
   // Setting columns for table customer
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'name', headerName: 'Tên', width: 350 },
+    { field: 'name', headerName: 'Tên', width: 250 },
+    { field: 'pm', headerName: 'GĐTN', width: 250 },
+    { field: 'location', headerName: 'Địa chỉ', width: 150 },
+    { field: 'branch', headerName: 'Chi nhánh', width: 150 },
+    { field: 'representative', headerName: 'Người đại diện', width: 150 },
+    { field: 'status', headerName: 'Trạng thái', width: 150 },
+    { field: 'phoneNumber', headerName: 'Số điện thoại', width: 150 },
+    { field: 'note', headerName: 'Ghi chú', width: 150 },
+
     {
       field: 'actions',
       headerName: 'Actions',
@@ -102,12 +121,21 @@ function Customer() {
     mutationFn: customerApi.getCustomer,
     onSuccess: (data) => {
       setIsEdit(true);
+      setUserInfo(data);
       setFormState({
         userId: data?.data?.customerDetail?.id,
-        name: data?.data?.customerDetail?.name
+        name: data?.data?.customerDetail?.name,
+        pm: data?.data?.customerDetail?.pm,
+        location: data?.data?.customerDetail?.location,
+        branch: data?.data?.customerDetail?.branch,
+        representative: data?.data?.customerDetail?.representative,
+        status: data?.data?.customerDetail?.status,
+        phoneNumber: data?.data?.customerDetail?.phoneNumber,
+        note: data?.data?.customerDetail?.note
       });
     }
   });
+
   // call api update customer
   const handleUpdateCustomer = (rowId) => {
     getCustomerMutation.mutate(rowId);
@@ -132,6 +160,7 @@ function Customer() {
   const handlegetInfoCustomer = (rowId) => {
     getCustomerMutation.mutate(rowId);
   };
+
   return (
     <>
       <MainCard title="Quản lý Dự án">
@@ -186,14 +215,18 @@ function Customer() {
               </IconButton>
             </Toolbar>
           </AppBar>
-          <DialogContent>{isEdit && <InfoCustomer isEdit={isEdit} />}</DialogContent>
+          <DialogContent>{isEdit && <InfoCustomer handleDeleteCustomer={handleDeleteCustomer} userInfo={userInfo} />}</DialogContent>
         </Dialog>
 
-        <Box sx={{ height: '100%', width: '100%' }}>
+        <Box sx={{ width: '100%', height: '600px' }}>
           <DataGrid
+            rowHeight={70}
             rows={customerData?.data}
             columns={columns}
-            pageSize={5}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 5 } }
+            }}
+            pagination
             checkboxSelection
             slots={{ toolbar: GridToolbar }}
             slotProps={{
@@ -201,6 +234,7 @@ function Customer() {
                 showQuickFilter: true
               }
             }}
+            pageSizeOptions={[5, 10, 25]}
           />
         </Box>
       </MainCard>

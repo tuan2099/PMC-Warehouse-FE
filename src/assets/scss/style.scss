@@ -63,6 +63,10 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 20px;
 }
+
+.MuiTablePagination-root {
+  max-height: none !important;
+}
 // ==============================|| ANIMATION KEYFRAMES ||============================== //
 
 @keyframes wings {

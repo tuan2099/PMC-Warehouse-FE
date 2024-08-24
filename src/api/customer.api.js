@@ -3,7 +3,7 @@ import http from 'utils/http';
 
 const customerApi = {
   getAllCustomer() {
-    return http.get('/customers');
+    return http.get(`/customers`);
   },
   getCustomer(id) {
     return http.get(`/customers/${id}`);

@@ -140,7 +140,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
             }
           });
           // Log dữ liệu đã format để gửi lên server
-          // console.log(formattedData);
+          console.log(formattedData);
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, touched, values }) => (
