@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
@@ -16,14 +16,39 @@ import {
   useTheme,
   Select,
   MenuItem,
-  TextField
+  TextField,
+  Grid
 } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-import productsApi from 'api/product.api';
+import getAllCustomer from 'api/customer.api';
+import warehouseApi from 'api/warehouse.api';
 function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLogin }) {
   const theme = useTheme(); // theme setting
-  // id cho phiếu xuất
+  const [selectedWarehouseID, setSelectedWarehouseID] = useState(null);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    if (selectedWarehouseID) {
+      // Gọi hàm để lấy dữ liệu sản phẩm từ kho đã chọn
+      fetchProductsByWarehouseID(selectedWarehouseID);
+    }
+  }, [selectedWarehouseID]);
+
+  const getWarehouseMutationByID = useMutation({
+    mutationFn: warehouseApi.getWarehouseById,
+    onSuccess: (data) => {
+      const extractedProducts = data?.data?.warehouseDetail?.warehouse_inventories.map((item) => ({
+        ...item.inventory.product,
+        quantity: item.inventory.quantity
+      }));
+      setProducts(extractedProducts);
+    }
+  });
+
+  const fetchProductsByWarehouseID = (warehouseID) => {
+    getWarehouseMutationByID.mutate(warehouseID);
+  };
 
   const transformUserData = (data) => {
     // Lấy thông tin người dùng
@@ -67,6 +92,8 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
   };
 
   const result = transformUserData(userDataLogin);
+
+  // set code for export
   const getCurrentDateTime = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -88,10 +115,11 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
       return total + Number(dispatch.quantity || 0);
     }, 0);
   };
-  // get api product
-  const { data: ProductsData } = useQuery({
-    queryKey: ['products'],
-    queryFn: async () => await productsApi.getAllProducts()
+
+  // get api customers
+  const { data: customersData } = useQuery({
+    queryKey: ['customers'],
+    queryFn: async () => await getAllCustomer.getAllCustomer()
   });
 
   return (
@@ -120,11 +148,12 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
               exportDate: values.exportDate, // định dạng ngày tháng
               exportType: values.exportType,
               totalProductQuantity: calculateTotalQuantity(values.dispatches),
-              totalAmount: values.totalAmount,
+              totalAmount: values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
               exportDescription: values.exportDescription,
               recipient: values.recipient,
               userID: result.id,
               warehouseID: values.warehouseID,
+              customerID: values.customerID,
               dispatches: values.dispatches.map((dispatch) => ({
                 quantity: dispatch.quantity,
                 product: dispatch.product
@@ -143,7 +172,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
           console.log(formattedData);
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, touched, values }) => (
+        {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Typography variant="h3" gutterBottom>
               Thông tin xuất kho
@@ -233,24 +262,6 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                 )}
               </FormControl>
 
-              <FormControl fullWidth error={Boolean(touched.totalAmount && errors.totalAmount)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-totalAmount">Tổng số tiền</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-totalAmount"
-                  type="number"
-                  value={values.totalAmount}
-                  name="totalAmount"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.totalAmount && errors.totalAmount && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.totalAmount}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
               <FormControl
                 fullWidth
                 error={Boolean(touched.exportDescription && errors.exportDescription)}
@@ -310,12 +321,44 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                 )}
               </FormControl>
 
+              <FormControl fullWidth error={Boolean(touched.customerID && errors.customerID)} sx={{ ...theme.typography.customSelect }}>
+                <InputLabel htmlFor="outlined-adornment-customerID">Chọn dự án</InputLabel>
+                <Select
+                  name="customerID"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={values.customerID}
+                  label="Age"
+                  inputProps={{}}
+                >
+                  {customersData &&
+                    customersData?.data?.map((item) => {
+                      return (
+                        <MenuItem key={item.id} value={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      );
+                    })}
+                </Select>
+                {touched.warehouseID && errors.warehouseID && (
+                  <FormHelperText error id="standard-weight-helper-text--register">
+                    {errors.warehouseID}
+                  </FormHelperText>
+                )}
+              </FormControl>
+
               <FormControl fullWidth error={Boolean(touched.warehouseID && errors.warehouseID)} sx={{ ...theme.typography.customSelect }}>
                 <InputLabel htmlFor="outlined-adornment-warehouseID">Chọn kho</InputLabel>
                 <Select
                   name="warehouseID"
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(event) => {
+                    const warehouseID = event.target.value;
+                    setSelectedWarehouseID(warehouseID); // Cập nhật state để gọi API hoặc xử lý logic khác
+                    handleChange(event); // Cập nhật giá trị vào Formik
+                  }}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={values.warehouseID}
@@ -349,6 +392,27 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                       <div className="form-add-detail">
                         <FormControl
                           fullWidth
+                          error={Boolean(touched.dispatches?.[index]?.product && errors.dispatches?.[index]?.product)}
+                          key={index}
+                        >
+                          <Autocomplete
+                            id={`outlined-adornment-dispatch-product-${index}`}
+                            value={products.find((option) => option.id === dispatch.product) || null}
+                            onChange={(event, newValue) => {
+                              // Lấy id của sản phẩm được chọn và cập nhật vào Formik
+                              setFieldValue(`dispatches.${index}.product`, newValue?.id || '');
+                              setFieldValue(`dispatches.${index}.QtyInStock`, newValue?.salePrice || '');
+                            }}
+                            options={products} // Sử dụng danh sách sản phẩm đã xử lý
+                            getOptionLabel={(option) => `${option.name} (${option.quantity})`}
+                            renderInput={(params) => <TextField {...params} label="Tên sản phẩm" />}
+                          />
+                          {touched.dispatches?.[index]?.product && errors.dispatches?.[index]?.product && (
+                            <FormHelperText error>{errors.dispatches[index].product}</FormHelperText>
+                          )}
+                        </FormControl>
+                        <FormControl
+                          fullWidth
                           error={Boolean(touched.dispatches?.[index]?.quantity && errors.dispatches?.[index]?.quantity)}
                         >
                           <InputLabel htmlFor={`outlined-adornment-dispatch-quantity-${index}`}>Số lượng</InputLabel>
@@ -358,45 +422,38 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                             value={dispatch.quantity}
                             name={`dispatches.${index}.quantity`}
                             onBlur={handleBlur}
-                            onChange={handleChange}
+                            // onChange={handleChange}
+                            onChange={(event) => {
+                              handleChange(event); // Cập nhật số lượng
+                              const newQuantity = event.target.value;
+                              const newTotal = newQuantity * dispatch.QtyInStock;
+                              setFieldValue(`dispatches.${index}.totalPriceProduct`, newTotal); // Cập nhật tổng
+                            }}
                             inputProps={{}}
                           />
                           {touched.dispatches?.[index]?.quantity && errors.dispatches?.[index]?.quantity && (
                             <FormHelperText error>{errors.dispatches[index].quantity}</FormHelperText>
                           )}
                         </FormControl>
-                        <FormControl fullWidth error={Boolean(touched.dispatches?.[index]?.product && errors.dispatches?.[index]?.product)}>
-                          <Autocomplete
-                            id={`outlined-adornment-dispatch-product-${index}`}
-                            value={ProductsData?.data.find((option) => option.id === dispatch.product) || null}
-                            onChange={(event, newValue) => {
-                              handleChange({
-                                target: {
-                                  name: `dispatches.${index}.product`,
-                                  value: newValue?.id || ''
-                                }
-                              });
-                            }}
-                            options={ProductsData?.data || []}
-                            getOptionLabel={(option) => option.name}
-                            renderInput={(params) => <TextField {...params} label="Tên sản phẩm" />}
-                          />
-                          {touched.dispatches?.[index]?.product && errors.dispatches?.[index]?.product && (
-                            <FormHelperText error>{errors.dispatches[index].product}</FormHelperText>
-                          )}
-                        </FormControl>
                         <FormControl
                           fullWidth
                           error={Boolean(touched.dispatches?.[index]?.QtyInStock && errors.dispatches?.[index]?.QtyInStock)}
                         >
-                          <InputLabel htmlFor={`outlined-adornment-dispatch-QtyInStock-${index}`}>Số lượng tồn trong kho</InputLabel>
+                          <InputLabel htmlFor={`outlined-adornment-dispatch-QtyInStock-${index}`}>Đơn giá</InputLabel>
                           <OutlinedInput
+                            disabled
                             id={`outlined-adornment-dispatch-QtyInStock-${index}`}
                             type="number"
                             value={dispatch.QtyInStock}
                             name={`dispatches.${index}.QtyInStock`}
                             onBlur={handleBlur}
-                            onChange={handleChange}
+                            // onChange={handleChange}
+                            onChange={(event) => {
+                              handleChange(event); // Cập nhật đơn giá
+                              const newPrice = event.target.value;
+                              const newTotal = dispatch.quantity * newPrice;
+                              setFieldValue(`dispatches.${index}.totalPriceProduct`, newTotal); // Cập nhật tổng
+                            }}
                             inputProps={{}}
                           />
                           {touched.dispatches?.[index]?.QtyInStock && errors.dispatches?.[index]?.QtyInStock && (
@@ -407,7 +464,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                           fullWidth
                           error={Boolean(touched.dispatches?.[index]?.totalPriceProduct && errors.dispatches?.[index]?.totalPriceProduct)}
                         >
-                          <InputLabel htmlFor={`outlined-adornment-dispatch-totalPriceProduct-${index}`}>totalPriceProduct ID</InputLabel>
+                          <InputLabel htmlFor={`outlined-adornment-dispatch-totalPriceProduct-${index}`}>Tổng</InputLabel>
                           <OutlinedInput
                             id={`outlined-adornment-dispatch-totalPriceProduct-${index}`}
                             type="number"
@@ -416,6 +473,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                             onBlur={handleBlur}
                             onChange={handleChange}
                             inputProps={{}}
+                            disabled
                           />
                           {touched.dispatches?.[index]?.totalPriceProduct && errors.dispatches?.[index]?.totalPriceProduct && (
                             <FormHelperText error>{errors.dispatches[index].totalPriceProduct}</FormHelperText>
@@ -443,11 +501,30 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                 </>
               )}
             </FieldArray>
+            <Box sx={{ mt: 8, bgcolor: '#E3F2FD', pt: 6, pb: 3 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={4}></Grid>
+                <Grid item xs={4}></Grid>
+                <Grid container xs={4}>
+                  <Grid item xs={4}>
+                    Tổng số tiền:
+                  </Grid>
+                  <Grid item xs={4} sx={{ fontWeight: '700' }}>
+                    {(() => {
+                      const totalAmount = values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0);
+
+                      // Định dạng và hiển thị tổng số tiền
+                      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalAmount).replace('₫', 'đ');
+                    })()}
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Box>
 
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
-                <Button disableElevation fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Submit
+                <Button disableElevation size="large" type="submit" variant="contained" color="secondary">
+                  Tạo phiếu xuất kho
                 </Button>
               </AnimateButton>
             </Box>

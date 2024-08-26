@@ -67,6 +67,9 @@
 .MuiTablePagination-root {
   max-height: none !important;
 }
+.MuiDrawer-root {
+  z-index: 1300;
+}
 // ==============================|| ANIMATION KEYFRAMES ||============================== //
 
 @keyframes wings {

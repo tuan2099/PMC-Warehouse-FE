@@ -22,6 +22,7 @@ function WarehouseDispatch() {
     recipient: '',
     userID: '',
     warehouseID: '',
+    customerID: '',
     dispatches: [
       {
         quantity: '',

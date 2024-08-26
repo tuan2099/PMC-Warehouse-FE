@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { Box, Tabs, Tab, Typography, Button, Grid } from '@mui/material';
+import { Box, Tabs, Tab, Typography, Button, Grid, IconButton, Drawer } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-
+import { Search as SearchIcon } from '@mui/icons-material';
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -15,6 +15,15 @@ function CustomTabPanel(props) {
   );
 }
 function InfoCustomer({ userInfo, handleDeleteCustomer }) {
+  const [open, setOpen] = useState(false);
+  const [WCPDetail, setWCPdetail] = useState(null);
+
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
+  };
+
+  const DrawerList = <Box sx={{ width: 550, zIndex: 12000 }}>{WCPDetail}</Box>;
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'exportCode', headerName: 'Mã xuất kho', width: 250 },
@@ -22,30 +31,24 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
     { field: 'exportType', headerName: 'Kiểu xuất', width: 150 },
     { field: 'totalProductQuantity', headerName: 'Tổng số lượng sản phẩm', width: 150 },
     { field: 'exportDescription', headerName: 'Mô tả', width: 150 },
-    { field: 'recipient', headerName: 'Người nhận', width: 150 }
-
-    // {
-    //   field: 'actions',
-    //   headerName: 'Actions',
-    //   width: 220,
-    //   renderCell: ({ id }) => (
-    //     <>
-    //       <IconButton aria-label="delete" variant="contained" color="secondary" onClick={() => handleDeleteCustomer(id)}>
-    //         <DeleteIcon />
-    //       </IconButton>
-    //       <IconButton onClick={() => handleUpdateCustomer(id)}>
-    //         <ModeEditIcon />
-    //       </IconButton>
-    //       <IconButton
-    //         onClick={() => {
-    //           handleOpenDialog('dialog2'), handlegetInfoCustomer(id);
-    //         }}
-    //       >
-    //         <SearchIcon />
-    //       </IconButton>
-    //     </>
-    //   )
-    // }
+    { field: 'recipient', headerName: 'Người nhận', width: 150 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 220,
+      renderCell: ({ id }) => (
+        <>
+          <IconButton
+            onClick={() => {
+              toggleDrawer(true)();
+              getDcpDetails(id);
+            }}
+          >
+            <SearchIcon />
+          </IconButton>
+        </>
+      )
+    }
   ];
   // console.log(userInfo.data.customerDetail);
   const [value, setValue] = useState(0);
@@ -61,8 +64,26 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
     };
   }
 
-  const userInfoFormat = userInfo.data.customerDetail;
-  console.log(userInfoFormat);
+  const getDcpDetails = (id) => {
+    // fetch data from API
+    const matchingDispatch = findMatchingDispatchById(userInfoFormat.warehouse_dispatches, id);
+    setWCPdetail(matchingDispatch);
+  };
+
+  const userInfoFormat = userInfo?.data?.customerDetail;
+
+  function findMatchingDispatchById(warehouseDispatches, id) {
+    for (const dispatch of warehouseDispatches) {
+      if (dispatch.id === id) {
+        for (const detail of dispatch.warehouseDispatchDetails) {
+          if (detail.warehouseDisPatchID === id) {
+            return dispatch; // Trả về dữ liệu của phiếu xuất kho có ID trùng khớp
+          }
+        }
+      }
+    }
+    return null; // Trả về null nếu không tìm thấy
+  }
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -120,6 +141,9 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
           />
         </CustomTabPanel>
       </Box>
+      <Drawer open={open} onClose={toggleDrawer(false)}>
+        {DrawerList}
+      </Drawer>
     </>
   );
 }

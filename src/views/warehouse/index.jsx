@@ -95,7 +95,6 @@ function Warehouse() {
       return warehouseApi.getAllWarehouse();
     }
   });
-
   // delete warehouse
   const deleteWarehouseMutation = useMutation({
     mutationFn: warehouseApi.deleteWarehouse,
