@@ -5,6 +5,8 @@ import { Box, Tabs, Tab, Typography, Button, Grid, IconButton, Drawer } from '@m
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Search as SearchIcon } from '@mui/icons-material';
+
+// hàm xử lý tab Mui
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -15,15 +17,19 @@ function CustomTabPanel(props) {
   );
 }
 function InfoCustomer({ userInfo, handleDeleteCustomer }) {
-  const [open, setOpen] = useState(false);
-  const [WCPDetail, setWCPdetail] = useState(null);
+  const [open, setOpen] = useState(false); // state quản lý drawer
+  const [WCPDetail, setWCPdetail] = useState(null); // state quản lý dữ liệu warehose dispatch
+  const [value, setValue] = useState(0); // state quản lý tab Mui
 
+  // hàm xử lý cài dặt drawer
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
 
-  const DrawerList = <Box sx={{ width: 550, zIndex: 12000 }}>{WCPDetail}</Box>;
+  // trả về giao diện warehouse dispatch details
+  const DrawerList = <Box sx={{ width: 550, zIndex: 12000 }}>{1}</Box>;
 
+  // Cài đặt cột cho data grid warehouse dispatch
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'exportCode', headerName: 'Mã xuất kho', width: 250 },
@@ -50,13 +56,13 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
       )
     }
   ];
-  // console.log(userInfo.data.customerDetail);
-  const [value, setValue] = useState(0);
 
+  // hàm điều khiển tab Mui
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  // hàm điều khiển tab Mui
   function a11yProps(index) {
     return {
       id: `simple-tab-${index}`,
@@ -64,25 +70,28 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
     };
   }
 
+  // lấy và set dữ liệu cho WCPDetail
   const getDcpDetails = (id) => {
     // fetch data from API
-    const matchingDispatch = findMatchingDispatchById(userInfoFormat.warehouse_dispatches, id);
+    const matchingDispatch = findMatchingDispatchById(userInfoFormat.warehouse_dispatches, id); // function
     setWCPdetail(matchingDispatch);
   };
 
+  // Xử lý dữ liệu lấy từ api về
   const userInfoFormat = userInfo?.data?.customerDetail;
 
+  // hàm lấy dữ liệu warehouse dispatch đã click
   function findMatchingDispatchById(warehouseDispatches, id) {
     for (const dispatch of warehouseDispatches) {
       if (dispatch.id === id) {
         for (const detail of dispatch.warehouseDispatchDetails) {
           if (detail.warehouseDisPatchID === id) {
-            return dispatch; // Trả về dữ liệu của phiếu xuất kho có ID trùng khớp
+            return dispatch; // So sánh ID truyền vào có trùng  với warehouseDispatches được lấy từ api về ko
           }
         }
       }
     }
-    return null; // Trả về null nếu không tìm thấy
+    return null; // ko trùng trả về null
   }
   return (
     <>
