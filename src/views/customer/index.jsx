@@ -15,9 +15,10 @@ import customerApi from 'api/customer.api';
 import CustomerForm from './components/customerForm';
 import InfoCustomer from './components/InfoCustomer';
 function Customer() {
-  const [openDialog, setOpenDialog] = useState();
-  const [isEdit, setIsEdit] = useState(false);
+  const [openDialog, setOpenDialog] = useState(); // cài đặt đóng mở dialog
+  const [isEdit, setIsEdit] = useState(false); // điều chỉnh trang thái form đang sửa hoặc thêm
   const [formState, setFormState] = useState({
+    // initial state của form
     userId: null,
     name: '',
     pm: '',
@@ -28,14 +29,15 @@ function Customer() {
     phoneNumber: '',
     note: ''
   });
-  const [userInfo, setUserInfo] = useState([]);
+  const [userInfo, setUserInfo] = useState([]); // dữ liệu người dùng get từ api về
 
-  // Open & close ---> Dialog
+  // hàm xử lý mở dialog - nhận vào ID để xác định dialog
   const handleOpenDialog = (DialogId) => {
     setIsEdit(false);
     setOpenDialog(DialogId);
   };
 
+  // hàm xử lý đóng dialog - nhận vào ID để xác định dialog
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
@@ -48,7 +50,8 @@ function Customer() {
       });
     }
   };
-  // Call api get customers
+
+  // Gọi api dự án
   const { data: customerData, refetch } = useQuery({
     queryKey: ['customer'],
     queryFn: async () => {
@@ -57,7 +60,8 @@ function Customer() {
     },
     keepPreviousData: true
   });
-  // Setting columns for table customer
+
+  // Setting columns table Dự án
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Tên', width: 250 },
@@ -92,7 +96,7 @@ function Customer() {
       )
     }
   ];
-  // call api add customer
+  // Gọi Api thêm dự án
   const addCustomer = useMutation({
     mutationFn: (body) => customerApi.creteCustomer(body),
     onSuccess: () => {
@@ -102,7 +106,7 @@ function Customer() {
     }
   });
 
-  // call api delete customer
+  // Gọi api xóa dự án
   const deleteUserMutation = useMutation({
     mutationFn: customerApi.deleteCustomer,
     onSuccess: () => {
@@ -116,7 +120,7 @@ function Customer() {
     deleteUserMutation.mutate(rowId);
   };
 
-  // call api get customer by id
+  // Gọi api lấy thông tin người dùng bằng ID
   const getCustomerMutation = useMutation({
     mutationFn: customerApi.getCustomer,
     onSuccess: (data) => {
@@ -136,7 +140,11 @@ function Customer() {
     }
   });
 
-  // call api update customer
+  const handlegetInfoCustomer = (rowId) => {
+    getCustomerMutation.mutate(rowId);
+  };
+
+  // Gọi api update người dùng
   const handleUpdateCustomer = (rowId) => {
     getCustomerMutation.mutate(rowId);
     handleOpenDialog('dialog1');
@@ -155,11 +163,6 @@ function Customer() {
       refetch();
     }
   });
-
-  //
-  const handlegetInfoCustomer = (rowId) => {
-    getCustomerMutation.mutate(rowId);
-  };
 
   return (
     <>
