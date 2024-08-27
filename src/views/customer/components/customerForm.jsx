@@ -1,10 +1,14 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import React from 'react';
+
+// MUI components
 import AnimateButton from 'ui-component/extended/AnimateButton';
+import { Box, FormControl, useTheme, InputLabel, OutlinedInput, FormHelperText, Button } from '@mui/material';
+
+// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import { Box, FormControl, useTheme, InputLabel, OutlinedInput, FormHelperText, Button } from '@mui/material';
 
 function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updateCustomer }) {
   const theme = useTheme(); // theme setting

@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+
+// MUI components
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import {
@@ -12,24 +14,25 @@ import {
 import MainCard from 'ui-component/cards/MainCard';
 import InfoUser from './components/InfoUser';
 import UserForm from './components/UserForm';
+
 // third party
 import { useQuery, useMutation } from '@tanstack/react-query';
+
 // Api
 import userApi from '../../api/auth.api';
 
 function User() {
-  const [isEdit, setIsEdit] = useState([]);
-  const [showPassword, setShowPassword] = useState(false); // password setting
-  const [openDialog, setOpenDialog] = useState();
+  const [isEdit, setIsEdit] = useState([]); //
+  const [showPassword, setShowPassword] = useState(false); // điều khiển password strength
+  const [openDialog, setOpenDialog] = useState(); // điều khiển đóng mở dialog
   const [formState, setFormState] = useState({
     name: '',
     email: '',
     password: '',
     role: '',
     warehouseId: []
-  });
-  // const dispatch = useDispatch();
-  // Setting columns for table users
+  }); // quản lý form
+  // Cài đặt column user
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Tên', width: 350 },
@@ -60,7 +63,7 @@ function User() {
     }
   ];
 
-  // Call api get users
+  // lấy dữ liệu tất cả user
   const { data: userData, refetch } = useQuery({
     queryKey: ['users'],
     queryFn: () => {
@@ -68,17 +71,14 @@ function User() {
     }
   });
 
-  const handlegetUser = (rowId) => {
-    getUserMutation.mutate(rowId);
-  };
-
-  // Open & close ---> Dialog
+  // Mở dialog
   const handleOpenDialog = (DialogId) => {
     handlegetUser();
     setOpenDialog(DialogId);
     setIsEdit([]);
   };
 
+  // Đóng dialog
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
@@ -102,7 +102,7 @@ function User() {
     }
   };
 
-  // Call Api delete user
+  // Hàm xoá dữ liệu user
   const deletePurchasesMutation = useMutation({
     mutationFn: userApi.deleteUser,
     onSuccess: () => {
@@ -115,7 +115,7 @@ function User() {
     deletePurchasesMutation.mutate(rowId);
   };
 
-  // Call Api get user
+  // Lấy dữ liệu user bằng ID
   const getUserMutation = useMutation({
     mutationFn: userApi.getUserById,
     onSuccess: (data) => {
@@ -129,13 +129,11 @@ function User() {
       });
     }
   });
-
-  const handleUpdateUser = (rowId) => {
+  const handlegetUser = (rowId) => {
     getUserMutation.mutate(rowId);
-    handleOpenDialog('dialog1');
   };
 
-  // Setting passwords input
+  // hàm kiểu tra độ mạnh của mật khẩu
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -150,7 +148,7 @@ function User() {
     setLevel(strengthColor(temp));
   };
 
-  // Add user logic
+  // Tạo user
   const addUserMutation = useMutation({
     mutationFn: (body) => userApi.adduser(body),
     onSuccess: () => {
@@ -159,6 +157,11 @@ function User() {
     }
   });
 
+  // update user
+  const handleUpdateUser = (rowId) => {
+    getUserMutation.mutate(rowId);
+    handleOpenDialog('dialog1');
+  };
   const updateUserMutation = useMutation({
     mutationFn: ({ userId, values }) => {
       if (!userId) {

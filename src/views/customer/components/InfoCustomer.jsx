@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
+
+// MUI components
 import { Box, Tabs, Tab, Typography, Button, Grid, IconButton, Drawer } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';

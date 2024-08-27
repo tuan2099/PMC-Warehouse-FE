@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+
+// MUI components
 import MainCard from 'ui-component/cards/MainCard';
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
 import {
@@ -10,7 +12,11 @@ import {
   Search as SearchIcon
 } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+
+// third party
 import { useQuery, useMutation } from '@tanstack/react-query';
+
+// Api
 import customerApi from 'api/customer.api';
 import CustomerForm from './components/customerForm';
 import InfoCustomer from './components/InfoCustomer';

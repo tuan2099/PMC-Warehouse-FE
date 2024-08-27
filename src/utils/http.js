@@ -4,7 +4,7 @@ class Http {
   instance;
   constructor() {
     this.instance = axios.create({
-      baseURL: 'http://localhost:4000/api/v1',
+      baseURL: `${import.meta.env.API}`,
       headers: {
         'Content-Type': 'application/json'
       }

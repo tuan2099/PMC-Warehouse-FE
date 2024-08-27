@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+
+// MUI components
 import MainCard from 'ui-component/cards/MainCard';
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
 import {
@@ -10,20 +12,26 @@ import {
   Search as SearchIcon
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
+
+// Third party
 import { useMutation, useQuery } from '@tanstack/react-query';
+
+// API
 import warehouseApi from '../../api/warehouse.api';
+
+// Custom components
 import WarehouseForm from './components/WarehouseForm';
 
 function Warehouse() {
-  const [isEdit, setIsEdit] = useState();
-  const [openDialog, setOpenDialog] = useState();
+  const [isEdit, setIsEdit] = useState(); //
+  const [openDialog, setOpenDialog] = useState(); // đóng mở dialog
   const [formState, setFormState] = useState({
     name: '',
     address: '',
     note: '',
     type: '',
     info: ''
-  });
+  }); // setting form
 
   // setting columns for table users
   const columns = [
@@ -53,12 +61,12 @@ function Warehouse() {
     }
   ];
 
-  // Open & close ---> Dialog
+  // Mở dialog
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
     console.log(dialogId);
   };
-
+  // Đóng dialog
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
@@ -73,7 +81,8 @@ function Warehouse() {
       // Reset state cho dialog2 nếu cần
     }
   };
-  // get warehouse
+
+  // Lấy dữ liệu warehosue bằng ID
   const getWarehouseMutation = useMutation({
     mutationFn: (body) => warehouseApi.getWarehouseById(body),
     onSuccess: (warehouse) => {
@@ -82,19 +91,18 @@ function Warehouse() {
       setFormState({
         name: warehouseData.name,
         address: warehouseData.address
-        // note: warehouseData.note,
-        // type: warehouseData.type,
-        // info: warehouseData.info
       });
     }
   });
-  // get api all warehouse
+
+  // get dữ liệu tất cả warehouse
   const { data: WarehouseData, refetch } = useQuery({
     queryKey: ['warehouse'],
     queryFn: () => {
       return warehouseApi.getAllWarehouse();
     }
   });
+
   // delete warehouse
   const deleteWarehouseMutation = useMutation({
     mutationFn: warehouseApi.deleteWarehouse,
@@ -121,6 +129,7 @@ function Warehouse() {
       refetch();
     }
   });
+
   // update warehouse
   const handleUpdateWarehouse = (rowId) => {
     getWarehouseMutation.mutate(rowId);

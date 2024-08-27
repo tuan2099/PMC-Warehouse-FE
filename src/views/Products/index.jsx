@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
+
+// MUI components
 import MainCard from 'ui-component/cards/MainCard';
 import {
   Box,
@@ -30,11 +32,15 @@ import {
   Search as SearchIcon
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
+
+// third party
 import { useMutation, useQuery } from '@tanstack/react-query';
+
+// Api
 import productsApi from '../../api/product.api';
 
 function Products() {
-  // setting columns for table products
+  // cài đặt column cho data-grid
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Tên Biển bảng', width: 350 },

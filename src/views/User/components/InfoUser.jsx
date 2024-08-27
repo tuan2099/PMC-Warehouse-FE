@@ -7,6 +7,7 @@ import InfoUserContent from './infoUserContent';
 import UserWarehouse from './UserWarehouse';
 import Userdispatch from './Userdispatch';
 
+// hàm setting tab Mui
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -15,8 +16,8 @@ function CustomTabPanel(props) {
     </div>
   );
 }
+
 function InfoUser({ isEdit }) {
-  // console.log(isEdit);
   const [value, setValue] = useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
