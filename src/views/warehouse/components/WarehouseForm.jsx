@@ -7,7 +7,7 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 function WarehouseForm({ updateWarehouseMutaiton, formState, handleCloseDialog, createWarehouseMutation, isEdit }) {
   const theme = useTheme(); // theme setting
-
+  console.log(isEdit);
   return (
     <>
       <Formik

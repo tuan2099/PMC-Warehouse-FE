@@ -21,9 +21,11 @@ import warehouseApi from '../../api/warehouse.api';
 
 // Custom components
 import WarehouseForm from './components/WarehouseForm';
+import InfoWarehouse from './components/InfoWarehouse';
 
 function Warehouse() {
   const [isEdit, setIsEdit] = useState(); //
+  const [warehouseId, setWarehouseId] = useState(); // lưu id kho đang sửa
   const [openDialog, setOpenDialog] = useState(); // đóng mở dialog
   const [formState, setFormState] = useState({
     name: '',
@@ -53,7 +55,11 @@ function Warehouse() {
           <IconButton onClick={() => handleUpdateWarehouse(id)}>
             <ModeEditIcon />
           </IconButton>
-          <IconButton onClick={() => console.log(123)}>
+          <IconButton
+            onClick={() => {
+              handleOpenDialog('dialog2'), handleGetWarehouse(id);
+            }}
+          >
             <SearchIcon />
           </IconButton>
         </>
@@ -64,7 +70,6 @@ function Warehouse() {
   // Mở dialog
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
-    console.log(dialogId);
   };
   // Đóng dialog
   const handleCloseDialog = (dialogId) => {
@@ -86,7 +91,8 @@ function Warehouse() {
   const getWarehouseMutation = useMutation({
     mutationFn: (body) => warehouseApi.getWarehouseById(body),
     onSuccess: (warehouse) => {
-      const warehouseData = warehouse?.data?.warehouseDetail;
+      const warehouseData = warehouse?.data?.simplifiedWarehouseDetail;
+      setWarehouseId(warehouseData);
       setIsEdit(warehouseData);
       setFormState({
         name: warehouseData.name,
@@ -94,6 +100,11 @@ function Warehouse() {
       });
     }
   });
+
+  const handleGetWarehouse = (rowID) => {
+    getWarehouseMutation.mutate(rowID);
+    // handleOpenDialog('dialog1');
+  };
 
   // get dữ liệu tất cả warehouse
   const { data: WarehouseData, refetch } = useQuery({
@@ -150,6 +161,7 @@ function Warehouse() {
       refetch();
     }
   });
+
   return (
     <>
       <MainCard title="Quản lý kho hàng">
@@ -183,6 +195,29 @@ function Warehouse() {
           </DialogContent>
         </Dialog>
 
+        <Dialog
+          onClose={() => handleCloseDialog('dialog2')}
+          open={openDialog === 'dialog2'}
+          maxWidth="xl"
+          fullWidth
+          sx={{
+            '& .MuiDialogContent-root': {
+              height: '85%', // Chiều cao cố định cho phần nội dung
+              minHeight: '700px'
+            }
+          }}
+        >
+          <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
+            <Toolbar>
+              <IconButton edge="start" color="inherit" aria-label="close" onClick={() => handleCloseDialog('dialog2')}>
+                <CloseIcon color="primary" />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+          <DialogContent>
+            <InfoWarehouse warehouseId={warehouseId && warehouseId} />
+          </DialogContent>
+        </Dialog>
         <Box sx={{ height: '100%', width: '100%' }}>
           <DataGrid rows={WarehouseData?.data} columns={columns} pageSize={5} checkboxSelection />
         </Box>
