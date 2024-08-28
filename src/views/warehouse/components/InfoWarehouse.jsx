@@ -20,7 +20,6 @@ function CustomTabPanel(props) {
 }
 
 function InfoWarehouse({ warehouseId }) {
-    console.log(warehouseId);
     const [value, setValue] = useState(0);
     const handleChange = (event, newValue) => {
         setValue(newValue);

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
 
 // material-ui
@@ -11,15 +12,26 @@ import LogoSection from '../LogoSection';
 import SearchSection from './SearchSection';
 import NotificationSection from './NotificationSection';
 import ProfileSection from './ProfileSection';
-
+import userApi from 'api/auth.api';
 // assets
 import { IconMenu2 } from '@tabler/icons-react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
 
 const Header = ({ handleLeftDrawerToggle }) => {
   const theme = useTheme();
-
+  const userID = JSON.parse(localStorage.getItem('auth_user'));
+  // Gọi api dự án
+  const { data: userData } = useQuery({
+    queryKey: ['customer'],
+    queryFn: async () => {
+      const response = await userApi.getUserById(userID.id);
+      return response;
+    },
+    keepPreviousData: true
+  });
   return (
     <>
       {/* logo & toggler button */}
@@ -64,7 +76,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
 
       {/* notification & profile */}
       <NotificationSection />
-      <ProfileSection />
+      <ProfileSection userData={userData && userData} />
     </>
   );
 };
