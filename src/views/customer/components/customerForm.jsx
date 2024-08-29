@@ -32,7 +32,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-name-register">Tên người dùng</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-name-register">Tên kho</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-name-register"
                 type="name"
@@ -49,7 +49,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
               )}
             </FormControl>
             <FormControl fullWidth error={Boolean(touched.pm && errors.pm)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-pm-register">Tên người dùng</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-pm-register">Giám đôc tòa nhà</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-pm-register"
                 type="pm"
@@ -66,7 +66,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
               )}
             </FormControl>
             <FormControl fullWidth error={Boolean(touched.location && errors.location)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-location-register">Tên người dùng</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-location-register">Địa chỉ</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-location-register"
                 type="location"
@@ -83,7 +83,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
               )}
             </FormControl>
             <FormControl fullWidth error={Boolean(touched.branch && errors.branch)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-branch-register">Tên người dùng</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-branch-register">Chi nhánh</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-branch-register"
                 type="branch"
@@ -104,7 +104,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
               error={Boolean(touched.representative && errors.representative)}
               sx={{ ...theme.typography.customInput }}
             >
-              <InputLabel htmlFor="outlined-adornment-representative-register">Tên người dùng</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-representative-register">Người đại diện</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-representative-register"
                 type="representative"
@@ -121,7 +121,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
               )}
             </FormControl>
             <FormControl fullWidth error={Boolean(touched.status && errors.status)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-status-register">Tên người dùng</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-status-register">Trạng thái</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-status-register"
                 type="status"
@@ -138,7 +138,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
               )}
             </FormControl>
             <FormControl fullWidth error={Boolean(touched.phoneNumber && errors.phoneNumber)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-phoneNumber-register">Tên người dùng</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-phoneNumber-register">Số điện thoại</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-phoneNumber-register"
                 type="phoneNumber"
@@ -155,7 +155,7 @@ function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updat
               )}
             </FormControl>
             <FormControl fullWidth error={Boolean(touched.note && errors.note)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-note-register">Tên người dùng</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-note-register">Ghi chú</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-note-register"
                 type="note"

@@ -99,14 +99,14 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
               }))
             }
           };
-          // createWarehouseMutation.mutate(formattedData, {
-          //   onSuccess: () => {
-          //     alert('Tạo phiếu xuất kho thành công!');
-          //   },
-          //   onError: (error) => {
-          //     alert(error.message);
-          //   }
-          // });
+          createWarehouseMutation.mutate(formattedData, {
+            onSuccess: () => {
+              alert('Tạo phiếu xuất kho thành công!');
+            },
+            onError: (error) => {
+              alert(error.message);
+            }
+          });
           // Log dữ liệu đã format để gửi lên server
           console.log(formattedData);
         }}

@@ -132,16 +132,17 @@ function Customer() {
     onSuccess: (data) => {
       setIsEdit(true);
       setUserInfo(data);
+      console.log(data);
       setFormState({
-        userId: data?.data?.customerDetail?.id,
-        name: data?.data?.customerDetail?.name,
-        pm: data?.data?.customerDetail?.pm,
-        location: data?.data?.customerDetail?.location,
-        branch: data?.data?.customerDetail?.branch,
-        representative: data?.data?.customerDetail?.representative,
-        status: data?.data?.customerDetail?.status,
-        phoneNumber: data?.data?.customerDetail?.phoneNumber,
-        note: data?.data?.customerDetail?.note
+        userId: data?.data?.simplifiedcustomerDetail?.id,
+        name: data?.data?.simplifiedcustomerDetail?.name,
+        pm: data?.data?.simplifiedcustomerDetail?.pm,
+        location: data?.data?.simplifiedcustomerDetail?.location,
+        branch: data?.data?.simplifiedcustomerDetail?.branch,
+        representative: data?.data?.simplifiedcustomerDetail?.representative,
+        status: data?.data?.simplifiedcustomerDetail?.status,
+        phoneNumber: data?.data?.simplifiedcustomerDetail?.phoneNumber,
+        note: data?.data?.simplifiedcustomerDetail?.note
       });
     }
   });
