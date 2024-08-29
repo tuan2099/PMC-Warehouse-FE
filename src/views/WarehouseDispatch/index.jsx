@@ -1,16 +1,16 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Dialog, DialogContent, Toolbar, AppBar, IconButton } from '@mui/material';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import warehouseDispatchApi from '../../api/warehouseDispatch';
 import MainCard from 'ui-component/cards/MainCard';
+import userApi from 'api/auth.api';
 import { Add as AddIcon, Close as CloseIcon } from '@mui/icons-material';
 import WarehouseDispatchForm from './components/WarehouseDispatchForm';
 function WarehouseDispatch() {
   const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
-
-  const [isEdit, setIsEdit] = useState();
+  // const [isEdit, setIsEdit] = useState();
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState({
     exportCode: '',
@@ -26,7 +26,9 @@ function WarehouseDispatch() {
     dispatches: [
       {
         quantity: '',
-        product: ''
+        productName: '',
+        price: '',
+        totalPriceProduct: ''
       }
     ]
   });
@@ -53,6 +55,13 @@ function WarehouseDispatch() {
       // Reset state cho dialog2 nếu cần
     }
   };
+  const { data: userDetail } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => {
+      return userApi.getUserById(userDataLogin.id);
+    }
+  });
+  const userLogin = userDetail?.data?.data;
   return (
     <>
       <MainCard title="Thông tin xuất kho">
@@ -76,7 +85,7 @@ function WarehouseDispatch() {
             </Toolbar>
           </AppBar>
           <DialogContent>
-            <WarehouseDispatchForm formState={formState} createWarehouseMutation={createWarehouseMutation} userDataLogin={userDataLogin} />
+            <WarehouseDispatchForm formState={formState} createWarehouseMutation={createWarehouseMutation} userLogin={userLogin} />
           </DialogContent>
         </Dialog>
       </MainCard>

@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
@@ -19,80 +19,10 @@ import {
   TextField,
   Grid
 } from '@mui/material';
-import { useMutation, useQuery } from '@tanstack/react-query';
-
-import getAllCustomer from 'api/customer.api';
-import warehouseApi from 'api/warehouse.api';
-function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLogin }) {
+function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }) {
   const theme = useTheme(); // theme setting
-  const [selectedWarehouseID, setSelectedWarehouseID] = useState(null);
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    if (selectedWarehouseID) {
-      // Gọi hàm để lấy dữ liệu sản phẩm từ kho đã chọn
-      fetchProductsByWarehouseID(selectedWarehouseID);
-    }
-  }, [selectedWarehouseID]);
-
-  const getWarehouseMutationByID = useMutation({
-    mutationFn: warehouseApi.getWarehouseById,
-    onSuccess: (data) => {
-      const extractedProducts = data?.data?.warehouseDetail?.warehouse_inventories.map((item) => ({
-        ...item.inventory.product,
-        quantity: item.inventory.quantity
-      }));
-      setProducts(extractedProducts);
-    }
-  });
-
-  const fetchProductsByWarehouseID = (warehouseID) => {
-    getWarehouseMutationByID.mutate(warehouseID);
-  };
-
-  const transformUserData = (data) => {
-    // Lấy thông tin người dùng
-    const { id, name, email, role, avatar, user_warehouses } = data;
-
-    // Lấy thông tin kho và sản phẩm
-    const warehouses = user_warehouses.map((uw) => {
-      const { warehouse } = uw;
-      const { id: warehouseId, name: warehouseName, warehouse_inventories } = warehouse;
-
-      // Lấy thông tin sản phẩm từ kho
-      const products = warehouse_inventories.map((wi) => {
-        const { inventory } = wi;
-        const { product } = inventory;
-
-        return {
-          id: product.id,
-          name: product.name,
-          size: product.size,
-          quantityInStock: inventory.quantity,
-          purchasePrice: product.purchasePrice,
-          salePrice: product.salePrice
-        };
-      });
-
-      return {
-        warehouseId,
-        warehouseName,
-        products
-      };
-    });
-
-    return {
-      id,
-      name,
-      email,
-      role,
-      avatar,
-      warehouses
-    };
-  };
-
-  const result = transformUserData(userDataLogin);
-
+  const [ListProductFormWarehouse, setListProductFormWarehouse] = useState(null);
+  const [price, setPrice] = useState(null);
   // set code for export
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -116,11 +46,19 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
     }, 0);
   };
 
-  // get api customers
-  const { data: customersData } = useQuery({
-    queryKey: ['customers'],
-    queryFn: async () => await getAllCustomer.getAllCustomer()
-  });
+  const userWarehouse = userLogin?.user_warehouses;
+  const userCustomer = userLogin?.user_customers;
+
+  function findWarehouseById(id) {
+    // Tìm kiếm warehouse có ID trùng với ID được cung cấp
+    const warehouse = userWarehouse.find((warehouse) => warehouse.id === id);
+    // Kiểm tra xem warehouse có được tìm thấy hay không
+    if (warehouse) {
+      setListProductFormWarehouse(warehouse.warehouse_inventories);
+    } else {
+      throw new Error(`Warehouse with ID ${id} not found.`);
+    }
+  }
 
   return (
     <>
@@ -142,6 +80,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
         })}
         // setting submit
         onSubmit={(values) => {
+          console.log(values);
           const formattedData = {
             warehouseDcp: {
               exportCode: getCurrentDateTime(),
@@ -151,7 +90,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
               totalAmount: values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
               exportDescription: values.exportDescription,
               recipient: values.recipient,
-              userID: result.id,
+              userID: userLogin.id,
               warehouseID: values.warehouseID,
               customerID: values.customerID,
               dispatches: values.dispatches.map((dispatch) => ({
@@ -160,14 +99,14 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
               }))
             }
           };
-          createWarehouseMutation.mutate(formattedData, {
-            onSuccess: () => {
-              alert('Tạo phiếu xuất kho thành công!');
-            },
-            onError: (error) => {
-              alert(error.message);
-            }
-          });
+          // createWarehouseMutation.mutate(formattedData, {
+          //   onSuccess: () => {
+          //     alert('Tạo phiếu xuất kho thành công!');
+          //   },
+          //   onError: (error) => {
+          //     alert(error.message);
+          //   }
+          // });
           // Log dữ liệu đã format để gửi lên server
           console.log(formattedData);
         }}
@@ -308,7 +247,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                   disabled
                   id="outlined-adornment-recipient"
                   type="text"
-                  value={result.name}
+                  value={userLogin?.name}
                   name="recipient"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -333,8 +272,8 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                   label="Age"
                   inputProps={{}}
                 >
-                  {customersData &&
-                    customersData?.data?.map((item) => {
+                  {userCustomer &&
+                    userCustomer.map((item) => {
                       return (
                         <MenuItem key={item.id} value={item.id}>
                           {item.name}
@@ -355,21 +294,20 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                   name="warehouseID"
                   onBlur={handleBlur}
                   onChange={(event) => {
-                    const warehouseID = event.target.value;
-                    setSelectedWarehouseID(warehouseID); // Cập nhật state để gọi API hoặc xử lý logic khác
                     handleChange(event); // Cập nhật giá trị vào Formik
+                    findWarehouseById(event.target.value);
                   }}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={values.warehouseID}
+                  value={values.warehouseID || ''}
                   label="Age"
                   inputProps={{}}
                 >
-                  {result &&
-                    result?.warehouses?.map((item) => {
+                  {userWarehouse &&
+                    userWarehouse?.map((item) => {
                       return (
-                        <MenuItem key={item.warehouseId} value={item.warehouseId}>
-                          {item.warehouseName}
+                        <MenuItem key={item.id} value={item.id}>
+                          {item.name}
                         </MenuItem>
                       );
                     })}
@@ -397,14 +335,13 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                         >
                           <Autocomplete
                             id={`outlined-adornment-dispatch-product-${index}`}
-                            value={products.find((option) => option.id === dispatch.product) || null}
+                            options={ListProductFormWarehouse || []}
+                            getOptionLabel={(option) => `${option.productName} (${option.quantity})`}
                             onChange={(event, newValue) => {
-                              // Lấy id của sản phẩm được chọn và cập nhật vào Formik
-                              setFieldValue(`dispatches.${index}.product`, newValue?.id || '');
-                              setFieldValue(`dispatches.${index}.QtyInStock`, newValue?.salePrice || '');
+                              setFieldValue(`dispatches.${index}.quantity`, newValue ? newValue.quantity : '');
+                              setFieldValue(`dispatches.${index}.product`, newValue ? newValue.id : '');
+                              setPrice(newValue.salePrice);
                             }}
-                            options={products} // Sử dụng danh sách sản phẩm đã xử lý
-                            getOptionLabel={(option) => `${option.name} (${option.quantity})`}
                             renderInput={(params) => <TextField {...params} label="Tên sản phẩm" />}
                           />
                           {touched.dispatches?.[index]?.product && errors.dispatches?.[index]?.product && (
@@ -422,12 +359,8 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                             value={dispatch.quantity}
                             name={`dispatches.${index}.quantity`}
                             onBlur={handleBlur}
-                            // onChange={handleChange}
                             onChange={(event) => {
                               handleChange(event); // Cập nhật số lượng
-                              const newQuantity = event.target.value;
-                              const newTotal = newQuantity * dispatch.QtyInStock;
-                              setFieldValue(`dispatches.${index}.totalPriceProduct`, newTotal); // Cập nhật tổng
                             }}
                             inputProps={{}}
                           />
@@ -435,29 +368,23 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                             <FormHelperText error>{errors.dispatches[index].quantity}</FormHelperText>
                           )}
                         </FormControl>
-                        <FormControl
-                          fullWidth
-                          error={Boolean(touched.dispatches?.[index]?.QtyInStock && errors.dispatches?.[index]?.QtyInStock)}
-                        >
-                          <InputLabel htmlFor={`outlined-adornment-dispatch-QtyInStock-${index}`}>Đơn giá</InputLabel>
+                        <FormControl fullWidth error={Boolean(touched.dispatches?.[index]?.price && errors.dispatches?.[index]?.price)}>
+                          <InputLabel htmlFor={`outlined-adornment-dispatch-price-${index}`}>Đơn giá</InputLabel>
                           <OutlinedInput
                             disabled
-                            id={`outlined-adornment-dispatch-QtyInStock-${index}`}
+                            id={`outlined-adornment-dispatch-price-${index}`}
                             type="number"
-                            value={dispatch.QtyInStock}
-                            name={`dispatches.${index}.QtyInStock`}
+                            value={Number(price && price)}
+                            name={`dispatches.${index}.price`}
                             onBlur={handleBlur}
                             // onChange={handleChange}
                             onChange={(event) => {
                               handleChange(event); // Cập nhật đơn giá
-                              const newPrice = event.target.value;
-                              const newTotal = dispatch.quantity * newPrice;
-                              setFieldValue(`dispatches.${index}.totalPriceProduct`, newTotal); // Cập nhật tổng
                             }}
                             inputProps={{}}
                           />
-                          {touched.dispatches?.[index]?.QtyInStock && errors.dispatches?.[index]?.QtyInStock && (
-                            <FormHelperText error>{errors.dispatches[index].QtyInStock}</FormHelperText>
+                          {touched.dispatches?.[index]?.price && errors.dispatches?.[index]?.price && (
+                            <FormHelperText error>{errors.dispatches[index].price}</FormHelperText>
                           )}
                         </FormControl>
                         <FormControl
@@ -468,7 +395,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
                           <OutlinedInput
                             id={`outlined-adornment-dispatch-totalPriceProduct-${index}`}
                             type="number"
-                            value={dispatch.totalPriceProduct}
+                            value={1}
                             name={`dispatches.${index}.totalPriceProduct`}
                             onBlur={handleBlur}
                             onChange={handleChange}
@@ -505,7 +432,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userDataLog
               <Grid container spacing={2}>
                 <Grid item xs={4}></Grid>
                 <Grid item xs={4}></Grid>
-                <Grid container xs={4}>
+                <Grid item xs={4} sx={{ display: 'flex' }}>
                   <Grid item xs={4}>
                     Tổng số tiền:
                   </Grid>

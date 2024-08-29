@@ -44,7 +44,6 @@ import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons-re
 
 const ProfileSection = ({ userData }) => {
   const userDetail = userData?.data?.data;
-  console.log(userDetail);
   const theme = useTheme();
   const dispatch = useDispatch();
   const customization = useSelector((state) => state.customization);

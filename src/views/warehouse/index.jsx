@@ -149,7 +149,6 @@ function Warehouse() {
 
   const updateWarehouseMutaiton = useMutation({
     mutationFn: ({ warehouseId, values }) => {
-      console.log(warehouseId, values);
       if (!warehouseId) {
         throw new Error('User ID is missing');
       }
