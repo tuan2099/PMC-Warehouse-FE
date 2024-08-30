@@ -1,11 +1,13 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import { Button, FormControl, FormHelperText, InputLabel, OutlinedInput, useTheme } from '@mui/material';
+import { Box } from '@mui/system';
 import { Formik } from 'formik';
-import { Box, FormControl, FormHelperText, InputLabel, OutlinedInput, Button, useTheme } from '@mui/material';
+import React from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
-function WarehouseForm({ updateWarehouseMutaiton, formState, handleCloseDialog, createWarehouseMutation, isEdit }) {
+
+// eslint-disable-next-line react/prop-types
+function ProductForm({ formState }) {
   const theme = useTheme(); // theme setting
 
   return (
@@ -21,28 +23,6 @@ function WarehouseForm({ updateWarehouseMutaiton, formState, handleCloseDialog, 
         // setting submit
         onSubmit={(values) => {
           // convert data
-          const transformValuesToApiFormat = (values) => {
-            return {
-              name: values.name,
-              address: values.address,
-              note: values.note || '',
-              type: values.type,
-              info: values.info
-            };
-          };
-          if (isEdit) {
-            updateWarehouseMutaiton.mutate({ warehouseId: isEdit?.id, values });
-          } else {
-            createWarehouseMutation.mutate(transformValuesToApiFormat(values), {
-              onSuccess: (values) => {
-                console.log(values);
-              },
-              onError: (error) => {
-                alert(error.message);
-              }
-            });
-          }
-          handleCloseDialog();
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
@@ -65,20 +45,20 @@ function WarehouseForm({ updateWarehouseMutaiton, formState, handleCloseDialog, 
                   </FormHelperText>
                 )}
               </FormControl>
-              <FormControl fullWidth error={Boolean(touched.address && errors.address)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-address-register">Địa chỉ</InputLabel>
+              <FormControl fullWidth error={Boolean(touched.size && errors.size)} sx={{ ...theme.typography.customInput }}>
+                <InputLabel htmlFor="outlined-adornment-size-register">Kích thước</InputLabel>
                 <OutlinedInput
-                  id="outlined-adornment-address-register"
-                  type="address"
-                  value={values.address}
-                  name="address"
+                  id="outlined-adornment-size-register"
+                  type="size"
+                  value={values.size}
+                  name="size"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   inputProps={{}}
                 />
-                {touched.address && errors.address && (
+                {touched.size && errors.size && (
                   <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.address}
+                    {errors.size}
                   </FormHelperText>
                 )}
               </FormControl>
@@ -144,7 +124,7 @@ function WarehouseForm({ updateWarehouseMutaiton, formState, handleCloseDialog, 
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  {isEdit ? 'Cập nhật kho' : 'Tạo kho'}
+                  Tạo sản phẩm
                 </Button>
               </AnimateButton>
             </Box>
@@ -155,4 +135,4 @@ function WarehouseForm({ updateWarehouseMutaiton, formState, handleCloseDialog, 
   );
 }
 
-export default WarehouseForm;
+export default ProductForm;

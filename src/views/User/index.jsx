@@ -125,10 +125,11 @@ function User() {
         email: data?.data?.data?.email,
         password: data?.data?.data?.password,
         role: data?.data?.data?.role,
-        warehouseId: []
+        warehouseId: data.data.data?.user_warehouses.map((warehouse) => warehouse.id)
       });
     }
   });
+
   const handlegetUser = (rowId) => {
     getUserMutation.mutate(rowId);
   };
@@ -157,11 +158,12 @@ function User() {
     }
   });
 
-  // update user
+  // Cập nhật user
   const handleUpdateUser = (rowId) => {
     getUserMutation.mutate(rowId);
     handleOpenDialog('dialog1');
   };
+
   const updateUserMutation = useMutation({
     mutationFn: ({ userId, values }) => {
       if (!userId) {

@@ -48,7 +48,14 @@ function Customer() {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
       setFormState({
-        name: ''
+        name: '',
+        pm: '',
+        location: '',
+        branch: '',
+        representative: '',
+        status: '',
+        phoneNumber: '',
+        note: ''
       });
     } else if (dialogId === 'dialog2') {
       setFormState({
@@ -132,7 +139,6 @@ function Customer() {
     onSuccess: (data) => {
       setIsEdit(true);
       setUserInfo(data);
-      console.log(data);
       setFormState({
         userId: data?.data?.simplifiedcustomerDetail?.id,
         name: data?.data?.simplifiedcustomerDetail?.name,
@@ -170,7 +176,6 @@ function Customer() {
       refetch();
     }
   });
-
   return (
     <>
       <MainCard title="Quản lý Dự án">

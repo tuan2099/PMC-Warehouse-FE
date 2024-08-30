@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+
 import { Button, Dialog, DialogContent, Toolbar, AppBar, IconButton } from '@mui/material';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -55,12 +57,14 @@ function WarehouseDispatch() {
       // Reset state cho dialog2 nếu cần
     }
   };
+
   const { data: userDetail } = useQuery({
     queryKey: ['user'],
     queryFn: () => {
       return userApi.getUserById(userDataLogin.id);
     }
   });
+
   const userLogin = userDetail?.data?.data;
   return (
     <>

@@ -7,6 +7,7 @@ import { Box, Tabs, Tab, Typography, Button, Grid, IconButton, Drawer } from '@m
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Search as SearchIcon } from '@mui/icons-material';
+import WPcustomer from './WP_customer';
 
 // hàm xử lý tab Mui
 function CustomTabPanel(props) {
@@ -28,9 +29,6 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
     setOpen(newOpen);
   };
 
-  // trả về giao diện warehouse dispatch details
-  const DrawerList = <Box sx={{ width: 550, zIndex: 12000 }}>{1}</Box>;
-
   // Cài đặt cột cho data grid warehouse dispatch
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -48,8 +46,8 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
         <>
           <IconButton
             onClick={() => {
+              checkWarehosue(id);
               toggleDrawer(true)();
-              getDcpDetails(id);
             }}
           >
             <SearchIcon />
@@ -71,30 +69,19 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
       'aria-controls': `simple-tabpanel-${index}`
     };
   }
-
-  // lấy và set dữ liệu cho WCPDetail
-  const getDcpDetails = (id) => {
-    // fetch data from API
-    const matchingDispatch = findMatchingDispatchById(userInfoFormat.warehouse_dispatches, id); // function
-    setWCPdetail(matchingDispatch);
-  };
-
   // Xử lý dữ liệu lấy từ api về
-  const userInfoFormat = userInfo?.data?.customerDetail;
+  const userInfoFormat = userInfo?.data?.simplifiedcustomerDetail;
 
-  // hàm lấy dữ liệu warehouse dispatch đã click
-  function findMatchingDispatchById(warehouseDispatches, id) {
-    for (const dispatch of warehouseDispatches) {
+  // kiểm tra và trả về warehouse dispatch đã click
+  const checkWarehosue = (id) => {
+    const warehouseDispatchDetails = userInfo?.data?.simplifiedcustomerDetail?.warehouse_dispatches;
+    warehouseDispatchDetails.map((dispatch) => {
       if (dispatch.id === id) {
-        for (const detail of dispatch.warehouseDispatchDetails) {
-          if (detail.warehouseDisPatchID === id) {
-            return dispatch; // So sánh ID truyền vào có trùng  với warehouseDispatches được lấy từ api về ko
-          }
-        }
+        const result = dispatch.warehouseDispatchDetails;
+        setWCPdetail(result);
       }
-    }
-    return null; // ko trùng trả về null
-  }
+    });
+  };
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -135,7 +122,7 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
         <CustomTabPanel value={value} index={1}>
           <DataGrid
             rowHeight={70}
-            rows={userInfoFormat?.warehouse_dispatches}
+            rows={userInfoFormat?.warehouse_dispatches || []}
             columns={columns}
             initialState={{
               pagination: { paginationModel: { pageSize: 5 } }
@@ -153,7 +140,7 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
         </CustomTabPanel>
       </Box>
       <Drawer open={open} onClose={toggleDrawer(false)}>
-        {DrawerList}
+        <WPcustomer WCPDetail={WCPDetail} />
       </Drawer>
     </>
   );
