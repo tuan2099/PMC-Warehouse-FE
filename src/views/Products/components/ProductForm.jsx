@@ -1,137 +1,185 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import { Button, FormControl, FormHelperText, InputLabel, OutlinedInput, useTheme } from '@mui/material';
-import { Box } from '@mui/system';
-import { Formik } from 'formik';
 import React from 'react';
+import { Button, Box, FormHelperText } from '@mui/material';
+import { Formik } from 'formik';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 
-// eslint-disable-next-line react/prop-types
+import InputField from 'ui-component/InputField';
+import SelectField from 'ui-component/SelectField';
+
 function ProductForm({ formState }) {
-  const theme = useTheme(); // theme setting
+  // Define validation schema using Yup
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Tên sản phẩm là bắt buộc'),
+    size: Yup.string().required('Kích thước là bắt buộc'),
+    salePrice: Yup.number().required('Giá bán là bắt buộc').positive('Giá bán phải là số dương'),
+    purchasePrice: Yup.number().required('Giá nhập là bắt buộc').positive('Giá nhập phải là số dương'),
+    quantityIn: Yup.number().required('Số lượng tối thiểu là bắt buộc').min(0, 'Số lượng tối thiểu không thể nhỏ hơn 0'),
+    quantityOut: Yup.number().required('Số lượng tối đa là bắt buộc').min(0, 'Số lượng tối đa không thể nhỏ hơn 0'),
+    // image: Yup.string().url('URL hình ảnh không hợp lệ').required('Hình ảnh là bắt buộc'),
+    status: Yup.string().required('Trạng thái là bắt buộc'),
+    minimumQuantity: Yup.number().required('Số lượng tối thiểu là bắt buộc').min(0, 'Số lượng tối thiểu không thể nhỏ hơn 0'),
+    maximumQuantity: Yup.number().required('Số lượng tối đa là bắt buộc').min(0, 'Số lượng tối đa không thể nhỏ hơn 0'),
+    note: Yup.string().required('Ghi chú là bắt buộc')
+  });
+
+  const statusOptions = [
+    { value: 'available', label: 'Còn hàng' },
+    { value: 'unavailable', label: 'Hết hàng' },
+    { value: 'discontinued', label: 'Ngừng kinh doanh' }
+  ];
 
   return (
-    <>
-      <Formik
-        initialValues={formState}
-        enableReinitialize
-        // validation form
-        validationSchema={Yup.object().shape({
-          // email: Yup.string().email('Must be a valid email').max(255).required('Email is required')
-          // password: Yup.string().max(255).required('Password is required')
-        })}
-        // setting submit
-        onSubmit={(values) => {
-          // convert data
-        }}
-      >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit}>
-            <div className="Form-add-warehouse">
-              <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-name-register">Tên Kho</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-name-register"
-                  type="name"
-                  value={values.name}
-                  name="name"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.name && errors.name && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.name}
-                  </FormHelperText>
-                )}
-              </FormControl>
-              <FormControl fullWidth error={Boolean(touched.size && errors.size)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-size-register">Kích thước</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-size-register"
-                  type="size"
-                  value={values.size}
-                  name="size"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.size && errors.size && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.size}
-                  </FormHelperText>
-                )}
-              </FormControl>
-              <FormControl fullWidth error={Boolean(touched.note && errors.note)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-note-register">Ghi chú</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-note-register"
-                  type="note"
-                  value={values.note}
-                  name="note"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.note && errors.note && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.note}
-                  </FormHelperText>
-                )}
-              </FormControl>
-              <FormControl fullWidth error={Boolean(touched.type && errors.type)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-type-register">Loại hình kho</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-type-register"
-                  type="type"
-                  value={values.type}
-                  name="type"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.type && errors.type && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.type}
-                  </FormHelperText>
-                )}
-              </FormControl>
-              <FormControl fullWidth error={Boolean(touched.info && errors.info)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-info-register">Thông tin thêm</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-info-register"
-                  type="info"
-                  value={values.info}
-                  name="info"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.info && errors.info && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.info}
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </div>
+    <Formik
+      initialValues={formState}
+      enableReinitialize
+      validationSchema={validationSchema}
+      onSubmit={(values, { setSubmitting }) => {
+        setSubmitting(true);
+        setSubmitting(false);
+      }}
+    >
+      {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        <form noValidate onSubmit={handleSubmit}>
+          <InputField
+            name="name"
+            label="Tên sản phẩm"
+            type="text"
+            value={values.name}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
 
-            {errors.submit && (
-              <Box sx={{ mt: 3 }}>
-                <FormHelperText error>{errors.submit}</FormHelperText>
-              </Box>
-            )}
+          <InputField
+            name="size"
+            label="Kích thước"
+            type="text"
+            value={values.size}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
 
-            <Box sx={{ mt: 2 }}>
-              <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Tạo sản phẩm
-                </Button>
-              </AnimateButton>
+          <InputField
+            name="salePrice"
+            label="Giá bán"
+            type="number"
+            value={values.salePrice}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
+
+          <InputField
+            name="purchasePrice"
+            label="Giá nhập"
+            type="number"
+            value={values.purchasePrice}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
+
+          <InputField
+            name="quantityIn"
+            label="Số lượng tối thiểu"
+            type="number"
+            value={values.quantityIn}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
+
+          <InputField
+            name="quantityOut"
+            label="Số lượng tối đa"
+            type="number"
+            value={values.quantityOut}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
+
+          <InputField
+            name="image"
+            label="Hình ảnh"
+            type="text"
+            value={values.image}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
+
+          <SelectField
+            name="status"
+            label="Trạng thái"
+            value={values.status}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            options={statusOptions}
+            touched={touched}
+            errors={errors}
+          />
+
+          <InputField
+            name="minimumQuantity"
+            label="Số lượng tối thiểu"
+            type="number"
+            value={values.minimumQuantity}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
+
+          <InputField
+            name="maximumQuantity"
+            label="Số lượng tối đa"
+            type="number"
+            value={values.maximumQuantity}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
+
+          <InputField
+            name="note"
+            label="Ghi chú"
+            type="text"
+            value={values.note}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched}
+            errors={errors}
+          />
+
+          {errors.submit && (
+            <Box sx={{ mt: 3 }}>
+              <FormHelperText error>{errors.submit}</FormHelperText>
             </Box>
-          </form>
-        )}
-      </Formik>
-    </>
+          )}
+
+          <Box sx={{ mt: 2 }}>
+            <AnimateButton>
+              <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
+                Tạo sản phẩm
+              </Button>
+            </AnimateButton>
+          </Box>
+        </form>
+      )}
+    </Formik>
   );
 }
 

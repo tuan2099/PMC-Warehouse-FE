@@ -1,188 +1,148 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import React from 'react';
-
-// MUI components
 import AnimateButton from 'ui-component/extended/AnimateButton';
-import { Box, FormControl, useTheme, InputLabel, OutlinedInput, FormHelperText, Button } from '@mui/material';
-
-// third party
+import { Box, Button, Grid } from '@mui/material';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import InputField from 'ui-component/InputField';
 
 function CustomerForm({ formState, addCustomer, handleCloseDialog, isEdit, updateCustomer }) {
-  const theme = useTheme(); // theme setting
   return (
-    <>
-      <Formik
-        initialValues={formState}
-        enableReinitialize
-        // validation form
-        validationSchema={Yup.object().shape({})}
-        // setting submit
-        onSubmit={(values) => {
-          if (isEdit) {
-            updateCustomer.mutate({ customerId: formState?.userId, values });
-          } else {
-            addCustomer.mutate(values);
-          }
-          handleCloseDialog();
-        }}
-      >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit}>
-            <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-name-register">Tên kho</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-name-register"
-                type="name"
+    <Formik
+      initialValues={formState}
+      enableReinitialize
+      validationSchema={Yup.object().shape({
+        // validation schema goes here
+      })}
+      onSubmit={(values) => {
+        if (isEdit) {
+          updateCustomer.mutate({ customerId: formState?.userId, values });
+        } else {
+          addCustomer.mutate(values);
+        }
+        handleCloseDialog();
+      }}
+    >
+      {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        <form noValidate onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <InputField
+                id="name-register"
+                label="Tên kho"
+                type="text"
                 value={values.name}
                 name="name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                touched={touched}
+                errors={errors}
               />
-              {touched.name && errors.name && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.name}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth error={Boolean(touched.pm && errors.pm)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-pm-register">Giám đôc tòa nhà</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-pm-register"
-                type="pm"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputField
+                id="pm-register"
+                label="Giám đôc tòa nhà"
+                type="text"
                 value={values.pm}
                 name="pm"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                touched={touched}
+                errors={errors}
               />
-              {touched.pm && errors.pm && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.pm}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth error={Boolean(touched.location && errors.location)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-location-register">Địa chỉ</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-location-register"
-                type="location"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputField
+                id="location-register"
+                label="Địa chỉ"
+                type="text"
                 value={values.location}
                 name="location"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                touched={touched}
+                errors={errors}
               />
-              {touched.location && errors.location && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.location}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth error={Boolean(touched.branch && errors.branch)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-branch-register">Chi nhánh</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-branch-register"
-                type="branch"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputField
+                id="branch-register"
+                label="Chi nhánh"
+                type="text"
                 value={values.branch}
                 name="branch"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                touched={touched}
+                errors={errors}
               />
-              {touched.branch && errors.branch && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.branch}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl
-              fullWidth
-              error={Boolean(touched.representative && errors.representative)}
-              sx={{ ...theme.typography.customInput }}
-            >
-              <InputLabel htmlFor="outlined-adornment-representative-register">Người đại diện</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-representative-register"
-                type="representative"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputField
+                id="representative-register"
+                label="Người đại diện"
+                type="text"
                 value={values.representative}
                 name="representative"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                touched={touched}
+                errors={errors}
               />
-              {touched.representative && errors.representative && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.representative}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth error={Boolean(touched.status && errors.status)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-status-register">Trạng thái</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-status-register"
-                type="status"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputField
+                id="status-register"
+                label="Trạng thái"
+                type="text"
                 value={values.status}
                 name="status"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                touched={touched}
+                errors={errors}
               />
-              {touched.status && errors.status && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.status}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth error={Boolean(touched.phoneNumber && errors.phoneNumber)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-phoneNumber-register">Số điện thoại</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-phoneNumber-register"
-                type="phoneNumber"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputField
+                id="phoneNumber-register"
+                label="Số điện thoại"
+                type="text"
                 value={values.phoneNumber}
                 name="phoneNumber"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                touched={touched}
+                errors={errors}
               />
-              {touched.phoneNumber && errors.phoneNumber && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.phoneNumber}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth error={Boolean(touched.note && errors.note)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-note-register">Ghi chú</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-note-register"
-                type="note"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputField
+                id="note-register"
+                label="Ghi chú"
+                type="text"
                 value={values.note}
                 name="note"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                inputProps={{}}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                touched={touched}
+                errors={errors}
               />
-              {touched.note && errors.note && (
-                <FormHelperText error id="standard-weight-helper-text--register">
-                  {errors.note}
-                </FormHelperText>
-              )}
-            </FormControl>
+            </Grid>
+          </Grid>
 
-            <Box sx={{ mt: 2 }}>
-              <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  {isEdit ? ' Cập nhật dự án' : 'Tạo dự án mới'}
-                </Button>
-              </AnimateButton>
-            </Box>
-          </form>
-        )}
-      </Formik>
-    </>
+          <Box sx={{ mt: 3 }}>
+            <AnimateButton>
+              <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
+                {isEdit ? 'Cập nhật dự án' : 'Tạo dự án mới'}
+              </Button>
+            </AnimateButton>
+          </Box>
+        </form>
+      )}
+    </Formik>
   );
 }
 

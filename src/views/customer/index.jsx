@@ -81,11 +81,7 @@ function Customer() {
     { field: 'pm', headerName: 'GĐTN', width: 250 },
     { field: 'location', headerName: 'Địa chỉ', width: 150 },
     { field: 'branch', headerName: 'Chi nhánh', width: 150 },
-    { field: 'representative', headerName: 'Người đại diện', width: 150 },
     { field: 'status', headerName: 'Trạng thái', width: 150 },
-    { field: 'phoneNumber', headerName: 'Số điện thoại', width: 150 },
-    { field: 'note', headerName: 'Ghi chú', width: 150 },
-
     {
       field: 'actions',
       headerName: 'Actions',
