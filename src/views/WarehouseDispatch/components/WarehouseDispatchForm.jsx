@@ -1,464 +1,226 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
-import {
-  Box,
-  FormControl,
-  FormHelperText,
-  Autocomplete,
-  InputLabel,
-  OutlinedInput,
-  Button,
-  Typography,
-  useTheme,
-  Select,
-  MenuItem,
-  TextField,
-  Grid
-} from '@mui/material';
+import { Box, Typography, Grid, Button } from '@mui/material';
+import InputField from 'ui-component/InputField';
+import SelectField from 'ui-component/SelectField';
+import DispatchItem from './DispatchItem';
+
 function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }) {
-  const theme = useTheme(); // theme setting
-  const [ListProductFormWarehouse, setListProductFormWarehouse] = useState(null);
-  const [price, setPrice] = useState(null);
-  // set code for export
   const getCurrentDateTime = () => {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0 nên cần +1
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-
-    return `PN-${year}${month}${day}${hours}${seconds}`;
+    return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
   };
 
-  const calculateTotalQuantity = (dispatches) => {
-    if (!Array.isArray(dispatches)) {
-      // Nếu dispatches không phải là mảng, trả về 0
-      return 0;
-    }
-
-    return dispatches.reduce((total, dispatch) => {
-      return total + Number(dispatch.quantity || 0);
-    }, 0);
-  };
-
-  const userWarehouse = userLogin?.user_warehouses;
-  const userCustomer = userLogin?.user_customers;
-
-  function findWarehouseById(id) {
-    // Tìm kiếm warehouse có ID trùng với ID được cung cấp
-    const warehouse = userWarehouse.find((warehouse) => warehouse.id === id);
-    // Kiểm tra xem warehouse có được tìm thấy hay không
-    if (warehouse) {
-      setListProductFormWarehouse(warehouse.warehouse_inventories);
-    } else {
-      throw new Error(`Warehouse with ID ${id} not found.`);
-    }
-  }
+  const calculateTotalQuantity = (dispatches) =>
+    Array.isArray(dispatches) ? dispatches.reduce((total, dispatch) => total + Number(dispatch.quantity || 0), 0) : 0;
 
   return (
-    <>
-      <Formik
-        initialValues={formState}
-        enableReinitialize
-        // validation form
-        validationSchema={Yup.object().shape({
-          // exportDate: Yup.date().required('Ngày xuất kho là bắt buộc').nullable(),
-          // exportType: Yup.string().required('Loại xuất kho là bắt buộc'),
-          // exportDescription: Yup.string().max(500, 'Mô tả xuất kho không quá 500 ký tự').required('Mô tả xuất kho là bắt buộc'),
-          // recipient: Yup.string().required('Người nhận là bắt buộc'),
-          // warehouseID: Yup.number().required('Warehouse ID là bắt buộc'),
-          // dispatches: Yup.array().of(
-          //   Yup.object().shape({
-          //     quantity: Yup.number().min(1, 'Số lượng sản phẩm phải lớn hơn 0').required('Số lượng sản phẩm là bắt buộc')
-          //   })
-          // )
-        })}
-        // setting submit
-        onSubmit={(values) => {
-          console.log(values);
-          const formattedData = {
-            warehouseDcp: {
-              exportCode: getCurrentDateTime(),
-              exportDate: values.exportDate, // định dạng ngày tháng
-              exportType: values.exportType,
-              totalProductQuantity: calculateTotalQuantity(values.dispatches),
-              totalAmount: values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
-              exportDescription: values.exportDescription,
-              recipient: values.recipient,
-              userID: userLogin.id,
-              warehouseID: values.warehouseID,
-              customerID: values.customerID,
-              dispatches: values.dispatches.map((dispatch) => ({
-                quantity: dispatch.quantity,
-                product: dispatch.product
-              }))
-            }
-          };
-          createWarehouseMutation.mutate(formattedData, {
-            onSuccess: () => {
-              alert('Tạo phiếu xuất kho thành công!');
-            },
-            onError: (error) => {
-              alert(error.message);
-            }
-          });
-          // Log dữ liệu đã format để gửi lên server
-          console.log(formattedData);
-        }}
-      >
-        {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue }) => (
-          <form noValidate onSubmit={handleSubmit}>
-            <Typography variant="h3" gutterBottom>
-              Thông tin xuất kho
-            </Typography>
-            <div className="Form-add-warehouse">
-              <FormControl fullWidth error={Boolean(touched.exportCode && errors.exportCode)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-exportCode">Mã xuất kho</InputLabel>
-                <OutlinedInput
-                  disabled
-                  id="outlined-adornment-exportCode"
-                  type="text"
-                  // value={values.exportCode}
-                  value={getCurrentDateTime()}
-                  name="exportCode"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.exportCode && errors.exportCode && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.exportCode}
-                  </FormHelperText>
-                )}
-              </FormControl>
+    <Formik
+      initialValues={formState}
+      enableReinitialize
+      validationSchema={Yup.object().shape({})}
+      onSubmit={(values) => {
+        const formattedData = {
+          warehouseDcp: {
+            exportCode: getCurrentDateTime(),
+            exportDate: values.exportDate,
+            exportType: values.exportType,
+            totalProductQuantity: calculateTotalQuantity(values.dispatches),
+            totalAmount: values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
+            exportDescription: values.exportDescription,
+            recipient: values.recipient,
+            userID: userLogin.id,
+            warehouseID: values.warehouseID,
+            customerID: values.customerID,
+            dispatches: values.dispatches.map((dispatch) => ({
+              quantity: dispatch.quantity,
+              product: dispatch.product
+            }))
+          }
+        };
+        createWarehouseMutation.mutate(formattedData, {
+          onSuccess: () => alert('Tạo phiếu xuất kho thành công!'),
+          onError: (error) => alert(error.message)
+        });
+      }}
+    >
+      {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue }) => (
+        <form noValidate onSubmit={handleSubmit}>
+          <Typography variant="h3" gutterBottom>
+            Thông tin xuất kho
+          </Typography>
+          <div className="Form-add-warehouse">
+            <InputField
+              name="exportCode"
+              label="Mã xuất kho"
+              type="text"
+              value={getCurrentDateTime()}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+              disabled
+            />
+            <InputField
+              name="exportDate"
+              label="Ngày xuất kho"
+              type="date"
+              value={values.exportDate}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            <SelectField
+              name="exportType"
+              label="Loại xuất kho"
+              value={values.exportType}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              options={[
+                { value: 'Xuất Mới', label: 'Xuất Mới' },
+                { value: 'Xuất thay thế', label: 'Xuất thay thế' },
+                { value: 'Xuất vip', label: 'Xuất vip' }
+              ]}
+              touched={touched}
+              errors={errors}
+            />
+            <InputField
+              name="totalProductQuantity"
+              label="Tổng số lượng sản phẩm"
+              type="number"
+              value={calculateTotalQuantity(values.dispatches)}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+              disabled
+            />
+            <InputField
+              name="exportDescription"
+              label="Mô tả xuất kho"
+              type="text"
+              value={values.exportDescription}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            <InputField
+              name="recipient"
+              label="Người nhận"
+              type="text"
+              value={values.recipient}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            <InputField
+              name="userID"
+              label="Người xuất kho"
+              type="text"
+              value={userLogin?.name}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+              disabled
+            />
+            <SelectField
+              name="customerID"
+              label="Chọn dự án"
+              value={values.customerID}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              options={userLogin?.user_customers?.map((item) => ({ value: item.id, label: item.name }))}
+              touched={touched}
+              errors={errors}
+            />
+            <SelectField
+              name="warehouseID"
+              label="Chọn kho"
+              value={values.warehouseID}
+              handleBlur={handleBlur}
+              handleChange={(event) => {
+                handleChange(event);
+                const warehouse = userLogin?.user_warehouses.find((wh) => wh.id === event.target.value);
+                if (warehouse) {
+                  setFieldValue(
+                    'dispatches',
+                    warehouse.warehouse_inventories.map((inventory) => ({
+                      quantity: '',
+                      product: inventory.id,
+                      price: inventory.salePrice,
+                      totalPriceProduct: 0
+                    }))
+                  );
+                }
+              }}
+              options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))}
+              touched={touched}
+              errors={errors}
+            />
+          </div>
 
-              <FormControl fullWidth error={Boolean(touched.exportDate && errors.exportDate)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-exportDate">Ngày xuất kho</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-exportDate"
-                  type="date"
-                  value={values.exportDate}
-                  name="exportDate"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.exportDate && errors.exportDate && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.exportDate}
-                  </FormHelperText>
-                )}
-              </FormControl>
+          <Typography variant="h3" gutterBottom sx={{ mt: 2, mb: 4 }}>
+            Thêm biển bảng
+          </Typography>
 
-              <FormControl fullWidth error={Boolean(touched.exportType && errors.exportType)} sx={{ ...theme.typography.customSelect }}>
-                <InputLabel htmlFor="outlined-adornment-exportType">Loại xuất kho</InputLabel>
-                <Select
-                  name="exportType"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={values.exportType}
-                  label="Age"
-                  inputProps={{}}
-                >
-                  <MenuItem value={'Xuất Mới'}>Xuất Mới</MenuItem>
-                  <MenuItem value={'Xuất thay thế'}>Xuất thay thế</MenuItem>
-                  <MenuItem value={'Xuất vip'}>Xuất vip</MenuItem>
-                </Select>
-                {touched.exportType && errors.exportType && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.exportType}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
-              <FormControl
-                fullWidth
-                error={Boolean(touched.totalProductQuantity && errors.totalProductQuantity)}
-                sx={{ ...theme.typography.customInput }}
-              >
-                <InputLabel htmlFor="outlined-adornment-totalProductQuantity">Tổng số lượng sản phẩm</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-totalProductQuantity"
-                  type="number"
-                  disabled
-                  value={calculateTotalQuantity(values.dispatches)}
-                  name="totalProductQuantity"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.totalProductQuantity && errors.totalProductQuantity && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.totalProductQuantity}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
-              <FormControl
-                fullWidth
-                error={Boolean(touched.exportDescription && errors.exportDescription)}
-                sx={{ ...theme.typography.customInput }}
-              >
-                <InputLabel htmlFor="outlined-adornment-exportDescription">Mô tả xuất kho</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-exportDescription"
-                  type="text"
-                  value={values.exportDescription}
-                  name="exportDescription"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.exportDescription && errors.exportDescription && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.exportDescription}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
-              <FormControl fullWidth error={Boolean(touched.recipient && errors.recipient)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-recipient">Người nhận</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-recipient"
-                  type="text"
-                  value={values.recipient}
-                  name="recipient"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.recipient && errors.recipient && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.recipient}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
-              <FormControl fullWidth error={Boolean(touched.userID && errors.userID)} sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="outlined-adornment-userID">Người xuất kho</InputLabel>
-                <OutlinedInput
-                  disabled
-                  id="outlined-adornment-recipient"
-                  type="text"
-                  value={userLogin?.name}
-                  name="recipient"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                />
-                {touched.userID && errors.userID && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.userID}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
-              <FormControl fullWidth error={Boolean(touched.customerID && errors.customerID)} sx={{ ...theme.typography.customSelect }}>
-                <InputLabel htmlFor="outlined-adornment-customerID">Chọn dự án</InputLabel>
-                <Select
-                  name="customerID"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={values.customerID}
-                  label="Age"
-                  inputProps={{}}
-                >
-                  {userCustomer &&
-                    userCustomer.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-                {touched.warehouseID && errors.warehouseID && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.warehouseID}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
-              <FormControl fullWidth error={Boolean(touched.warehouseID && errors.warehouseID)} sx={{ ...theme.typography.customSelect }}>
-                <InputLabel htmlFor="outlined-adornment-warehouseID">Chọn kho</InputLabel>
-                <Select
-                  name="warehouseID"
-                  onBlur={handleBlur}
-                  onChange={(event) => {
-                    handleChange(event); // Cập nhật giá trị vào Formik
-                    findWarehouseById(event.target.value);
-                  }}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={values.warehouseID || ''}
-                  label="Age"
-                  inputProps={{}}
-                >
-                  {userWarehouse &&
-                    userWarehouse?.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-                {touched.warehouseID && errors.warehouseID && (
-                  <FormHelperText error id="standard-weight-helper-text--register">
-                    {errors.warehouseID}
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </div>
-            <Typography variant="h3" gutterBottom sx={{ mt: 2, mb: 4 }}>
-              Thêm biển bảng
-            </Typography>
-            <FieldArray name="dispatches">
-              {({ push, remove }) => (
-                <>
-                  {values.dispatches.map((dispatch, index) => (
-                    <Box key={index} sx={{ mb: 2 }}>
-                      <div className="form-add-detail">
-                        <FormControl
-                          fullWidth
-                          error={Boolean(touched.dispatches?.[index]?.product && errors.dispatches?.[index]?.product)}
-                          key={index}
-                        >
-                          <Autocomplete
-                            id={`outlined-adornment-dispatch-product-${index}`}
-                            options={ListProductFormWarehouse || []}
-                            getOptionLabel={(option) => `${option.productName} (${option.quantity})`}
-                            onChange={(event, newValue) => {
-                              setFieldValue(`dispatches.${index}.quantity`, newValue ? newValue.quantity : '');
-                              setFieldValue(`dispatches.${index}.product`, newValue ? newValue.id : '');
-                              setPrice(newValue.salePrice);
-                            }}
-                            renderInput={(params) => <TextField {...params} label="Tên sản phẩm" />}
-                          />
-                          {touched.dispatches?.[index]?.product && errors.dispatches?.[index]?.product && (
-                            <FormHelperText error>{errors.dispatches[index].product}</FormHelperText>
-                          )}
-                        </FormControl>
-                        <FormControl
-                          fullWidth
-                          error={Boolean(touched.dispatches?.[index]?.quantity && errors.dispatches?.[index]?.quantity)}
-                        >
-                          <InputLabel htmlFor={`outlined-adornment-dispatch-quantity-${index}`}>Số lượng</InputLabel>
-                          <OutlinedInput
-                            id={`outlined-adornment-dispatch-quantity-${index}`}
-                            type="number"
-                            value={dispatch.quantity}
-                            name={`dispatches.${index}.quantity`}
-                            onBlur={handleBlur}
-                            onChange={(event) => {
-                              handleChange(event); // Cập nhật số lượng
-                            }}
-                            inputProps={{}}
-                          />
-                          {touched.dispatches?.[index]?.quantity && errors.dispatches?.[index]?.quantity && (
-                            <FormHelperText error>{errors.dispatches[index].quantity}</FormHelperText>
-                          )}
-                        </FormControl>
-                        <FormControl fullWidth error={Boolean(touched.dispatches?.[index]?.price && errors.dispatches?.[index]?.price)}>
-                          <InputLabel htmlFor={`outlined-adornment-dispatch-price-${index}`}>Đơn giá</InputLabel>
-                          <OutlinedInput
-                            disabled
-                            id={`outlined-adornment-dispatch-price-${index}`}
-                            type="number"
-                            value={Number(price && price)}
-                            name={`dispatches.${index}.price`}
-                            onBlur={handleBlur}
-                            // onChange={handleChange}
-                            onChange={(event) => {
-                              handleChange(event); // Cập nhật đơn giá
-                            }}
-                            inputProps={{}}
-                          />
-                          {touched.dispatches?.[index]?.price && errors.dispatches?.[index]?.price && (
-                            <FormHelperText error>{errors.dispatches[index].price}</FormHelperText>
-                          )}
-                        </FormControl>
-                        <FormControl
-                          fullWidth
-                          error={Boolean(touched.dispatches?.[index]?.totalPriceProduct && errors.dispatches?.[index]?.totalPriceProduct)}
-                        >
-                          <InputLabel htmlFor={`outlined-adornment-dispatch-totalPriceProduct-${index}`}>Tổng</InputLabel>
-                          <OutlinedInput
-                            id={`outlined-adornment-dispatch-totalPriceProduct-${index}`}
-                            type="number"
-                            value={1}
-                            name={`dispatches.${index}.totalPriceProduct`}
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            inputProps={{}}
-                            disabled
-                          />
-                          {touched.dispatches?.[index]?.totalPriceProduct && errors.dispatches?.[index]?.totalPriceProduct && (
-                            <FormHelperText error>{errors.dispatches[index].totalPriceProduct}</FormHelperText>
-                          )}
-                        </FormControl>
-                        <Button onClick={() => remove(index)} color="error" sx={{ padding: '0', height: '90%' }}>
-                          Xóa biển bảng
-                        </Button>
-                      </div>
-                    </Box>
-                  ))}
-
-                  <Button
-                    onClick={() =>
-                      push({
-                        quantity: '',
-                        product: ''
-                      })
+          <FieldArray name="dispatches">
+            {({ push, remove }) => (
+              <>
+                {values.dispatches.map((dispatch, index) => (
+                  <DispatchItem
+                    key={index}
+                    index={index}
+                    dispatch={dispatch}
+                    ListProductFormWarehouse={
+                      userLogin?.user_warehouses.find((wh) => wh.id === values.warehouseID)?.warehouse_inventories || []
                     }
-                    color="primary"
-                    sx={{ mt: 2 }}
-                  >
-                    Thêm biển bảng
-                  </Button>
-                </>
-              )}
-            </FieldArray>
-            <Box sx={{ mt: 8, bgcolor: '#E3F2FD', pt: 6, pb: 3 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={4}></Grid>
-                <Grid item xs={4}></Grid>
-                <Grid item xs={4} sx={{ display: 'flex' }}>
-                  <Grid item xs={4}>
-                    Tổng số tiền:
-                  </Grid>
-                  <Grid item xs={4} sx={{ fontWeight: '700' }}>
-                    {(() => {
-                      const totalAmount = values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0);
-
-                      // Định dạng và hiển thị tổng số tiền
-                      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalAmount).replace('₫', 'đ');
-                    })()}
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Box>
-
-            <Box sx={{ mt: 2 }}>
-              <AnimateButton>
-                <Button disableElevation size="large" type="submit" variant="contained" color="secondary">
-                  Tạo phiếu xuất kho
+                    handleBlur={handleBlur}
+                    handleChange={handleChange}
+                    setFieldValue={setFieldValue}
+                    remove={remove}
+                    touched={touched}
+                    errors={errors}
+                  />
+                ))}
+                <Button onClick={() => push({ quantity: '', product: '', price: 0, totalPriceProduct: 0 })} color="primary">
+                  Thêm biển bảng
                 </Button>
-              </AnimateButton>
-            </Box>
-          </form>
-        )}
-      </Formik>
-    </>
+              </>
+            )}
+          </FieldArray>
+
+          <Box sx={{ mt: 8, bgcolor: '#E3F2FD', pt: 6, pb: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={8}></Grid>
+              <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body1">Tổng số tiền:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: '700' }}>
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+                    .format(values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0))
+                    .replace('₫', 'đ')}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Box>
+
+          <Box sx={{ mt: 2 }}>
+            <AnimateButton>
+              <Button disableElevation size="large" type="submit" variant="contained" color="secondary">
+                Tạo phiếu xuất kho
+              </Button>
+            </AnimateButton>
+          </Box>
+        </form>
+      )}
+    </Formik>
   );
 }
 

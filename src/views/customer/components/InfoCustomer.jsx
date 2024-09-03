@@ -77,11 +77,11 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
     const warehouseDispatchDetails = userInfo?.data?.simplifiedcustomerDetail?.warehouse_dispatches;
     warehouseDispatchDetails.map((dispatch) => {
       if (dispatch.id === id) {
-        const result = dispatch.warehouseDispatchDetails;
-        setWCPdetail(result);
+        setWCPdetail(dispatch);
       }
     });
   };
+
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -140,7 +140,7 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
         </CustomTabPanel>
       </Box>
       <Drawer open={open} onClose={toggleDrawer(false)}>
-        <WPcustomer WCPDetail={WCPDetail} />
+        <WPcustomer WCPDetail={WCPDetail} userInfoFormat={userInfoFormat} />
       </Drawer>
     </>
   );

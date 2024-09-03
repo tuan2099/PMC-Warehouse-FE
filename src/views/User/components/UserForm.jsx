@@ -19,6 +19,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import warehouseApi from 'api/warehouse.api';
+import customerApi from 'api/customer.api';
 import { useQuery } from '@tanstack/react-query';
 function UserForm({
   updateUserMutation,
@@ -39,6 +40,14 @@ function UserForm({
       return warehouseApi.getAllWarehouse();
     }
   });
+
+  const { data: CustomerData } = useQuery({
+    queryKey: ['customer'],
+    queryFn: () => {
+      return customerApi.getAllCustomer();
+    }
+  });
+
   return (
     <>
       <Formik
@@ -46,8 +55,8 @@ function UserForm({
         enableReinitialize
         // validation form
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          email: Yup.string().email('Must be a valid email').max(255).required('Email is required')
+          // password: Yup.string().max(255).required('Password is required')
         })}
         // setting submit
         onSubmit={(values) => {
@@ -61,7 +70,8 @@ function UserForm({
                   date_of_birth: values.date_of_birth || '',
                   password: values.password,
                   role: values.role,
-                  warehouseId: values.warehouseId
+                  warehouseId: values.warehouseId,
+                  customerId: values.customerId || []
                 }
               ]
             };
@@ -197,6 +207,30 @@ function UserForm({
                     })}
                   </Select>
                 </FormControl>
+                <FormControl fullWidth error={Boolean(touched.customerId && errors.customerId)} sx={{ ...theme.typography.customSelect }}>
+                  <InputLabel htmlFor="outlined-adornment-password-register">Phân quyền dự án</InputLabel>
+                  <Select
+                    name="customerId"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={values.customerId}
+                    multiple
+                    label="Age"
+                    inputProps={{}}
+                  >
+                    {CustomerData
+                      ? CustomerData?.data?.map((item) => {
+                          return (
+                            <MenuItem key={item.id} value={item.id}>
+                              {item.name}
+                            </MenuItem>
+                          );
+                        })
+                      : []}
+                  </Select>
+                </FormControl>
               </>
             )}
 
@@ -209,7 +243,7 @@ function UserForm({
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  {isEdit.length === 0 ? 'tạo người dùng' : 'Cập nhật người dùng'}
+                  {isEdit.length === 0 ? 'Tạo người dùng' : 'Cập nhật người dùng'}
                 </Button>
               </AnimateButton>
             </Box>

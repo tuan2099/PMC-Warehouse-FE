@@ -30,7 +30,8 @@ function User() {
     email: '',
     password: '',
     role: '',
-    warehouseId: []
+    warehouseId: [],
+    customerId: []
   }); // quản lý form
   // Cài đặt column user
   const columns = [
@@ -87,7 +88,8 @@ function User() {
         email: '',
         password: '',
         role: '',
-        warehouseId: []
+        warehouseId: [],
+        customerId: []
       });
       setIsEdit(false);
     } else if (dialogId === 'dialog2') {
@@ -96,7 +98,8 @@ function User() {
         email: '',
         password: '',
         role: '',
-        warehouseId: []
+        warehouseId: [],
+        customerId: []
       });
       setIsEdit(false);
     }
@@ -125,7 +128,8 @@ function User() {
         email: data?.data?.data?.email,
         password: data?.data?.data?.password,
         role: data?.data?.data?.role,
-        warehouseId: data.data.data?.user_warehouses.map((warehouse) => warehouse.id)
+        warehouseId: data.data.data?.user_warehouses.map((warehouse) => warehouse.id),
+        customerId: data.data.data?.user_customers.map((customer) => customer.id)
       });
     }
   });
