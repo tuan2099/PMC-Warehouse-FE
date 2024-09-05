@@ -2,34 +2,36 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 
-// MUI components
+// Các thành phần của MUI
 import { Box, Tabs, Tab, Typography, Button, Grid, IconButton, Drawer } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Search as SearchIcon } from '@mui/icons-material';
-import WPcustomer from './WP_customer';
+import DeleteIcon from '@mui/icons-material/Delete'; // Icon xóa
+import { DataGrid, GridToolbar } from '@mui/x-data-grid'; // Bảng dữ liệu từ MUI
+import { Search as SearchIcon } from '@mui/icons-material'; // Icon tìm kiếm
+import WPcustomer from './WP_customer'; // Component WP_customer để hiển thị chi tiết warehouse dispatch
 
-// hàm xử lý tab Mui
+// Hàm để quản lý và hiển thị nội dung theo từng tab của MUI
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
     <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>} {/* Chỉ hiển thị nội dung khi tab được chọn */}
     </div>
   );
 }
-function InfoCustomer({ userInfo, handleDeleteCustomer }) {
-  const [open, setOpen] = useState(false); // state quản lý drawer
-  const [WCPDetail, setWCPdetail] = useState(null); // state quản lý dữ liệu warehose dispatch
-  const [value, setValue] = useState(0); // state quản lý tab Mui
 
-  // hàm xử lý cài dặt drawer
+// Component InfoCustomer để hiển thị thông tin chi tiết khách hàng
+function InfoCustomer({ userInfo, handleDeleteCustomer }) {
+  const [open, setOpen] = useState(false); // State để quản lý trạng thái mở/đóng của drawer
+  const [WCPDetail, setWCPdetail] = useState(null); // State để quản lý dữ liệu chi tiết warehouse dispatch
+  const [value, setValue] = useState(0); // State để quản lý giá trị của tab MUI (tab nào đang được chọn)
+
+  // Hàm để bật/tắt drawer (bảng điều khiển chi tiết)
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
 
-  // Cài đặt cột cho data grid warehouse dispatch
+  // Cấu hình các cột cho bảng dữ liệu warehouse dispatch
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'exportCode', headerName: 'Mã xuất kho', width: 250 },
@@ -40,14 +42,15 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
     { field: 'recipient', headerName: 'Người nhận', width: 150 },
     {
       field: 'actions',
-      headerName: 'Actions',
+      headerName: 'Actions', // Cột hành động
       width: 220,
       renderCell: ({ id }) => (
         <>
+          {/* Icon để xem chi tiết warehouse dispatch */}
           <IconButton
             onClick={() => {
-              checkWarehosue(id);
-              toggleDrawer(true)();
+              checkWarehosue(id); // Lấy chi tiết warehouse dispatch theo ID
+              toggleDrawer(true)(); // Mở drawer để hiển thị chi tiết
             }}
           >
             <SearchIcon />
@@ -57,52 +60,59 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
     }
   ];
 
-  // hàm điều khiển tab Mui
+  // Hàm điều khiển chuyển đổi giữa các tab của MUI
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setValue(newValue); // Cập nhật tab hiện tại
   };
 
-  // hàm điều khiển tab Mui
+  // Hàm trả về các thuộc tính cần thiết cho các tab của MUI
   function a11yProps(index) {
     return {
       id: `simple-tab-${index}`,
       'aria-controls': `simple-tabpanel-${index}`
     };
   }
-  // Xử lý dữ liệu lấy từ api về
+
+  // Định dạng dữ liệu khách hàng từ API để dễ sử dụng
   const userInfoFormat = userInfo?.data?.simplifiedcustomerDetail;
 
-  // kiểm tra và trả về warehouse dispatch đã click
+  // Hàm kiểm tra và lấy warehouse dispatch dựa trên ID đã chọn
   const checkWarehosue = (id) => {
     const warehouseDispatchDetails = userInfo?.data?.simplifiedcustomerDetail?.warehouse_dispatches;
     warehouseDispatchDetails.map((dispatch) => {
       if (dispatch.id === id) {
-        setWCPdetail(dispatch);
+        setWCPdetail(dispatch); // Cập nhật chi tiết warehouse dispatch
       }
     });
   };
 
   return (
     <>
+      {/* Hộp chứa toàn bộ nội dung */}
       <Box sx={{ width: '100%' }}>
+        {/* Thông tin tiêu đề và nút xóa */}
         <Box sx={{ mb: 2 }}>
           <Typography variant="h1" gutterBottom>
-            {userInfoFormat.name}
+            {userInfoFormat.name} {/* Tên khách hàng/dự án */}
           </Typography>
           <Button onClick={() => handleDeleteCustomer(userInfoFormat.id)} startIcon={<DeleteIcon />}>
-            Xoá dự án
+            Xoá dự án {/* Nút xóa dự án */}
           </Button>
         </Box>
+
+        {/* Tabs để chuyển đổi giữa các phần */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab label="Thông tin Dự án" {...a11yProps(0)} />
-            <Tab label="Thông tin xuất đơn" {...a11yProps(1)} />
+            <Tab label="Thông tin Dự án" {...a11yProps(0)} /> {/* Tab thông tin dự án */}
+            <Tab label="Thông tin xuất đơn" {...a11yProps(1)} /> {/* Tab thông tin warehouse dispatch */}
           </Tabs>
         </Box>
+
+        {/* Nội dung của tab Thông tin dự án */}
         <CustomTabPanel value={value} index={0}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <Typography variant="h5">Giám đôc toà nhà</Typography>
+              <Typography variant="h5">Giám đốc toà nhà</Typography>
               <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{userInfoFormat.pm}</Typography>
             </Grid>
             <Grid item xs={6}>
@@ -119,28 +129,32 @@ function InfoCustomer({ userInfo, handleDeleteCustomer }) {
             </Grid>
           </Grid>
         </CustomTabPanel>
+
+        {/* Nội dung của tab Thông tin xuất đơn */}
         <CustomTabPanel value={value} index={1}>
           <DataGrid
-            rowHeight={70}
-            rows={userInfoFormat?.warehouse_dispatches || []}
-            columns={columns}
+            rowHeight={70} /* Chiều cao của mỗi hàng trong bảng */
+            rows={userInfoFormat?.warehouse_dispatches || []} /* Dữ liệu warehouse dispatch */
+            columns={columns} /* Cấu hình cột */
             initialState={{
-              pagination: { paginationModel: { pageSize: 5 } }
+              pagination: { paginationModel: { pageSize: 5 } } // Phân trang với kích thước mặc định là 5
             }}
             pagination
             checkboxSelection
-            slots={{ toolbar: GridToolbar }}
+            slots={{ toolbar: GridToolbar }} /* Thanh công cụ cho bảng dữ liệu */
             slotProps={{
               toolbar: {
-                showQuickFilter: true
+                showQuickFilter: true // Hiển thị bộ lọc nhanh
               }
             }}
-            pageSizeOptions={[5, 10, 25]}
+            pageSizeOptions={[5, 10, 25]} /* Các lựa chọn cho kích thước trang */
           />
         </CustomTabPanel>
       </Box>
+
+      {/* Drawer hiển thị chi tiết warehouse dispatch */}
       <Drawer open={open} onClose={toggleDrawer(false)}>
-        <WPcustomer WCPDetail={WCPDetail} userInfoFormat={userInfoFormat} />
+        <WPcustomer WCPDetail={WCPDetail} userInfoFormat={userInfoFormat} /> {/* Truyền dữ liệu chi tiết vào WPcustomer */}
       </Drawer>
     </>
   );

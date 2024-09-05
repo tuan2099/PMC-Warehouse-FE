@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 
-// MUI components
+// Các thành phần MUI
 import MainCard from 'ui-component/cards/MainCard';
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
 import {
@@ -13,29 +13,29 @@ import {
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 
-// Third party
+// Thư viện bên thứ ba
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 // API
 import warehouseApi from '../../api/warehouse.api';
 
-// Custom components
+// Các thành phần tùy chỉnh
 import WarehouseForm from './components/WarehouseForm';
 import InfoWarehouse from './components/InfoWarehouse';
 
 function Warehouse() {
-  const [isEdit, setIsEdit] = useState(); //
-  const [warehouseId, setWarehouseId] = useState(); // lưu id kho đang sửa
-  const [openDialog, setOpenDialog] = useState(); // đóng mở dialog
+  const [isEdit, setIsEdit] = useState(); // State quản lý trạng thái chỉnh sửa
+  const [warehouseId, setWarehouseId] = useState(); // Lưu ID của kho đang được chỉnh sửa
+  const [openDialog, setOpenDialog] = useState(); // Quản lý trạng thái đóng/mở của dialog
   const [formState, setFormState] = useState({
     name: '',
     address: '',
     note: '',
     type: '',
     info: ''
-  }); // setting form
+  }); // Trạng thái của form
 
-  // setting columns for table users
+  // Cấu hình các cột cho bảng dữ liệu kho hàng
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Tên kho', width: 350 },
@@ -45,19 +45,23 @@ function Warehouse() {
     { field: 'updatedAt', headerName: 'Ngày cập nhật gần nhất', with: 200 },
     {
       field: 'actions',
-      headerName: 'Actions',
+      headerName: 'Actions', // Cột hành động
       width: 220,
       renderCell: ({ id }) => (
         <>
+          {/* Nút xóa kho hàng */}
           <IconButton aria-label="delete" variant="contained" color="secondary" onClick={() => handleDeleteWarehouse(id)}>
             <DeleteIcon />
           </IconButton>
+          {/* Nút chỉnh sửa kho hàng */}
           <IconButton onClick={() => handleUpdateWarehouse(id)}>
             <ModeEditIcon />
           </IconButton>
+          {/* Nút xem thông tin chi tiết kho hàng */}
           <IconButton
             onClick={() => {
-              handleOpenDialog('dialog2'), handleGetWarehouse(id);
+              handleOpenDialog('dialog2');
+              handleGetWarehouse(id);
             }}
           >
             <SearchIcon />
@@ -67,19 +71,21 @@ function Warehouse() {
     }
   ];
 
-  // Mở dialog
+  // Hàm mở dialog
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
   };
-  // Đóng dialog
+
+  // Hàm đóng dialog
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
       setFormState({
         name: '',
-        email: '',
-        password: '',
-        role: ''
+        address: '',
+        note: '',
+        type: '',
+        info: ''
       });
       setIsEdit(false);
     } else if (dialogId === 'dialog2') {
@@ -87,13 +93,13 @@ function Warehouse() {
     }
   };
 
-  // Lấy dữ liệu warehosue bằng ID
+  // Lấy dữ liệu kho hàng bằng ID
   const getWarehouseMutation = useMutation({
     mutationFn: (body) => warehouseApi.getWarehouseById(body),
     onSuccess: (warehouse) => {
       const warehouseData = warehouse?.data?.simplifiedWarehouseDetail;
-      setWarehouseId(warehouseData);
-      setIsEdit(warehouseData);
+      setWarehouseId(warehouseData); // Lưu thông tin kho hàng vào state
+      setIsEdit(warehouseData); // Đặt trạng thái chỉnh sửa
       setFormState({
         name: warehouseData.name,
         address: warehouseData.address
@@ -101,12 +107,12 @@ function Warehouse() {
     }
   });
 
+  // Hàm lấy thông tin chi tiết kho hàng
   const handleGetWarehouse = (rowID) => {
     getWarehouseMutation.mutate(rowID);
-    // handleOpenDialog('dialog1');
   };
 
-  // get dữ liệu tất cả warehouse
+  // Lấy tất cả dữ liệu kho hàng
   const { data: WarehouseData, refetch } = useQuery({
     queryKey: ['warehouse'],
     queryFn: () => {
@@ -114,24 +120,26 @@ function Warehouse() {
     }
   });
 
-  // delete warehouse
+  // Xóa kho hàng
   const deleteWarehouseMutation = useMutation({
     mutationFn: warehouseApi.deleteWarehouse,
     onSuccess: () => {
       alert('Xóa kho hàng thành công');
-      refetch();
+      refetch(); // Lấy lại danh sách kho hàng sau khi xóa
     },
     onError: () => {
       alert('Xóa kho hàng thất bại');
       refetch();
     }
   });
+
   const handleDeleteWarehouse = (rowId) => {
-    window.confirm('Are you sure you want to delete');
-    deleteWarehouseMutation.mutate(rowId);
+    if (window.confirm('Are you sure you want to delete')) {
+      deleteWarehouseMutation.mutate(rowId); // Gọi hàm xóa kho hàng
+    }
   };
 
-  // add new warehouse
+  // Thêm mới kho hàng
   const createWarehouseMutation = useMutation({
     mutationFn: (body) => warehouseApi.addWarehouse(body),
     onSuccess: (warehouse) => {
@@ -141,29 +149,30 @@ function Warehouse() {
     }
   });
 
-  // update warehouse
+  // Cập nhật kho hàng
   const handleUpdateWarehouse = (rowId) => {
-    getWarehouseMutation.mutate(rowId);
-    handleOpenDialog('dialog1');
+    getWarehouseMutation.mutate(rowId); // Lấy thông tin kho hàng
+    handleOpenDialog('dialog1'); // Mở dialog cập nhật
   };
 
   const updateWarehouseMutaiton = useMutation({
     mutationFn: ({ warehouseId, values }) => {
       if (!warehouseId) {
-        throw new Error('User ID is missing');
+        throw new Error('Warehouse ID is missing');
       }
-      return warehouseApi.updateWarehouse(Number(warehouseId), values);
+      return warehouseApi.updateWarehouse(Number(warehouseId), values); // Gọi API cập nhật kho hàng
     },
     onSuccess: (warehouse) => {
       console.log(warehouse);
       alert('Cập nhật kho thành công!');
-      refetch();
+      refetch(); // Lấy lại danh sách kho hàng sau khi cập nhật
     }
   });
 
   return (
     <>
       <MainCard title="Quản lý kho hàng">
+        {/* Nút tạo mới kho hàng */}
         <Button
           sx={{ mb: 2 }}
           variant="outlined"
@@ -175,6 +184,7 @@ function Warehouse() {
           Tạo kho hàng
         </Button>
 
+        {/* Dialog cho việc thêm/chỉnh sửa kho hàng */}
         <Dialog onClose={() => handleCloseDialog('dialog1')} open={openDialog === 'dialog1'} maxWidth="xl" fullWidth>
           <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
             <Toolbar>
@@ -194,6 +204,7 @@ function Warehouse() {
           </DialogContent>
         </Dialog>
 
+        {/* Dialog xem thông tin chi tiết kho hàng */}
         <Dialog
           onClose={() => handleCloseDialog('dialog2')}
           open={openDialog === 'dialog2'}
@@ -214,9 +225,11 @@ function Warehouse() {
             </Toolbar>
           </AppBar>
           <DialogContent>
-            <InfoWarehouse warehouseId={warehouseId && warehouseId} />
+            <InfoWarehouse warehouseId={warehouseId} />
           </DialogContent>
         </Dialog>
+
+        {/* Bảng dữ liệu kho hàng */}
         <Box sx={{ height: '100%', width: '100%' }}>
           <DataGrid rows={WarehouseData?.data} columns={columns} pageSize={5} checkboxSelection />
         </Box>
