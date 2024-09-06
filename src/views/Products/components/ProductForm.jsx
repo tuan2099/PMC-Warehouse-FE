@@ -2,47 +2,59 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
 import { Button, Box, FormHelperText } from '@mui/material';
-import { Formik } from 'formik';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import * as Yup from 'yup';
+import { Formik } from 'formik'; // Thư viện hỗ trợ quản lý form và các giá trị của form
+import AnimateButton from 'ui-component/extended/AnimateButton'; // Thư viện tùy chỉnh cho nút có hiệu ứng animation
+import * as Yup from 'yup'; // Thư viện hỗ trợ kiểm tra và xác thực dữ liệu
 
-import InputField from 'ui-component/InputField';
-import SelectField from 'ui-component/SelectField';
+import InputField from 'ui-component/InputField'; // Thành phần tùy chỉnh cho các trường input
+import SelectField from 'ui-component/SelectField'; // Thành phần tùy chỉnh cho các trường select
 
-function ProductForm({ formState }) {
-  // Define validation schema using Yup
+function ProductForm({ formState, productID, isEdit, createProductMutation, updateProductMutation }) {
+  // Xác thực dữ liệu form bằng Yup
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Tên sản phẩm là bắt buộc'),
-    size: Yup.string().required('Kích thước là bắt buộc'),
-    salePrice: Yup.number().required('Giá bán là bắt buộc').positive('Giá bán phải là số dương'),
-    purchasePrice: Yup.number().required('Giá nhập là bắt buộc').positive('Giá nhập phải là số dương'),
-    quantityIn: Yup.number().required('Số lượng tối thiểu là bắt buộc').min(0, 'Số lượng tối thiểu không thể nhỏ hơn 0'),
-    quantityOut: Yup.number().required('Số lượng tối đa là bắt buộc').min(0, 'Số lượng tối đa không thể nhỏ hơn 0'),
-    // image: Yup.string().url('URL hình ảnh không hợp lệ').required('Hình ảnh là bắt buộc'),
-    status: Yup.string().required('Trạng thái là bắt buộc'),
-    minimumQuantity: Yup.number().required('Số lượng tối thiểu là bắt buộc').min(0, 'Số lượng tối thiểu không thể nhỏ hơn 0'),
-    maximumQuantity: Yup.number().required('Số lượng tối đa là bắt buộc').min(0, 'Số lượng tối đa không thể nhỏ hơn 0'),
-    note: Yup.string().required('Ghi chú là bắt buộc')
+    name: Yup.string().required('Tên sản phẩm là bắt buộc'), // Xác thực trường 'name'
+    size: Yup.string().required('Kích thước là bắt buộc'), // Xác thực trường 'size'
+    salePrice: Yup.number().required('Giá bán là bắt buộc').positive('Giá bán phải là số dương'), // Xác thực trường 'salePrice'
+    purchasePrice: Yup.number().required('Giá nhập là bắt buộc').positive('Giá nhập phải là số dương'), // Xác thực trường 'purchasePrice'
+    quantityIn: Yup.number().required('Số lượng tối thiểu là bắt buộc').min(0, 'Số lượng tối thiểu không thể nhỏ hơn 0'), // Xác thực trường 'quantityIn'
+    quantityOut: Yup.number().required('Số lượng tối đa là bắt buộc').min(0, 'Số lượng tối đa không thể nhỏ hơn 0'), // Xác thực trường 'quantityOut'
+    status: Yup.string().required('Trạng thái là bắt buộc'), // Xác thực trường 'status'
+    minimumQuantity: Yup.number().required('Số lượng tối thiểu là bắt buộc').min(0, 'Số lượng tối thiểu không thể nhỏ hơn 0'), // Xác thực trường 'minimumQuantity'
+    maximumQuantity: Yup.number().required('Số lượng tối đa là bắt buộc').min(0, 'Số lượng tối đa không thể nhỏ hơn 0'), // Xác thực trường 'maximumQuantity'
+    note: Yup.string().required('Ghi chú là bắt buộc') // Xác thực trường 'note'
   });
 
+  // Các lựa chọn cho trường trạng thái sản phẩm
   const statusOptions = [
-    { value: 'available', label: 'Còn hàng' },
-    { value: 'unavailable', label: 'Hết hàng' },
-    { value: 'discontinued', label: 'Ngừng kinh doanh' }
+    { value: 'available', label: 'Còn hàng' }, // Trạng thái 'Còn hàng'
+    { value: 'unavailable', label: 'Hết hàng' }, // Trạng thái 'Hết hàng'
+    { value: 'discontinued', label: 'Ngừng kinh doanh' } // Trạng thái 'Ngừng kinh doanh'
   ];
 
   return (
     <Formik
-      initialValues={formState}
-      enableReinitialize
-      validationSchema={validationSchema}
+      initialValues={formState} // Giá trị ban đầu của form lấy từ prop 'formState'
+      enableReinitialize // Cập nhật lại form khi giá trị formState thay đổi
+      validationSchema={validationSchema} // Định nghĩa xác thực form
+      // Xử lý khi người dùng submit form
       onSubmit={(values, { setSubmitting }) => {
-        setSubmitting(true);
-        setSubmitting(false);
+        const transformValues = {
+          product: [values] // Chuyển đổi giá trị form thành một mảng với key 'product'
+        };
+        setSubmitting(true); // Bật trạng thái đang submit
+        if (isEdit) {
+          // Nếu đang ở chế độ chỉnh sửa, gọi API cập nhật
+          updateProductMutation.mutate({ productId: productID.id, values });
+        } else {
+          // Nếu ở chế độ tạo mới, gọi API tạo sản phẩm
+          createProductMutation.mutate(transformValues);
+        }
+        setSubmitting(false); // Tắt trạng thái submit
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
         <form noValidate onSubmit={handleSubmit}>
+          {/* Trường nhập tên sản phẩm */}
           <InputField
             name="name"
             label="Tên sản phẩm"
@@ -54,6 +66,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập kích thước sản phẩm */}
           <InputField
             name="size"
             label="Kích thước"
@@ -65,6 +78,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập giá bán */}
           <InputField
             name="salePrice"
             label="Giá bán"
@@ -76,6 +90,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập giá nhập */}
           <InputField
             name="purchasePrice"
             label="Giá nhập"
@@ -87,6 +102,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập số lượng tối thiểu */}
           <InputField
             name="quantityIn"
             label="Số lượng tối thiểu"
@@ -98,6 +114,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập số lượng tối đa */}
           <InputField
             name="quantityOut"
             label="Số lượng tối đa"
@@ -109,6 +126,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập hình ảnh */}
           <InputField
             name="image"
             label="Hình ảnh"
@@ -120,6 +138,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường chọn trạng thái sản phẩm */}
           <SelectField
             name="status"
             label="Trạng thái"
@@ -131,6 +150,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập số lượng tối thiểu */}
           <InputField
             name="minimumQuantity"
             label="Số lượng tối thiểu"
@@ -142,6 +162,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập số lượng tối đa */}
           <InputField
             name="maximumQuantity"
             label="Số lượng tối đa"
@@ -153,6 +174,7 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Trường nhập ghi chú */}
           <InputField
             name="note"
             label="Ghi chú"
@@ -164,16 +186,18 @@ function ProductForm({ formState }) {
             errors={errors}
           />
 
+          {/* Hiển thị lỗi nếu có */}
           {errors.submit && (
             <Box sx={{ mt: 3 }}>
               <FormHelperText error>{errors.submit}</FormHelperText>
             </Box>
           )}
 
+          {/* Nút submit form */}
           <Box sx={{ mt: 2 }}>
             <AnimateButton>
               <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                Tạo sản phẩm
+                {isEdit ? 'Cập nhật sản phẩm' : 'Tạo sản phẩm'} {/* Hiển thị nút khác nhau khi ở chế độ tạo mới và chỉnh sửa */}
               </Button>
             </AnimateButton>
           </Box>

@@ -142,8 +142,7 @@ function Warehouse() {
   // Thêm mới kho hàng
   const createWarehouseMutation = useMutation({
     mutationFn: (body) => warehouseApi.addWarehouse(body),
-    onSuccess: (warehouse) => {
-      console.log(warehouse);
+    onSuccess: () => {
       alert('Thêm kho thành công!');
       refetch();
     }
