@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 // MUI components
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
@@ -20,6 +21,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 
 // Api
 import userApi from '../../api/auth.api';
+import DataTable from 'ui-component/DataTable';
 
 function User() {
   const [isEdit, setIsEdit] = useState([]); //
@@ -33,6 +35,10 @@ function User() {
     warehouseId: [],
     customerId: []
   }); // quản lý form
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = searchParams.get('page');
+
   // Cài đặt column user
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -66,10 +72,14 @@ function User() {
 
   // lấy dữ liệu tất cả user
   const { data: userData, refetch } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => {
-      return userApi.getAllUser();
-    }
+    queryKey: ['users', page],
+    queryFn: () => userApi.getAllUser(page),
+    onSuccess: (data) => {
+      if (page && +page > data.data.meta.totalPages) {
+        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+      }
+    },
+    keepPreviousData: true
   });
 
   // Mở dialog
@@ -241,18 +251,7 @@ function User() {
         <DialogContent>{isEdit && <InfoUser isEdit={isEdit} />}</DialogContent>
       </Dialog>
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataGrid
-          rows={userData?.data?.data}
-          columns={columns}
-          pageSize={5}
-          checkboxSelection
-          slots={{ toolbar: GridToolbar }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true
-            }
-          }}
-        />
+        <DataTable columns={columns} rows={userData?.data?.data} pageSize={+userData?.data?.meta?.totalPages || 1} />
       </Box>
     </MainCard>
   );

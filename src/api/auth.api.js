@@ -6,8 +6,8 @@ export const registerAcc = (body) => http.post('users/register', body);
 export const loginAcc = (body) => http.post('users/login', body);
 
 const userApi = {
-  getAllUser() {
-    return http.get('/users');
+  getAllUser(page) {
+    return http.get(`/users?page=${page || 1}`);
   },
   adduser(body) {
     return http.post('/users/register', body);
