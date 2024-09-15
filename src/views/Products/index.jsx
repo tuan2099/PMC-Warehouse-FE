@@ -74,6 +74,7 @@ function Products() {
     queryFn: async () => await productsApi.getAllProducts() // Hàm gọi API lấy tất cả sản phẩm
   });
 
+  console.log(ProductsData?.data);
   // Hàm mở dialog để tạo mới sản phẩm
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId); // Mở dialog

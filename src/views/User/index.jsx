@@ -251,7 +251,7 @@ function User() {
         <DialogContent>{isEdit && <InfoUser isEdit={isEdit} />}</DialogContent>
       </Dialog>
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataTable columns={columns} rows={userData?.data?.data} pageSize={+userData?.data?.meta?.totalPages || 1} />
+        <DataTable columns={columns} data={userData} />
       </Box>
     </MainCard>
   );
