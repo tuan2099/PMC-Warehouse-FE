@@ -74,7 +74,6 @@ function Products() {
     queryFn: async () => await productsApi.getAllProducts() // Hàm gọi API lấy tất cả sản phẩm
   });
 
-  console.log(ProductsData?.data);
   // Hàm mở dialog để tạo mới sản phẩm
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId); // Mở dialog
@@ -172,7 +171,7 @@ function Products() {
 
         {/* Bảng hiển thị danh sách sản phẩm */}
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataGrid rows={ProductsData?.data || []} columns={columns} pageSize={5} checkboxSelection />
+          <DataGrid rows={ProductsData?.data?.data || []} columns={columns} pageSize={5} checkboxSelection />
         </Box>
 
         {/* Dialog chứa form tạo sản phẩm mới */}

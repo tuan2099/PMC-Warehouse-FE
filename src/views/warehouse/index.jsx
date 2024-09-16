@@ -232,7 +232,7 @@ function Warehouse() {
 
         {/* Bảng dữ liệu kho hàng */}
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataGrid rows={WarehouseData?.data} columns={columns} pageSize={5} checkboxSelection />
+          <DataGrid rows={WarehouseData?.data?.data} columns={columns} pageSize={5} checkboxSelection />
         </Box>
       </MainCard>
     </>

@@ -254,7 +254,7 @@ function Customer() {
         <Box sx={{ width: '100%', height: '600px' }}>
           <DataGrid
             rowHeight={70} /* Chiều cao mỗi hàng */
-            rows={customerData?.data} /* Dữ liệu cho bảng */
+            rows={customerData?.data?.data} /* Dữ liệu cho bảng */
             columns={columns} /* Cấu hình cột */
             initialState={{
               pagination: { paginationModel: { pageSize: 5 } } // Cấu hình phân trang
