@@ -120,6 +120,8 @@ function Warehouse() {
     }
   });
 
+  console.log(WarehouseData);
+
   // Xóa kho hàng
   const deleteWarehouseMutation = useMutation({
     mutationFn: warehouseApi.deleteWarehouse,
