@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 // Các thành phần MUI
 import MainCard from 'ui-component/cards/MainCard';
@@ -22,6 +23,7 @@ import warehouseApi from '../../api/warehouse.api';
 // Các thành phần tùy chỉnh
 import WarehouseForm from './components/WarehouseForm';
 import InfoWarehouse from './components/InfoWarehouse';
+import DataTable from 'ui-component/DataTable';
 
 function Warehouse() {
   const [isEdit, setIsEdit] = useState(); // State quản lý trạng thái chỉnh sửa
@@ -34,6 +36,9 @@ function Warehouse() {
     type: '',
     info: ''
   }); // Trạng thái của form
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = searchParams.get('page');
 
   // Cấu hình các cột cho bảng dữ liệu kho hàng
   const columns = [
@@ -115,9 +120,13 @@ function Warehouse() {
   // Lấy tất cả dữ liệu kho hàng
   const { data: WarehouseData, refetch } = useQuery({
     queryKey: ['warehouse'],
-    queryFn: () => {
-      return warehouseApi.getAllWarehouse();
-    }
+    queryFn: () => warehouseApi.getAllWarehouse(page),
+    onSuccess: (data) => {
+      if (page && +page > data.data.meta.totalPages) {
+        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+      }
+    },
+    keepPreviousData: true
   });
 
   console.log(WarehouseData);
@@ -232,7 +241,7 @@ function Warehouse() {
 
         {/* Bảng dữ liệu kho hàng */}
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataGrid rows={WarehouseData?.data} columns={columns} pageSize={5} checkboxSelection />
+          <DataTable rows={WarehouseData} columns={columns} />
         </Box>
       </MainCard>
     </>

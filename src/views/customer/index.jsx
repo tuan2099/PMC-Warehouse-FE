@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 // Các thành phần MUI
 import MainCard from 'ui-component/cards/MainCard';
@@ -20,6 +21,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import customerApi from 'api/customer.api';
 import CustomerForm from './components/customerForm'; // Form khách hàng
 import InfoCustomer from './components/InfoCustomer'; // Thông tin khách hàng
+import DataTable from 'ui-component/DataTable';
 
 function Customer() {
   // State quản lý dialog đóng/mở
@@ -40,6 +42,9 @@ function Customer() {
   });
   // State lưu dữ liệu người dùng lấy từ API
   const [userInfo, setUserInfo] = useState([]);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = searchParams.get('page');
 
   // Hàm mở dialog theo ID
   const handleOpenDialog = (DialogId) => {
@@ -72,10 +77,15 @@ function Customer() {
 
   // Gọi API lấy danh sách khách hàng
   const { data: customerData, refetch } = useQuery({
-    queryKey: ['customer'], // Tên key truy vấn
+    queryKey: ['customer', page], // Tên key truy vấn
     queryFn: async () => {
       const response = await customerApi.getAllCustomer(); // Gọi API
       return response; // Trả về kết quả từ API
+    },
+    onSuccess: (data) => {
+      if (page && +page > data.data.meta.totalPages) {
+        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+      }
     },
     keepPreviousData: true // Giữ dữ liệu trước khi có dữ liệu mới
   });
@@ -252,23 +262,7 @@ function Customer() {
 
         {/* Bảng dữ liệu dự án */}
         <Box sx={{ width: '100%', height: '600px' }}>
-          <DataGrid
-            rowHeight={70} /* Chiều cao mỗi hàng */
-            rows={customerData?.data} /* Dữ liệu cho bảng */
-            columns={columns} /* Cấu hình cột */
-            initialState={{
-              pagination: { paginationModel: { pageSize: 5 } } // Cấu hình phân trang
-            }}
-            pagination
-            checkboxSelection
-            slots={{ toolbar: GridToolbar }} /* Thanh công cụ cho bảng */
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true /* Hiển thị bộ lọc nhanh */
-              }
-            }}
-            pageSizeOptions={[5, 10, 25]} /* Tùy chọn số hàng mỗi trang */
-          />
+          <DataTable columns={columns} data={customerData} />
         </Box>
       </MainCard>
     </>

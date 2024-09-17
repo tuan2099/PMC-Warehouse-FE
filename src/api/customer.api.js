@@ -2,8 +2,8 @@
 import http from 'utils/http';
 
 const customerApi = {
-  getAllCustomer() {
-    return http.get(`/customers`);
+  getAllCustomer(page) {
+    return http.get(`/customers?page=${page || 1}`);
   },
   getCustomer(id) {
     return http.get(`/customers/${id}`);

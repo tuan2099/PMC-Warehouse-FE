@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 // Các thành phần của MUI
 import MainCard from 'ui-component/cards/MainCard';
@@ -21,6 +22,7 @@ import productsApi from '../../api/product.api';
 
 // Thành phần form sản phẩm tùy chỉnh
 import ProductForm from './components/ProductForm';
+import DataTable from 'ui-component/DataTable';
 
 function Products() {
   // Quản lý trạng thái mở/đóng của dialog và trạng thái của form
@@ -30,6 +32,9 @@ function Products() {
   const [isEdit, setIsEdit] = useState(false);
   // dữ liệu khi ấn vào 1 product
   const [productID, setProductID] = useState([]);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = searchParams.get('page');
   // Cấu hình các cột cho bảng dữ liệu sản phẩm
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -70,8 +75,14 @@ function Products() {
 
   // Lấy tất cả sản phẩm từ API thông qua `useQuery`
   const { data: ProductsData, refetch } = useQuery({
-    queryKey: ['products'], // Khóa truy vấn
-    queryFn: async () => await productsApi.getAllProducts() // Hàm gọi API lấy tất cả sản phẩm
+    queryKey: ['products', page], // Khóa truy vấn
+    queryFn: async () => await productsApi.getAllProducts(page), // Hàm gọi API lấy tất cả sản phẩm
+    onSuccess: (data) => {
+      if (page && +page > data.data.meta.totalPages) {
+        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+      }
+    },
+    keepPreviousData: true
   });
 
   console.log(ProductsData?.data);
@@ -172,7 +183,7 @@ function Products() {
 
         {/* Bảng hiển thị danh sách sản phẩm */}
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataGrid rows={ProductsData?.data || []} columns={columns} pageSize={5} checkboxSelection />
+          <DataTable rows={ProductsData} columns={columns} />
         </Box>
 
         {/* Dialog chứa form tạo sản phẩm mới */}
