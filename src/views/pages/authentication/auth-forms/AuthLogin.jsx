@@ -152,7 +152,13 @@ const AuthLogin = ({ ...others }) => {
                 }
                 label="Remember me"
               />
-              <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
+
+              <Typography
+                variant="subtitle1"
+                onClick={() => navigate('/pages/forgot-password/forgot-password')}
+                color="secondary"
+                sx={{ textDecoration: 'none', cursor: 'pointer' }}
+              >
                 Quên mật khẩu
               </Typography>
             </Stack>

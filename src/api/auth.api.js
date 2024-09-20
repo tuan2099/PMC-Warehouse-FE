@@ -20,6 +20,12 @@ const userApi = {
   },
   getUserById(id) {
     return http.get(`/users/${id}`);
+  },
+  forgotPassWord(body) {
+    return http.post('/users/forgotpass', body);
+  },
+  resetPassWord(body) {
+    return http.post('/users/resetpassword', body);
   }
 };
 
