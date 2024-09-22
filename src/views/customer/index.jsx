@@ -1,7 +1,4 @@
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-
-// Các thành phần MUI
 import MainCard from 'ui-component/cards/MainCard';
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
 import {
@@ -12,14 +9,11 @@ import {
   Search as SearchIcon
 } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-
-// Thư viện bên thứ ba
 import { useQuery, useMutation } from '@tanstack/react-query';
 
-// API
 import customerApi from 'api/customer.api';
-import CustomerForm from './components/customerForm'; // Form khách hàng
-import InfoCustomer from './components/InfoCustomer'; // Thông tin khách hàng
+import CustomerForm from './components/customerForm';
+import InfoCustomer from './components/InfoCustomer';
 
 function Customer() {
   // State quản lý dialog đóng/mở

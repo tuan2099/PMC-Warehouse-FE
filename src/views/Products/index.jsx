@@ -1,7 +1,4 @@
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-
-// Các thành phần của MUI
 import MainCard from 'ui-component/cards/MainCard';
 import { Button, Dialog, DialogContent, Toolbar, AppBar, IconButton, Box } from '@mui/material';
 import {
@@ -12,25 +9,31 @@ import {
   Search as SearchIcon
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
-
-// Thư viện bên thứ ba
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-// API
 import productsApi from '../../api/product.api';
-
-// Thành phần form sản phẩm tùy chỉnh
 import ProductForm from './components/ProductForm';
 
+const INITIAL_STATE = {
+  name: '',
+  size: '',
+  salePrice: '',
+  purchasePrice: '',
+  quantityIn: '',
+  quantityOut: '',
+  image: '',
+  status: '',
+  minimumQuantity: '',
+  maximumQuantity: '',
+  note: ''
+};
+
 function Products() {
-  // Quản lý trạng thái mở/đóng của dialog và trạng thái của form
   const [openDialog, setOpenDialog] = useState();
-  const [formState, setFormState] = useState(initialFormState()); // Khởi tạo trạng thái của form
-  // State điều chỉnh trạng thái form là thêm hay chỉnh sửa
+  const [formState, setFormState] = useState(INITIAL_STATE);
   const [isEdit, setIsEdit] = useState(false);
-  // dữ liệu khi ấn vào 1 product
   const [productID, setProductID] = useState([]);
-  // Cấu hình các cột cho bảng dữ liệu sản phẩm
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Tên Biển bảng', width: 350 },
@@ -42,7 +45,7 @@ function Products() {
     { field: 'note', headerName: 'Ghi chú', width: 250 },
     {
       field: 'actions',
-      headerName: 'Actions', // Cột hành động
+      headerName: 'Actions',
       width: 220,
       renderCell: ({ id }) => (
         <>
@@ -199,20 +202,5 @@ function Products() {
     </>
   );
 }
-
-// Hàm khởi tạo trạng thái mặc định cho form
-const initialFormState = () => ({
-  name: '',
-  size: '',
-  salePrice: '',
-  purchasePrice: '',
-  quantityIn: '',
-  quantityOut: '',
-  image: '',
-  status: '',
-  minimumQuantity: '',
-  maximumQuantity: '',
-  note: ''
-});
 
 export default Products;
