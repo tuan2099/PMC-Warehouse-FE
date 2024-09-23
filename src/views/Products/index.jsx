@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import MainCard from 'ui-component/cards/MainCard';
-import { Button, Dialog, DialogContent, Toolbar, AppBar, IconButton, Box } from '@mui/material';
-import {
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  ModeEdit as ModeEditIcon,
-  Close as CloseIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+import { Button, IconButton, Box } from '@mui/material';
+import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import productsApi from '../../api/product.api';
 import ProductForm from './components/ProductForm';
+import AddItemDialog from 'ui-component/AddItemDialog';
+import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 
 const INITIAL_STATE = {
   name: '',
@@ -172,32 +168,22 @@ function Products() {
           Tạo Sản Phẩm
         </Button>
 
+        <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
+          <ProductForm
+            updateProductMutation={updateProductMutation}
+            isEdit={isEdit}
+            createProductMutation={createProductMutation}
+            formState={formState}
+            productID={productID}
+          />
+        </AddItemDialog>
+
+        <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}></ViewDetailDialog>
+
         {/* Bảng hiển thị danh sách sản phẩm */}
         <Box sx={{ height: '100%', width: '100%' }}>
           <DataGrid rows={ProductsData?.data?.data || []} columns={columns} pageSize={5} checkboxSelection />
         </Box>
-
-        {/* Dialog chứa form tạo sản phẩm mới */}
-        <Dialog onClose={() => handleCloseDialog('dialog1')} open={openDialog === 'dialog1'} maxWidth="xl" fullWidth>
-          <AppBar sx={{ position: 'relative', backgroundColor: '#fff', boxShadow: 'none' }}>
-            <Toolbar>
-              {/* Nút đóng dialog */}
-              <IconButton edge="start" color="inherit" aria-label="close" onClick={handleCloseDialog}>
-                <CloseIcon color="primary" />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <DialogContent>
-            {/* Form tạo sản phẩm */}
-            <ProductForm
-              updateProductMutation={updateProductMutation}
-              isEdit={isEdit}
-              createProductMutation={createProductMutation}
-              formState={formState}
-              productID={productID}
-            />
-          </DialogContent>
-        </Dialog>
       </MainCard>
     </>
   );

@@ -1,36 +1,33 @@
 import React, { useState } from 'react';
 import MainCard from 'ui-component/cards/MainCard';
-import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
-import {
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  ModeEdit as ModeEditIcon,
-  Close as CloseIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { Box, Button, IconButton } from '@mui/material';
+import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 import customerApi from 'api/customer.api';
 import CustomerForm from './components/customerForm';
 import InfoCustomer from './components/InfoCustomer';
+import DataTable from 'ui-component/DataTable';
+import AddItemDialog from 'ui-component/AddItemDialog';
+import ViewDetailDialog from 'ui-component/ViewDetailDialog';
+
+const INITIAL_STATE = {
+  name: '',
+  pm: '',
+  location: '',
+  branch: '',
+  representative: '',
+  status: '',
+  phoneNumber: '',
+  note: ''
+};
 
 function Customer() {
-  // State quản lý dialog đóng/mở
   const [openDialog, setOpenDialog] = useState();
-  // State điều chỉnh trạng thái form là thêm hay chỉnh sửa
   const [isEdit, setIsEdit] = useState(false);
-  // State lưu trữ giá trị form
   const [formState, setFormState] = useState({
     userId: null,
-    name: '',
-    pm: '',
-    location: '',
-    branch: '',
-    representative: '',
-    status: '',
-    phoneNumber: '',
-    note: ''
+    ...INITIAL_STATE
   });
   // State lưu dữ liệu người dùng lấy từ API
   const [userInfo, setUserInfo] = useState([]);
@@ -46,16 +43,7 @@ function Customer() {
     setOpenDialog(null); // Đóng dialog
     if (dialogId === 'dialog1') {
       // Đặt lại giá trị form nếu là dialog1 (form thêm hoặc chỉnh sửa)
-      setFormState({
-        name: '',
-        pm: '',
-        location: '',
-        branch: '',
-        representative: '',
-        status: '',
-        phoneNumber: '',
-        note: ''
-      });
+      setFormState(INITIAL_STATE);
     } else if (dialogId === 'dialog2') {
       // Đặt lại giá trị form nếu là dialog2
       setFormState({
@@ -183,86 +171,27 @@ function Customer() {
   return (
     <>
       <MainCard title="Quản lý Dự án">
-        {/* Nút thêm dự án */}
         <Button sx={{ mb: 2 }} onClick={() => handleOpenDialog('dialog1')} variant="outlined" startIcon={<AddIcon />}>
           Thêm dự án
         </Button>
 
-        {/* Dialog cho form thêm/chỉnh sửa dự án */}
-        <Dialog
-          onClose={() => handleCloseDialog('dialog1')}
-          open={openDialog === 'dialog1'}
-          sx={{
-            '& .MuiDialogContent-root': {
-              height: '400px' // Chiều cao cố định cho phần nội dung
-            }
-          }}
-          maxWidth="xl"
-          fullWidth
-        >
-          {/* Thanh công cụ trong Dialog */}
-          <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
-            <Toolbar>
-              <IconButton edge="start" color="inherit" aria-label="close" onClick={handleCloseDialog}>
-                <CloseIcon color="primary" />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <DialogContent>
-            {/* Form khách hàng */}
-            <CustomerForm
-              updateCustomer={updateCustomer}
-              addCustomer={addCustomer}
-              formState={formState}
-              handleCloseDialog={handleCloseDialog}
-              isEdit={isEdit}
-            />
-          </DialogContent>
-        </Dialog>
+        <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
+          <CustomerForm
+            updateCustomer={updateCustomer}
+            addCustomer={addCustomer}
+            formState={formState}
+            handleCloseDialog={handleCloseDialog}
+            isEdit={isEdit}
+          />
+        </AddItemDialog>
 
-        {/* Dialog hiển thị thông tin khách hàng */}
-        <Dialog
-          onClose={() => handleCloseDialog('dialog2')}
-          open={openDialog === 'dialog2'}
-          maxWidth="xl"
-          fullWidth
-          sx={{
-            '& .MuiDialogContent-root': {
-              height: '85%', // Chiều cao cố định cho phần nội dung
-              minHeight: '700px'
-            }
-          }}
-        >
-          {/* Thanh công cụ trong Dialog */}
-          <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
-            <Toolbar>
-              <IconButton edge="start" color="inherit" aria-label="close" onClick={() => handleCloseDialog('dialog2')}>
-                <CloseIcon color="primary" />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <DialogContent>{isEdit && <InfoCustomer handleDeleteCustomer={handleDeleteCustomer} userInfo={userInfo} />}</DialogContent>
-        </Dialog>
+        <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
+          {isEdit && <InfoCustomer handleDeleteCustomer={handleDeleteCustomer} userInfo={userInfo} />}
+        </ViewDetailDialog>
 
         {/* Bảng dữ liệu dự án */}
         <Box sx={{ width: '100%', height: '600px' }}>
-          <DataGrid
-            rowHeight={70} /* Chiều cao mỗi hàng */
-            rows={customerData?.data?.data} /* Dữ liệu cho bảng */
-            columns={columns} /* Cấu hình cột */
-            initialState={{
-              pagination: { paginationModel: { pageSize: 5 } } // Cấu hình phân trang
-            }}
-            pagination
-            checkboxSelection
-            slots={{ toolbar: GridToolbar }} /* Thanh công cụ cho bảng */
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true /* Hiển thị bộ lọc nhanh */
-              }
-            }}
-            pageSizeOptions={[5, 10, 25]} /* Tùy chọn số hàng mỗi trang */
-          />
+          <DataTable data={customerData} columns={columns} />
         </Box>
       </MainCard>
     </>
