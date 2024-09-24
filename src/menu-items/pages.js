@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // assets
 import { IconKey } from '@tabler/icons-react';
 
@@ -32,6 +33,18 @@ const pages = {
           title: 'Register',
           type: 'item',
           url: '/pages/register/register3'
+        },
+        {
+          id: 'forgot-password',
+          title: 'Forgot Password',
+          type: 'item',
+          url: '/pages/forgot-password/forgot-password'
+        },
+        {
+          id: 'reset-password',
+          title: 'Reset Password',
+          type: 'item',
+          url: '/pages/reset-password/reset-password/'
         }
       ]
     }

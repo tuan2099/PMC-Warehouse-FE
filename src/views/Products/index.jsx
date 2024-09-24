@@ -85,7 +85,6 @@ function Products() {
     keepPreviousData: true
   });
 
-  console.log(ProductsData?.data);
   // Hàm mở dialog để tạo mới sản phẩm
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId); // Mở dialog
