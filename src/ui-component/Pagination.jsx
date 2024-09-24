@@ -16,24 +16,7 @@ const TablePagination = ({ count }) => {
 
   return (
     <Stack>
-      <Pagination
-        count={count}
-        showFirstButton
-        showLastButton
-        onChange={handlePageChange}
-        page={page ? +page : 1}
-        sx={{
-          '.MuiPaginationItem-root': {
-            borderRadius: '6px',
-            minWidth: '48px',
-            height: '35px',
-            color: '#687076'
-          },
-          '.Mui-selected': {
-            fontWeight: 600
-          }
-        }}
-      />
+      <Pagination count={count} onChange={handlePageChange} page={page ? +page : 1} />
     </Stack>
   );
 };

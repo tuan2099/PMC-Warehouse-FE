@@ -3,8 +3,8 @@ import http from 'utils/http';
 const URL = 'products';
 
 const productsApi = {
-  getAllProducts() {
-    return http.get(`/${URL}`);
+  getAllProducts(page) {
+    return http.get(`/${URL}??page=${page || 1}`);
   },
   getProduct(id) {
     return http.get(`/${URL}/${id}`);
