@@ -1,13 +1,8 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Button, Dialog, DialogContent, Toolbar, AppBar, IconButton, Box } from '@mui/material';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  ModeEdit as ModeEditIcon,
-  Close as CloseIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+import { Add as AddIcon, Close as CloseIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
 
 import warehouseDispatchApi from '../../api/warehouseDispatch';
@@ -44,7 +39,7 @@ function WarehouseDispatch() {
   const [formState, setFormState] = useState(INITIAL_STATE);
   const [viewItem, setViewItem] = useState();
 
-  const [searchParams, _] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
 
   const columns = [
@@ -98,13 +93,13 @@ function WarehouseDispatch() {
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
-      // setFormState({
-      //   name: '',
-      //   email: '',
-      //   password: '',
-      //   role: ''
-      // });
-      // setIsEdit(false);
+      setFormState({
+        name: '',
+        email: '',
+        password: '',
+        role: ''
+      });
+      setIsEdit(false);
     } else if (dialogId === 'dialog2') {
       setViewItem('');
     }
@@ -170,7 +165,7 @@ function WarehouseDispatch() {
         </Dialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable columns={columns} data={warehouseDispatch} />
+          <DataTable columns={columns} data={warehouseDispatch?.data?.data} />
         </Box>
       </MainCard>
     </>

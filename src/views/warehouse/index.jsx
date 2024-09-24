@@ -11,15 +11,13 @@ import {
   Close as CloseIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
 import { useMutation, useQuery } from '@tanstack/react-query';
-
 import warehouseApi from '../../api/warehouse.api';
 import WarehouseForm from './components/WarehouseForm';
 import InfoWarehouse from './components/InfoWarehouse';
 import DataTable from 'ui-component/DataTable';
 
-INITIAL_STATE = {
+const INITIAL_STATE = {
   name: '',
   address: '',
   note: '',
@@ -28,7 +26,6 @@ INITIAL_STATE = {
 };
 
 function Warehouse() {
-
   const [isEdit, setIsEdit] = useState();
   const [warehouseId, setWarehouseId] = useState();
   const [openDialog, setOpenDialog] = useState();
@@ -80,6 +77,8 @@ function Warehouse() {
       setFormState(INITIAL_STATE);
       setIsEdit(false);
     } else if (dialogId === 'dialog2') {
+      setWarehouseId(null);
+      setIsEdit(false);
     }
   };
 
@@ -218,7 +217,7 @@ function Warehouse() {
 
         {/* Bảng dữ liệu kho hàng */}
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable rows={WarehouseData} columns={columns} />
+          <DataTable rows={WarehouseData?.data?.data} columns={columns} />
         </Box>
       </MainCard>
     </>
