@@ -1,10 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-
-// MUI components
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import {
   Delete as DeleteIcon,
   Add as AddIcon,
@@ -12,34 +9,32 @@ import {
   Close as CloseIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
+import { useQuery, useMutation } from '@tanstack/react-query';
+
 import MainCard from 'ui-component/cards/MainCard';
 import InfoUser from './components/InfoUser';
 import UserForm from './components/UserForm';
-
-// third party
-import { useQuery, useMutation } from '@tanstack/react-query';
-
-// Api
 import userApi from '../../api/auth.api';
 import DataTable from 'ui-component/DataTable';
 
+const INITIAL_STATE = {
+  name: '',
+  email: '',
+  password: '',
+  role: '',
+  warehouseId: [],
+  customerId: []
+};
+
 function User() {
-  const [isEdit, setIsEdit] = useState([]); //
-  const [showPassword, setShowPassword] = useState(false); // điều khiển password strength
-  const [openDialog, setOpenDialog] = useState(); // điều khiển đóng mở dialog
-  const [formState, setFormState] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: '',
-    warehouseId: [],
-    customerId: []
-  }); // quản lý form
+  const [isEdit, setIsEdit] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [openDialog, setOpenDialog] = useState();
+  const [formState, setFormState] = useState(INITIAL_STATE);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get('page');
 
-  // Cài đặt column user
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Tên', width: 350 },
