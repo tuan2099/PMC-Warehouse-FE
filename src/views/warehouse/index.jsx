@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
+
+import { useSearchParams } from 'react-router-dom';
 import MainCard from 'ui-component/cards/MainCard';
 import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
 import {
@@ -15,6 +17,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import warehouseApi from '../../api/warehouse.api';
 import WarehouseForm from './components/WarehouseForm';
 import InfoWarehouse from './components/InfoWarehouse';
+import DataTable from 'ui-component/DataTable';
 
 INITIAL_STATE = {
   name: '',
@@ -25,10 +28,15 @@ INITIAL_STATE = {
 };
 
 function Warehouse() {
+
   const [isEdit, setIsEdit] = useState();
   const [warehouseId, setWarehouseId] = useState();
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState(INITIAL_STATE);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = searchParams.get('page');
+
+  // Cấu hình các cột cho bảng dữ liệu kho hàng
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -94,9 +102,13 @@ function Warehouse() {
 
   const { data: WarehouseData, refetch } = useQuery({
     queryKey: ['warehouse'],
-    queryFn: () => {
-      return warehouseApi.getAllWarehouse();
-    }
+    queryFn: () => warehouseApi.getAllWarehouse(page),
+    onSuccess: (data) => {
+      if (page && +page > data.data.meta.totalPages) {
+        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+      }
+    },
+    keepPreviousData: true
   });
 
   const deleteWarehouseMutation = useMutation({
@@ -206,7 +218,7 @@ function Warehouse() {
 
         {/* Bảng dữ liệu kho hàng */}
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataGrid rows={WarehouseData?.data?.data} columns={columns} pageSize={5} checkboxSelection />
+          <DataTable rows={WarehouseData} columns={columns} />
         </Box>
       </MainCard>
     </>

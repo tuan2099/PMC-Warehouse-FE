@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+// Các thành phần của MUI
 import MainCard from 'ui-component/cards/MainCard';
 import { Button, Dialog, DialogContent, Toolbar, AppBar, IconButton, Box } from '@mui/material';
 import {
@@ -13,6 +15,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 import productsApi from '../../api/product.api';
 import ProductForm from './components/ProductForm';
+import DataTable from 'ui-component/DataTable';
 
 const INITIAL_STATE = {
   name: '',
@@ -34,6 +37,11 @@ function Products() {
   const [isEdit, setIsEdit] = useState(false);
   const [productID, setProductID] = useState([]);
 
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = searchParams.get('page');
+  
+  // Cấu hình các cột cho bảng dữ liệu sản phẩm
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Tên Biển bảng', width: 350 },
@@ -73,8 +81,14 @@ function Products() {
 
   // Lấy tất cả sản phẩm từ API thông qua `useQuery`
   const { data: ProductsData, refetch } = useQuery({
-    queryKey: ['products'], // Khóa truy vấn
-    queryFn: async () => await productsApi.getAllProducts() // Hàm gọi API lấy tất cả sản phẩm
+    queryKey: ['products', page], // Khóa truy vấn
+    queryFn: async () => await productsApi.getAllProducts(page), // Hàm gọi API lấy tất cả sản phẩm
+    onSuccess: (data) => {
+      if (page && +page > data.data.meta.totalPages) {
+        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+      }
+    },
+    keepPreviousData: true
   });
 
   // Hàm mở dialog để tạo mới sản phẩm
@@ -174,7 +188,7 @@ function Products() {
 
         {/* Bảng hiển thị danh sách sản phẩm */}
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataGrid rows={ProductsData?.data?.data || []} columns={columns} pageSize={5} checkboxSelection />
+          <DataTable rows={ProductsData} columns={columns} />
         </Box>
 
         {/* Dialog chứa form tạo sản phẩm mới */}
