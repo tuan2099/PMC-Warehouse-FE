@@ -14,6 +14,9 @@ const ProductsManager = Loadable(lazy(() => import('views/Products/index')));
 const WarehouseDispatch = Loadable(lazy(() => import('views/WarehouseDispatch/index')));
 const Customer = Loadable(lazy(() => import('views/customer/index')));
 import ProtectedRoute from './ProtectedRoute';
+import SignaturePage from 'views/Signature';
+import Suppliers from 'views/Suppliers';
+import Transfer from 'views/Transfer';
 // sample page routing
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -67,6 +70,30 @@ const MainRoutes = {
       element: (
         <ProtectedRoute>
           <Customer />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: 'signature',
+      element: (
+        <ProtectedRoute>
+          <SignaturePage />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: 'suppliers',
+      element: (
+        <ProtectedRoute>
+          <Suppliers />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: 'transfer',
+      element: (
+        <ProtectedRoute>
+          <Transfer />
         </ProtectedRoute>
       )
     }

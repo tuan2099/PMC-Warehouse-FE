@@ -51,6 +51,30 @@ const users = {
       url: '/customer',
       icon: icons.IconBuildingWarehouse,
       breadcrumbs: false
+    },
+    {
+      id: 'Signature',
+      title: 'Chữ ký',
+      type: 'item',
+      url: '/signature',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
+    },
+    {
+      id: 'Suppliers',
+      title: 'Chuyển kho',
+      type: 'item',
+      url: '/suppliers',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
+    },
+    {
+      id: 'Transfer',
+      title: 'Transfer',
+      type: 'item',
+      url: '/transfer',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
     }
   ]
 };
