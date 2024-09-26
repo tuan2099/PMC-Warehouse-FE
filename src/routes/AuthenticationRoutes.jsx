@@ -10,7 +10,7 @@ const AuthLogin3 = Loadable(lazy(() => import('views/pages/authentication3/Login
 const AuthRegister3 = Loadable(lazy(() => import('views/pages/authentication3/Register3')));
 const AuthForgotPassword = Loadable(lazy(() => import('views/pages/authentication3/AuthForgotPassword')));
 const AuthResetPassword = Loadable(lazy(() => import('views/pages/authentication3/AuthResetPassword')));
-
+const AuthSignature = Loadable(lazy(() => import('views/Signature')));
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 
 const AuthenticationRoutes = {
@@ -32,6 +32,10 @@ const AuthenticationRoutes = {
     {
       path: '/pages/reset-password/reset-password',
       element: <AuthResetPassword />
+    },
+    {
+      path: '/signature/:id?',
+      element: <AuthSignature />
     }
   ]
 };

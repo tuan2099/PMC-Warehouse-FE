@@ -44,7 +44,7 @@ const pages = {
           id: 'reset-password',
           title: 'Reset Password',
           type: 'item',
-          url: '/pages/reset-password/reset-password/'
+          url: '/pages/reset-password/reset-password'
         }
       ]
     }

@@ -26,11 +26,6 @@ const INITIAL_STATE = {
   note: ''
 };
 
-import CustomerForm from './components/customerForm'; // Form khách hàng
-import InfoCustomer from './components/InfoCustomer'; // Thông tin khách hàng
-import DataTable from 'ui-component/DataTable';
-
-
 function Customer() {
   const [openDialog, setOpenDialog] = useState();
   const [isEdit, setIsEdit] = useState(false);

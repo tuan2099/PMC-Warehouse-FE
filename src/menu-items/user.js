@@ -53,14 +53,6 @@ const users = {
       breadcrumbs: false
     },
     {
-      id: 'Signature',
-      title: 'Chữ ký',
-      type: 'item',
-      url: '/signature',
-      icon: icons.IconBuildingWarehouse,
-      breadcrumbs: false
-    },
-    {
       id: 'Suppliers',
       title: 'Chuyển kho',
       type: 'item',

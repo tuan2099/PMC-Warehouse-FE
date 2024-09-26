@@ -6,6 +6,9 @@ const warehouseDispatchApi = {
   },
   createWarehouseDispatch(body) {
     return http.post('/warehouse_dispatchs', body);
+  },
+  updateSignature(id, body) {
+    return http.post(`/warehouse_dispatchs/signature/${id}`, body);
   }
 };
 

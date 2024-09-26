@@ -93,17 +93,17 @@ function WarehouseDispatch() {
 
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
-    if (dialogId === 'dialog1') {
-      setFormState({
-        name: '',
-        email: '',
-        password: '',
-        role: ''
-      });
-      setIsEdit(false);
-    } else if (dialogId === 'dialog2') {
-      setViewItem('');
-    }
+    // if (dialogId === 'dialog1') {
+    //   setFormState({
+    //     name: '',
+    //     email: '',
+    //     password: '',
+    //     role: ''
+    //   });
+    //   setIsEdit(false);
+    // } else if (dialogId === 'dialog2') {
+    //   setViewItem('');
+    // }
   };
 
   const { data: userDetail } = useQuery({

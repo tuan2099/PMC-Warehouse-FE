@@ -1,39 +1,85 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
+import { useFormik } from 'formik';
+import warehouseDispatchApi from 'api/warehouseDispatch';
+import { useParams, useLocation } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 
 const SignaturePage = () => {
   const [sign, setSign] = useState();
-  const [url, setUrl] = useState();
+  const [url, setUrl] = useState('');
+  const { id } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
+  const mutation = useMutation({
+    mutationFn: ({ id, body }) => warehouseDispatchApi.updateSignature(id, body),
+    onSuccess: () => {
+      alert('Chữ ký đã gửi thành công');
+    }
+  });
+  // Khởi tạo Formik
 
-  console.log(sign);
+  const formik = useFormik({
+    initialValues: {
+      signature: '',
+      token
+    },
+    onSubmit: (values) => {
+      if (!values.signature) {
+        alert('Vui lòng tạo chữ ký trước khi gửi');
+        return;
+      }
+      // Gọi mutation để gửi dữ liệu
+      mutation.mutate({
+        id,
+        body: {
+          signature: values.signature,
+          token
+        }
+      });
+    }
+  });
 
   const handleClear = () => {
     sign.clear();
     setUrl('');
-  };
-  const handleGenerate = () => {
-    setUrl(sign.getTrimmedCanvas().toDataURL('image/png'));
+    formik.setFieldValue('signature', ''); // Xóa giá trị chữ ký trong form
   };
 
-  console.log(url);
+  const handleGenerate = () => {
+    const signatureUrl = sign.getTrimmedCanvas().toDataURL('image/png');
+    setUrl(signatureUrl);
+    formik.setFieldValue('signature', signatureUrl); // Lưu giá trị chữ ký trong form
+  };
+
   return (
-    <div>
+    <form onSubmit={formik.handleSubmit}>
       <div style={{ border: '2px solid black', width: 500, height: 200 }}>
         <SignatureCanvas canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }} ref={(data) => setSign(data)} />
       </div>
 
-      <br></br>
-      <button style={{ height: '30px', width: '60px' }} onClick={handleClear}>
+      <br />
+      <button type="button" style={{ height: '30px', width: '60px' }} onClick={handleClear}>
         Clear
       </button>
-      <button style={{ height: '30px', width: '60px' }} onClick={handleGenerate}>
+      <button type="button" style={{ height: '30px', width: '60px' }} onClick={handleGenerate}>
         Save
       </button>
 
       <br />
       <br />
-      <img src={url} />
-    </div>
+      <img src={url} alt="Signature" />
+
+      {/* Trường ẩn để lưu chữ ký */}
+      <input type="hidden" name="signature" value={formik.values.signature} />
+
+      <br />
+      <button type="submit" style={{ height: '30px', width: '80px' }}>
+        Submit
+      </button>
+    </form>
   );
 };
 
