@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+
+import { useSearchParams } from 'react-router-dom';
+// Các thành phần MUI
 import MainCard from 'ui-component/cards/MainCard';
 import { Box, Button, IconButton } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 import customerApi from 'api/customer.api';
+
 import CustomerForm from './components/customerForm';
 import InfoCustomer from './components/InfoCustomer';
 import DataTable from 'ui-component/DataTable';
@@ -22,6 +26,11 @@ const INITIAL_STATE = {
   note: ''
 };
 
+import CustomerForm from './components/customerForm'; // Form khách hàng
+import InfoCustomer from './components/InfoCustomer'; // Thông tin khách hàng
+import DataTable from 'ui-component/DataTable';
+
+
 function Customer() {
   const [openDialog, setOpenDialog] = useState();
   const [isEdit, setIsEdit] = useState(false);
@@ -31,6 +40,9 @@ function Customer() {
   });
   // State lưu dữ liệu người dùng lấy từ API
   const [userInfo, setUserInfo] = useState([]);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = searchParams.get('page');
 
   // Hàm mở dialog theo ID
   const handleOpenDialog = (DialogId) => {
@@ -54,10 +66,15 @@ function Customer() {
 
   // Gọi API lấy danh sách khách hàng
   const { data: customerData, refetch } = useQuery({
-    queryKey: ['customer'], // Tên key truy vấn
+    queryKey: ['customer', page], // Tên key truy vấn
     queryFn: async () => {
       const response = await customerApi.getAllCustomer(); // Gọi API
       return response; // Trả về kết quả từ API
+    },
+    onSuccess: (data) => {
+      if (page && +page > data.data.meta.totalPages) {
+        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+      }
     },
     keepPreviousData: true // Giữ dữ liệu trước khi có dữ liệu mới
   });
@@ -191,7 +208,7 @@ function Customer() {
 
         {/* Bảng dữ liệu dự án */}
         <Box sx={{ width: '100%', height: '600px' }}>
-          <DataTable data={customerData} columns={columns} />
+          <DataTable columns={columns} data={customerData} />
         </Box>
       </MainCard>
     </>
