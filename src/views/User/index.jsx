@@ -1,14 +1,8 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
-import {
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  ModeEdit as ModeEditIcon,
-  Close as CloseIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+import { Box, Button, IconButton } from '@mui/material';
+import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 import MainCard from 'ui-component/cards/MainCard';
@@ -16,6 +10,8 @@ import InfoUser from './components/InfoUser';
 import UserForm from './components/UserForm';
 import userApi from '../../api/auth.api';
 import DataTable from 'ui-component/DataTable';
+import AddItemDialog from 'ui-component/AddItemDialog';
+import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 
 const INITIAL_STATE = {
   name: '',
@@ -193,58 +189,24 @@ function User() {
         Thêm người dùng
       </Button>
 
-      <Dialog
-        onClose={() => handleCloseDialog('dialog1')}
-        open={openDialog === 'dialog1'}
-        sx={{
-          '& .MuiDialogContent-root': {
-            height: '400px' // Chiều cao cố định cho phần nội dung
-          }
-        }}
-      >
-        <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
-          <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="close" onClick={handleCloseDialog}>
-              <CloseIcon color="primary" />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <DialogContent>
-          <UserForm
-            addUserMutation={addUserMutation}
-            updateUserMutation={updateUserMutation}
-            handleClickShowPassword={handleClickShowPassword}
-            handleMouseDownPassword={handleMouseDownPassword}
-            changePassword={changePassword}
-            isEdit={isEdit}
-            formState={formState}
-            showPassword={showPassword}
-            handleCloseDialog={handleCloseDialog}
-          />
-        </DialogContent>
-      </Dialog>
+      <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
+        <UserForm
+          addUserMutation={addUserMutation}
+          updateUserMutation={updateUserMutation}
+          handleClickShowPassword={handleClickShowPassword}
+          handleMouseDownPassword={handleMouseDownPassword}
+          changePassword={changePassword}
+          isEdit={isEdit}
+          formState={formState}
+          showPassword={showPassword}
+          handleCloseDialog={handleCloseDialog}
+        />
+      </AddItemDialog>
 
-      <Dialog
-        onClose={() => handleCloseDialog('dialog2')}
-        open={openDialog === 'dialog2'}
-        maxWidth="xl"
-        fullWidth
-        sx={{
-          '& .MuiDialogContent-root': {
-            height: '85%', // Chiều cao cố định cho phần nội dung
-            minHeight: '700px'
-          }
-        }}
-      >
-        <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
-          <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="close" onClick={() => handleCloseDialog('dialog2')}>
-              <CloseIcon color="primary" />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <DialogContent>{isEdit && <InfoUser isEdit={isEdit} />}</DialogContent>
-      </Dialog>
+      <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
+        {isEdit && <InfoUser isEdit={isEdit} />}
+      </ViewDetailDialog>
+
       <Box sx={{ height: '100%', width: '100%' }}>
         <DataTable columns={columns} data={userData} />
       </Box>

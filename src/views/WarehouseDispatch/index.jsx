@@ -1,16 +1,17 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { Button, Dialog, DialogContent, Toolbar, AppBar, IconButton, Box } from '@mui/material';
+import { Button, IconButton, Box } from '@mui/material';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Add as AddIcon, Close as CloseIcon, Search as SearchIcon } from '@mui/icons-material';
+import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
-
 import warehouseDispatchApi from '../../api/warehouseDispatch';
 import userApi from 'api/auth.api';
 import WarehouseDispatchForm from './components/WarehouseDispatchForm';
 import MainCard from 'ui-component/cards/MainCard';
 import DataTable from 'ui-component/DataTable';
 import WarehouseDetail from './components/WarehouseDetail';
+import AddItemDialog from 'ui-component/AddItemDialog';
+import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 
 const INITIAL_STATE = {
   exportCode: '',
@@ -127,42 +128,13 @@ function WarehouseDispatch() {
           Tạo Đơn xuất
         </Button>
 
-        <Dialog onClose={() => handleCloseDialog('dialog1')} open={openDialog === 'dialog1'} maxWidth="xl" fullWidth>
-          <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
-            <Toolbar>
-              <IconButton edge="start" color="inherit" aria-label="close" onClick={handleCloseDialog}>
-                <CloseIcon color="primary" />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <DialogContent>
-            <WarehouseDispatchForm formState={formState} createWarehouseMutation={createWarehouseMutation} userLogin={userLogin} />
-          </DialogContent>
-        </Dialog>
+        <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
+          <WarehouseDispatchForm formState={formState} createWarehouseMutation={createWarehouseMutation} userLogin={userLogin} />
+        </AddItemDialog>
 
-        <Dialog
-          onClose={() => handleCloseDialog('dialog2')}
-          open={openDialog === 'dialog2'}
-          maxWidth="xl"
-          fullWidth
-          sx={{
-            '& .MuiDialogContent-root': {
-              height: '85%',
-              minHeight: '700px'
-            }
-          }}
-        >
-          <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
-            <Toolbar>
-              <IconButton edge="start" color="inherit" aria-label="close" onClick={() => handleCloseDialog('dialog2')}>
-                <CloseIcon color="primary" />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <DialogContent>
-            <WarehouseDetail data={viewItem} />
-          </DialogContent>
-        </Dialog>
+        <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
+          <WarehouseDetail data={viewItem} />
+        </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
           <DataTable columns={columns} data={warehouseDispatch?.data?.data} />

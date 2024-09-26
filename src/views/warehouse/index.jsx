@@ -11,11 +11,17 @@ import {
   Close as CloseIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
+
 import { useMutation, useQuery } from '@tanstack/react-query';
 import warehouseApi from '../../api/warehouse.api';
 import WarehouseForm from './components/WarehouseForm';
 import InfoWarehouse from './components/InfoWarehouse';
+
+import AddItemDialog from 'ui-component/AddItemDialog';
+import ViewDetailDialog from 'ui-component/ViewDetailDialog';
+
 import DataTable from 'ui-component/DataTable';
+
 
 const INITIAL_STATE = {
   name: '',
@@ -170,52 +176,20 @@ function Warehouse() {
           Tạo kho hàng
         </Button>
 
-        {/* Dialog cho việc thêm/chỉnh sửa kho hàng */}
-        <Dialog onClose={() => handleCloseDialog('dialog1')} open={openDialog === 'dialog1'} maxWidth="xl" fullWidth>
-          <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
-            <Toolbar>
-              <IconButton edge="start" color="inherit" aria-label="close" onClick={handleCloseDialog}>
-                <CloseIcon color="primary" />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <DialogContent>
-            <WarehouseForm
-              updateWarehouseMutaiton={updateWarehouseMutaiton}
-              isEdit={isEdit}
-              formState={formState}
-              handleCloseDialog={handleCloseDialog}
-              createWarehouseMutation={createWarehouseMutation}
-            />
-          </DialogContent>
-        </Dialog>
+        <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
+          <WarehouseForm
+            updateWarehouseMutaiton={updateWarehouseMutaiton}
+            isEdit={isEdit}
+            formState={formState}
+            handleCloseDialog={handleCloseDialog}
+            createWarehouseMutation={createWarehouseMutation}
+          />
+        </AddItemDialog>
 
-        {/* Dialog xem thông tin chi tiết kho hàng */}
-        <Dialog
-          onClose={() => handleCloseDialog('dialog2')}
-          open={openDialog === 'dialog2'}
-          maxWidth="xl"
-          fullWidth
-          sx={{
-            '& .MuiDialogContent-root': {
-              height: '85%', // Chiều cao cố định cho phần nội dung
-              minHeight: '700px'
-            }
-          }}
-        >
-          <AppBar sx={{ position: 'relative', backgroundColor: '#fff' }} variant="">
-            <Toolbar>
-              <IconButton edge="start" color="inherit" aria-label="close" onClick={() => handleCloseDialog('dialog2')}>
-                <CloseIcon color="primary" />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <DialogContent>
-            <InfoWarehouse warehouseId={warehouseId} />
-          </DialogContent>
-        </Dialog>
+        <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
+          <InfoWarehouse warehouseId={warehouseId} />
+        </ViewDetailDialog>
 
-        {/* Bảng dữ liệu kho hàng */}
         <Box sx={{ height: '100%', width: '100%' }}>
           <DataTable rows={WarehouseData?.data?.data} columns={columns} />
         </Box>

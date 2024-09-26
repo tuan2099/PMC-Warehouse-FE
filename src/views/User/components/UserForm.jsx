@@ -198,13 +198,14 @@ function UserForm({
                     label="Age"
                     inputProps={{}}
                   >
-                    {WarehouseData?.data?.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      );
-                    })}
+                    {WarehouseData?.data &&
+                      WarehouseData?.data?.map((item) => {
+                        return (
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.name}
+                          </MenuItem>
+                        );
+                      })}
                   </Select>
                 </FormControl>
                 <FormControl fullWidth error={Boolean(touched.customerId && errors.customerId)} sx={{ ...theme.typography.customSelect }}>
