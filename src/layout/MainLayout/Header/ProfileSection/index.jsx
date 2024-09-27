@@ -225,7 +225,7 @@ const ProfileSection = ({ userData }) => {
                           <ListItemText
                             primary={
                               <Typography variant="body2">
-                                <Link to={'/options'}>Account Settings</Link>
+                                <Link to={'/options'}>Cài đặt</Link>
                               </Typography>
                             }
                           />
