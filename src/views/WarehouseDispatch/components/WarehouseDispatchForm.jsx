@@ -17,7 +17,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
 
   const calculateTotalQuantity = (dispatches) =>
     Array.isArray(dispatches) ? dispatches.reduce((total, dispatch) => total + Number(dispatch.quantity || 0), 0) : 0;
-
+  console.log(userLogin);
   return (
     <Formik
       initialValues={formState}
@@ -33,6 +33,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
             totalAmount: values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
             exportDescription: values.exportDescription,
             recipient: values.recipient,
+            customerEmail: values.customerEmail,
             userID: userLogin.id,
             warehouseID: values.warehouseID,
             customerID: values.customerID,
@@ -111,6 +112,16 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
               errors={errors}
             />
             <InputField
+              name="customerEmail"
+              label="Email khách hàng"
+              type="email"
+              value={values.customerEmail}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            <InputField
               name="recipient"
               label="Người nhận"
               type="text"
@@ -179,9 +190,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
                     key={index}
                     index={index}
                     dispatch={dispatch}
-                    ListProductFormWarehouse={
-                      userLogin?.user_warehouses.find((wh) => wh.id === values.warehouseID)?.warehouse_inventories || []
-                    }
+                    ListProductFormWarehouse={userLogin?.user_warehouses.find((wh) => wh.id === values.warehouseID) || []}
                     handleBlur={handleBlur}
                     handleChange={handleChange}
                     setFieldValue={setFieldValue}

@@ -3,7 +3,7 @@
 /* eslint-disable prettier/prettier */
 import { useState, useRef, useEffect } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // material-ui
@@ -60,6 +60,7 @@ const ProfileSection = ({ userData }) => {
   const anchorRef = useRef(null);
   const handleLogout = async () => {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
     dispatch({
       type: 'LOGOUT'
     });
@@ -221,7 +222,13 @@ const ProfileSection = ({ userData }) => {
                           <ListItemIcon>
                             <IconSettings stroke={1.5} size="1.3rem" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Account Settings</Typography>} />
+                          <ListItemText
+                            primary={
+                              <Typography variant="body2">
+                                <Link to={'/options'}>Account Settings</Link>
+                              </Typography>
+                            }
+                          />
                         </ListItemButton>
                         <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -10,12 +11,21 @@ import DataTable from 'ui-component/DataTable';
 import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 import SupplierDetail from './components/SupplierDetail';
 
+const INITIAL_STATE = {
+  name: '',
+  phoneNumber: '',
+  email: '',
+  address: ''
+};
+
 const Suppliers = () => {
   const [openDialog, setOpenDialog] = useState();
   const [viewItem, setViewItem] = useState();
-
   const [searchParams, _] = useSearchParams();
   const page = searchParams.get('page');
+  const [formState, setFormState] = useState({
+    ...INITIAL_STATE
+  });
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -67,7 +77,7 @@ const Suppliers = () => {
   return (
     <MainCard title="Suppliers">
       <Button sx={{ mb: 2 }} variant="outlined" startIcon={<AddIcon />}>
-        Tạo Đơn xuất
+        Tạo Nhà cung cấp
       </Button>
 
       <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>

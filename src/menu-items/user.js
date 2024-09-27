@@ -54,7 +54,7 @@ const users = {
     },
     {
       id: 'Suppliers',
-      title: 'Chuyển kho',
+      title: 'Nhà cung cấp',
       type: 'item',
       url: '/suppliers',
       icon: icons.IconBuildingWarehouse,
@@ -62,9 +62,17 @@ const users = {
     },
     {
       id: 'Transfer',
-      title: 'Transfer',
+      title: 'Chuyển kho',
       type: 'item',
       url: '/transfer',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
+    },
+    {
+      id: 'Orders',
+      title: 'Nhập kho',
+      type: 'item',
+      url: '/orders',
       icon: icons.IconBuildingWarehouse,
       breadcrumbs: false
     }

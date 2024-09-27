@@ -208,7 +208,7 @@ function User() {
       </ViewDetailDialog>
 
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataTable columns={columns} data={userData} />
+        <DataTable columns={columns} rows={userData?.data?.data} />
       </Box>
     </MainCard>
   );

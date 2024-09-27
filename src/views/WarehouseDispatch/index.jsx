@@ -55,7 +55,6 @@ function WarehouseDispatch() {
     { field: 'user', headerName: 'Người tạo', with: 200, valueGetter: (params) => params.name },
     { field: 'warehouse', headerName: 'Kho hàng', with: 200, valueGetter: (params) => params.name },
     { field: 'customer', headerName: 'Khách hàng', with: 200, valueGetter: (params) => params.name },
-
     {
       field: 'actions',
       headerName: 'Actions',
@@ -88,22 +87,10 @@ function WarehouseDispatch() {
 
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
-    // console.log(dialogId);
   };
 
-  const handleCloseDialog = (dialogId) => {
+  const handleCloseDialog = () => {
     setOpenDialog(null);
-    // if (dialogId === 'dialog1') {
-    //   setFormState({
-    //     name: '',
-    //     email: '',
-    //     password: '',
-    //     role: ''
-    //   });
-    //   setIsEdit(false);
-    // } else if (dialogId === 'dialog2') {
-    //   setViewItem('');
-    // }
   };
 
   const { data: userDetail } = useQuery({
