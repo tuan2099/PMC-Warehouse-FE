@@ -3,7 +3,8 @@ import { RouterProvider } from 'react-router-dom';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, StyledEngineProvider } from '@mui/material';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // routing
 import router from 'routes';
 
@@ -36,6 +37,7 @@ const App = () => {
           <NavigationScroll>
             <RouterProvider router={router} />
           </NavigationScroll>
+          <ToastContainer className="toast-container" />
         </ThemeProvider>
       </StyledEngineProvider>
     </QueryClientProvider>

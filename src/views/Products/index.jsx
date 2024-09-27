@@ -1,10 +1,10 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 // Các thành phần của MUI
 import MainCard from 'ui-component/cards/MainCard';
 import { Button, IconButton, Box } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import productsApi from '../../api/product.api';

@@ -179,8 +179,7 @@ function Customer() {
       }
       return customerApi.updateCustomer(Number(customerId), values); // Gọi API cập nhật
     },
-    onSuccess: (customer) => {
-      console.log(customer);
+    onSuccess: () => {
       alert('Cập nhật dự án thành công'); // Thông báo thành công
       refetch(); // Lấy lại danh sách khách hàng mới
     }
