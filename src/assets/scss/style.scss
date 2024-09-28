@@ -55,13 +55,13 @@
 .Form-add-warehouse {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
+  gap: 10px;
 }
 
 .form-add-detail {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 20px;
+  gap: 10px;
 }
 
 .MuiTablePagination-root {

@@ -1,14 +1,16 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { Box, Button, FormControl, Autocomplete, TextField } from '@mui/material';
+import { Box, Button, FormControl, Autocomplete, TextField, useTheme } from '@mui/material';
 import InputField from 'ui-component/InputField';
 
 function DispatchItem({ dispatch, index, ListProductFormWarehouse, handleBlur, handleChange, setFieldValue, remove, touched, errors }) {
+  const theme = useTheme(); // theme setting
+
   return (
     <Box key={index} sx={{ mb: 2 }}>
       <div className="form-add-detail">
-        <FormControl fullWidth>
+        <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
           <Autocomplete
             id={`dispatch-product-${index}`}
             options={ListProductFormWarehouse?.warehouse_inventories || []}

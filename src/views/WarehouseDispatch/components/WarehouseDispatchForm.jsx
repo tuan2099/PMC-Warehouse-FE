@@ -17,7 +17,6 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
 
   const calculateTotalQuantity = (dispatches) =>
     Array.isArray(dispatches) ? dispatches.reduce((total, dispatch) => total + Number(dispatch.quantity || 0), 0) : 0;
-  console.log(userLogin);
   return (
     <Formik
       initialValues={formState}
@@ -51,7 +50,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
     >
       {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue }) => (
         <form noValidate onSubmit={handleSubmit}>
-          <Typography variant="h3" gutterBottom>
+          <Typography variant="h4" gutterBottom sx={{ mt: 2, mb: 4 }}>
             Thông tin xuất kho
           </Typography>
           <div className="Form-add-warehouse">
@@ -65,6 +64,30 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
               touched={touched}
               errors={errors}
               disabled
+            />
+            <SelectField
+              name="warehouseID"
+              label="Chọn kho"
+              value={values.warehouseID}
+              handleBlur={handleBlur}
+              handleChange={(event) => {
+                handleChange(event);
+                const warehouse = userLogin?.user_warehouses.find((wh) => wh.id === event.target.value);
+                if (warehouse) {
+                  setFieldValue(
+                    'dispatches',
+                    warehouse.warehouse_inventories.map((inventory) => ({
+                      quantity: '',
+                      product: inventory.id,
+                      price: inventory.salePrice,
+                      totalPriceProduct: 0
+                    }))
+                  );
+                }
+              }}
+              options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))}
+              touched={touched}
+              errors={errors}
             />
             <InputField
               name="exportDate"
@@ -111,6 +134,21 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
               touched={touched}
               errors={errors}
             />
+          </div>
+          <Typography variant="h4" gutterBottom sx={{ mb: 1, mt: 4 }}>
+            Thông tin dự án
+          </Typography>
+          <div className="Form-add-warehouse">
+            <SelectField
+              name="customerID"
+              label="Chọn dự án"
+              value={values.customerID}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              options={userLogin?.user_customers?.map((item) => ({ value: item.id, label: item.name }))}
+              touched={touched}
+              errors={errors}
+            />
             <InputField
               name="customerEmail"
               label="Email khách hàng"
@@ -131,6 +169,11 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
               touched={touched}
               errors={errors}
             />
+          </div>
+          <Typography variant="h4" gutterBottom sx={{ mb: 1, mt: 4 }}>
+            Nhân viên
+          </Typography>
+          <div className="Form-add-warehouse">
             <InputField
               name="userID"
               label="Người xuất kho"
@@ -142,43 +185,9 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
               errors={errors}
               disabled
             />
-            <SelectField
-              name="customerID"
-              label="Chọn dự án"
-              value={values.customerID}
-              handleBlur={handleBlur}
-              handleChange={handleChange}
-              options={userLogin?.user_customers?.map((item) => ({ value: item.id, label: item.name }))}
-              touched={touched}
-              errors={errors}
-            />
-            <SelectField
-              name="warehouseID"
-              label="Chọn kho"
-              value={values.warehouseID}
-              handleBlur={handleBlur}
-              handleChange={(event) => {
-                handleChange(event);
-                const warehouse = userLogin?.user_warehouses.find((wh) => wh.id === event.target.value);
-                if (warehouse) {
-                  setFieldValue(
-                    'dispatches',
-                    warehouse.warehouse_inventories.map((inventory) => ({
-                      quantity: '',
-                      product: inventory.id,
-                      price: inventory.salePrice,
-                      totalPriceProduct: 0
-                    }))
-                  );
-                }
-              }}
-              options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))}
-              touched={touched}
-              errors={errors}
-            />
           </div>
 
-          <Typography variant="h3" gutterBottom sx={{ mt: 2, mb: 4 }}>
+          <Typography variant="h4" gutterBottom sx={{ mt: 2, mb: 4 }}>
             Thêm biển bảng
           </Typography>
 

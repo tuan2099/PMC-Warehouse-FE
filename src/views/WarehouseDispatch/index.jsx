@@ -124,7 +124,7 @@ function WarehouseDispatch() {
         </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable columns={columns} data={warehouseDispatch?.data?.data} />
+          <DataTable columns={columns} rows={warehouseDispatch?.data?.data} />
         </Box>
       </MainCard>
     </>
