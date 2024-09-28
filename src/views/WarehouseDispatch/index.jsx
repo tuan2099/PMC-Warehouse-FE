@@ -39,7 +39,6 @@ function WarehouseDispatch() {
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState(INITIAL_STATE);
   const [viewItem, setViewItem] = useState();
-
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
 
