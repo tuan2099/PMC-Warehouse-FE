@@ -116,7 +116,12 @@ function WarehouseDispatch() {
         </Button>
 
         <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
-          <WarehouseDispatchForm formState={formState} createWarehouseMutation={createWarehouseMutation} userLogin={userLogin} />
+          <WarehouseDispatchForm
+            formState={formState}
+            createWarehouseMutation={createWarehouseMutation}
+            userLogin={userLogin}
+            handleCloseDialog={handleCloseDialog}
+          />
         </AddItemDialog>
 
         <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>

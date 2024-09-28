@@ -8,8 +8,8 @@ import { Box, Typography, Grid, Button } from '@mui/material';
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import DispatchItem from './DispatchItem';
-
-function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }) {
+import { toast } from 'react-toastify';
+function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, handleCloseDialog }) {
   const getCurrentDateTime = () => {
     const now = new Date();
     return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
@@ -43,8 +43,29 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
           }
         };
         createWarehouseMutation.mutate(formattedData, {
-          onSuccess: () => alert('Tạo phiếu xuất kho thành công!'),
-          onError: (error) => alert(error.message)
+          onSuccess: () => {
+            handleCloseDialog();
+            toast.success('Tạo phiếu xuất kho thành công, vui lòng check mail của dự án để xác nhận đơn', {
+              position: 'top-right',
+              autoClose: 3000, // Tự động đóng sau 3 giây
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined
+            });
+          },
+          onError: (error) => {
+            toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`, {
+              position: 'top-right',
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined
+            });
+          }
         });
       }}
     >

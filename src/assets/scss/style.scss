@@ -145,7 +145,23 @@
 }
 
 .toast-container {
+  width: 500px;
+  height: 300px;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
+  text-align: center;
+  .Toastify__toast-body {
+    display: block;
+  }
+  .Toastify__toast {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+  }
+
+  .Toastify__toast-icon {
+    width: 80px;
+    margin: 20px auto;
+  }
 }
