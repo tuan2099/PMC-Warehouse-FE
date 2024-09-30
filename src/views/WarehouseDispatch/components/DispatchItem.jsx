@@ -6,7 +6,6 @@ import InputField from 'ui-component/InputField';
 
 function DispatchItem({ dispatch, index, ListProductFormWarehouse, handleBlur, handleChange, setFieldValue, remove, touched, errors }) {
   const theme = useTheme(); // theme setting
-
   return (
     <Box key={index} sx={{ mb: 2 }}>
       <div className="form-add-detail">
