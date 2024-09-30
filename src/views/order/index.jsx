@@ -42,7 +42,7 @@ function Order() {
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState(INITIAL_STATE);
   const [viewItem, setViewItem] = useState();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get('page');
   const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
 
@@ -140,7 +140,7 @@ function Order() {
           handleCloseDialog={handleCloseDialog}
           suppliersData={suppliersData}
           ProductsData={ProductsData}
-          refetch
+          refetch={refetch}
         />
       </AddItemDialog>
 

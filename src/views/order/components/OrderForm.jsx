@@ -29,17 +29,17 @@ function OrderForm({ formState, userLogin, handleCloseDialog, createOrderMutatio
           const formattedData = {
             purchaseOd: {
               orderCode: getCurrentDateTime(),
-              purchaseDate: values.exportDate,
-              purchaseType: values.exportType,
+              purchaseDate: values.purchaseDate,
+              purchaseType: values.purchaseType,
               purchaseQuantity: calculateTotalQuantity(values.orderDetail),
               purchaseTotalAmount: 1,
               purchaseVATAmount: values.purchaseVATAmount,
               purchaseTotalAmountAfterVAT: values.purchaseTotalAmountAfterVAT,
               note: values.note,
               paymentStatus: values.paymentStatus,
-              userID: userLogin.id,
+              userId: userLogin.id,
               warehouseID: values.warehouseID,
-              supplierID: values.supplierID,
+              supplierID: values.supplierId,
               orderDetail: values.orderDetail.map((dispatch) => ({
                 quantity: dispatch.quantity,
                 product: dispatch.product
@@ -47,7 +47,6 @@ function OrderForm({ formState, userLogin, handleCloseDialog, createOrderMutatio
             }
           };
 
-          console.log(formattedData);
           createOrderMutation.mutate(formattedData, {
             onSuccess: () => {
               handleCloseDialog();
