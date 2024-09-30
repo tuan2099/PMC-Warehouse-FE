@@ -13,7 +13,6 @@ import AddItemDialog from 'ui-component/AddItemDialog';
 import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 import DataTable from 'ui-component/DataTable';
 
-
 const INITIAL_STATE = {
   name: '',
   size: '',
@@ -34,10 +33,9 @@ function Products() {
   const [isEdit, setIsEdit] = useState(false);
   const [productID, setProductID] = useState([]);
 
-
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get('page');
-  
+
   // Cấu hình các cột cho bảng dữ liệu sản phẩm
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -87,6 +85,8 @@ function Products() {
     },
     keepPreviousData: true
   });
+
+  console.log(ProductsData);
 
   // Hàm mở dialog để tạo mới sản phẩm
   const handleOpenDialog = (dialogId) => {
@@ -197,7 +197,7 @@ function Products() {
 
         {/* Bảng hiển thị danh sách sản phẩm */}
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable rows={ProductsData} columns={columns} />
+          <DataTable data={ProductsData} columns={columns} />
         </Box>
       </MainCard>
     </>

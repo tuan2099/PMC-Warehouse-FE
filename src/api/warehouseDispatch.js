@@ -7,8 +7,14 @@ const warehouseDispatchApi = {
   createWarehouseDispatch(body) {
     return http.post('/warehouse_dispatchs', body);
   },
+  updateWarehouseDispatch({ id, body }) {
+    return http.put(`/warehouse_dispatchs/${id}`, body);
+  },
   updateSignature(id, body) {
     return http.post(`/warehouse_dispatchs/signature/${id}`, body);
+  },
+  getOne(id) {
+    return http.get(`/warehouse_dispatchs/${id}`);
   }
 };
 

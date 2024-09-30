@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import { Button, IconButton, Box } from '@mui/material';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
+import { Add as AddIcon, Search as SearchIcon, ModeEdit as ModeEditIcon } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 import warehouseDispatchApi from '../../api/warehouseDispatch';
 import userApi from 'api/auth.api';
 import WarehouseDispatchForm from './components/WarehouseDispatchForm';
@@ -23,15 +25,7 @@ const INITIAL_STATE = {
   recipient: '',
   userID: '',
   warehouseID: '',
-  customerID: '',
-  dispatches: [
-    {
-      quantity: '',
-      productName: '',
-      price: '',
-      totalPriceProduct: ''
-    }
-  ]
+  customerID: ''
 };
 
 function WarehouseDispatch() {
@@ -41,10 +35,10 @@ function WarehouseDispatch() {
   const [viewItem, setViewItem] = useState();
 
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const page = searchParams.get('page');
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 100 },
     { field: 'exportCode', headerName: 'CODE', width: 350 },
     { field: 'exportDate', headerName: 'Ngày xuất', width: 250 },
     { field: 'exportType', headerName: 'Phân loại', width: 250 },
@@ -64,7 +58,16 @@ function WarehouseDispatch() {
         <>
           <IconButton
             onClick={() => {
+              handleOpenDialog('dialog1');
+              navigate(`?mode=update&id=${id}`, { replace: true });
+            }}
+          >
+            <ModeEditIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => {
               handleOpenDialog('dialog2');
+              navigate(`?mode=view&id=${id}`, { replace: true });
               const chooseItem = warehouseDispatch?.data?.data.find((item) => item.id === id);
               setViewItem(chooseItem);
             }}
@@ -82,17 +85,13 @@ function WarehouseDispatch() {
     keepPreviousData: true
   });
 
-  const createWarehouseMutation = useMutation({
-    mutationFn: (body) => warehouseDispatchApi.createWarehouseDispatch(body)
-  });
-
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
-    // console.log(dialogId);
   };
 
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
+    navigate('', { replace: true });
     // if (dialogId === 'dialog1') {
     //   setFormState({
     //     name: '',
@@ -114,6 +113,7 @@ function WarehouseDispatch() {
   });
 
   const userLogin = userDetail?.data?.data;
+  console.log(userLogin);
   return (
     <>
       <MainCard title="Thông tin xuất kho">
@@ -121,6 +121,7 @@ function WarehouseDispatch() {
           sx={{ mb: 2 }}
           variant="outlined"
           onClick={() => {
+            navigate(`?mode=add`, { replace: true });
             handleOpenDialog('dialog1');
           }}
           startIcon={<AddIcon />}
@@ -129,7 +130,7 @@ function WarehouseDispatch() {
         </Button>
 
         <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
-          <WarehouseDispatchForm formState={formState} createWarehouseMutation={createWarehouseMutation} userLogin={userLogin} />
+          <WarehouseDispatchForm formState={formState} userLogin={userLogin} />
         </AddItemDialog>
 
         <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
@@ -137,7 +138,7 @@ function WarehouseDispatch() {
         </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable columns={columns} data={warehouseDispatch?.data?.data} />
+          <DataTable columns={columns} data={warehouseDispatch} />
         </Box>
       </MainCard>
     </>

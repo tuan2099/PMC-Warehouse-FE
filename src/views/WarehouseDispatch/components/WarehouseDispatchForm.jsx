@@ -1,15 +1,80 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useState } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
 import { Box, Typography, Grid, Button } from '@mui/material';
+import { useSearchParams } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
+
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import DispatchItem from './DispatchItem';
+import warehouseDispatchApi from 'api/warehouseDispatch';
 
-function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }) {
+const INITIAL_STATE = {
+  createdAt: '',
+  customer: '',
+  // { id: 1, name: 'KHO A', pm: 'ABC', location: '57 HTK', branch: 'HN' }
+  customerEmail: '',
+  customerID: '',
+  exportCode: '',
+  exportDate: '',
+  exportDescription: '',
+  exportType: '',
+  id: null,
+  recipient: '',
+  signatureCustomer: null,
+  signatureUser: null,
+  token: null,
+  tokenExpiresAt: null,
+  totalAmount: '',
+  totalProductQuantity: null,
+  updatedAt: '',
+  user: '',
+  // {
+  //   id: 1,
+  //   name: 'hoangduy',
+  //   email: 'hoangnhatbaduy2001@gmail.com',
+  //   date_of_birth: '2024-09-22',
+  //   password: '$2a$12$LLl8E0IZtAe6GagN./KE/eZdu6rSU4IOHDCk/upzUMk12PaJZrVXe'
+  // }
+  userID: null,
+  userId: null,
+  warehouse: null,
+  // {
+  //   id: 1,
+  //   name: 'KHO 1',
+  //   address: '123 thuy khue',
+  //   createdAt: '2024-09-30T16:03:02.000Z',
+  //   updatedAt: '2024-09-30T16:03:02.000Z'
+  // }
+  warehouseDispatchDetails: [],
+  warehouseID: 1
+};
+
+function WarehouseDispatchForm({ userLogin }) {
+  const [formValue, _] = useState(INITIAL_STATE);
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get('mode');
+  const isAddMode = Boolean(mode === 'add');
+  const WHDPid = searchParams.get('id');
+
+  const { data: WHDPdata } = useQuery({
+    queryKey: ['WHDPData', WHDPid],
+    queryFn: () => warehouseDispatchApi.getOne(WHDPid),
+    enabled: mode === 'update' && Boolean(WHDPid),
+    keepPreviousData: true
+  });
+
+  const handleCreateOrUpdateWHDP = useMutation({
+    mutationFn: (data) => {
+      if (isAddMode) return warehouseDispatchApi.createWarehouseDispatch(data);
+      return warehouseDispatchApi.updateWarehouseDispatch({ id: WHDPid, body: data });
+    }
+  });
+
   const getCurrentDateTime = () => {
     const now = new Date();
     return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
@@ -20,7 +85,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
 
   return (
     <Formik
-      initialValues={formState}
+      initialValues={isAddMode ? formValue : WHDPdata?.data || formValue}
       enableReinitialize
       validationSchema={Yup.object().shape({})}
       onSubmit={(values) => {
@@ -30,19 +95,19 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
             exportDate: values.exportDate,
             exportType: values.exportType,
             totalProductQuantity: calculateTotalQuantity(values.dispatches),
-            totalAmount: values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
+            totalAmount: values.warehouseDispatchDetails.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
             exportDescription: values.exportDescription,
             recipient: values.recipient,
             userID: userLogin.id,
             warehouseID: values.warehouseID,
             customerID: values.customerID,
-            dispatches: values.dispatches.map((dispatch) => ({
+            warehouseDispatchDetails: values.warehouseDispatchDetails.map((dispatch) => ({
               quantity: dispatch.quantity,
               product: dispatch.product
             }))
           }
         };
-        createWarehouseMutation.mutate(formattedData, {
+        handleCreateOrUpdateWHDP.mutate(formattedData, {
           onSuccess: () => alert('Tạo phiếu xuất kho thành công!'),
           onError: (error) => alert(error.message)
         });
@@ -58,7 +123,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
               name="exportCode"
               label="Mã xuất kho"
               type="text"
-              value={getCurrentDateTime()}
+              value={isAddMode ? getCurrentDateTime() : values.exportCode}
               handleBlur={handleBlur}
               handleChange={handleChange}
               touched={touched}
@@ -174,7 +239,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
           <FieldArray name="dispatches">
             {({ push, remove }) => (
               <>
-                {values.dispatches.map((dispatch, index) => (
+                {values.warehouseDispatchDetails.map((dispatch, index) => (
                   <DispatchItem
                     key={index}
                     index={index}
@@ -202,11 +267,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
               <Grid item xs={8}></Grid>
               <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1">Tổng số tiền:</Typography>
-                <Typography variant="body1" sx={{ fontWeight: '700' }}>
-                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                    .format(values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0))
-                    .replace('₫', 'đ')}
-                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: '700' }}></Typography>
               </Grid>
             </Grid>
           </Box>
@@ -214,7 +275,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin }
           <Box sx={{ mt: 2 }}>
             <AnimateButton>
               <Button disableElevation size="large" type="submit" variant="contained" color="secondary">
-                Tạo phiếu xuất kho
+                {isAddMode ? 'Tạo phiếu xuất kho' : 'Cập nhập phiếu xuất kho'}
               </Button>
             </AnimateButton>
           </Box>
