@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button, IconButton, Box } from '@mui/material';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Add as AddIcon, Search as SearchIcon, ModeEdit as ModeEditIcon } from '@mui/icons-material';
+import { Add as AddIcon, Search as SearchIcon, ModeEdit as ModeEditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,23 +15,9 @@ import WarehouseDetail from './components/WarehouseDetail';
 import AddItemDialog from 'ui-component/AddItemDialog';
 import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 
-const INITIAL_STATE = {
-  exportCode: '',
-  exportDate: '',
-  exportType: '',
-  totalProductQuantity: '',
-  totalAmount: '',
-  exportDescription: '',
-  recipient: '',
-  userID: '',
-  warehouseID: '',
-  customerID: ''
-};
-
 function WarehouseDispatch() {
   const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
   const [openDialog, setOpenDialog] = useState();
-  const [formState, setFormState] = useState(INITIAL_STATE);
   const [viewItem, setViewItem] = useState();
 
   const [searchParams] = useSearchParams();
@@ -56,6 +42,9 @@ function WarehouseDispatch() {
       width: 220,
       renderCell: ({ id }) => (
         <>
+          <IconButton aria-label="delete" variant="contained" color="secondary" onClick={() => handleDeleteWHDP(id)}>
+            <DeleteIcon />
+          </IconButton>
           <IconButton
             onClick={() => {
               handleOpenDialog('dialog1');
@@ -79,30 +68,34 @@ function WarehouseDispatch() {
     }
   ];
 
-  const { data: warehouseDispatch } = useQuery({
+  const { data: warehouseDispatch, refetch } = useQuery({
     queryKey: ['warehouseDispatch', page],
     queryFn: () => warehouseDispatchApi.getAll(page),
     keepPreviousData: true
   });
 
+  console.log(warehouseDispatch);
+
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
   };
 
-  const handleCloseDialog = (dialogId) => {
+  const handleCloseDialog = () => {
     setOpenDialog(null);
     navigate('', { replace: true });
-    // if (dialogId === 'dialog1') {
-    //   setFormState({
-    //     name: '',
-    //     email: '',
-    //     password: '',
-    //     role: ''
-    //   });
-    //   setIsEdit(false);
-    // } else if (dialogId === 'dialog2') {
-    //   setViewItem('');
-    // }
+  };
+
+  const deleteWHDPMutation = useMutation({
+    mutationFn: (id) => warehouseDispatchApi.delete(id),
+    onSuccess: () => {
+      alert('Xóa dự án thành công!');
+      refetch();
+    }
+  });
+
+  const handleDeleteWHDP = (id) => {
+    window.confirm('Are you sure you want to delete');
+    deleteWHDPMutation.mutate(id);
   };
 
   const { data: userDetail } = useQuery({
@@ -113,7 +106,7 @@ function WarehouseDispatch() {
   });
 
   const userLogin = userDetail?.data?.data;
-  console.log(userLogin);
+
   return (
     <>
       <MainCard title="Thông tin xuất kho">
@@ -130,7 +123,7 @@ function WarehouseDispatch() {
         </Button>
 
         <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
-          <WarehouseDispatchForm formState={formState} userLogin={userLogin} />
+          <WarehouseDispatchForm userLogin={userLogin} refetchClient={refetch} onClose={handleCloseDialog} />
         </AddItemDialog>
 
         <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>

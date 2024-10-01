@@ -15,6 +15,9 @@ const warehouseDispatchApi = {
   },
   getOne(id) {
     return http.get(`/warehouse_dispatchs/${id}`);
+  },
+  delete(id) {
+    return http.delete(`/warehouse_dispatchs/${id}`);
   }
 };
 

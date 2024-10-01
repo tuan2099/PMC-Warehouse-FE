@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
@@ -14,48 +14,21 @@ import DispatchItem from './DispatchItem';
 import warehouseDispatchApi from 'api/warehouseDispatch';
 
 const INITIAL_STATE = {
-  createdAt: '',
-  customer: '',
-  // { id: 1, name: 'KHO A', pm: 'ABC', location: '57 HTK', branch: 'HN' }
-  customerEmail: '',
-  customerID: '',
   exportCode: '',
   exportDate: '',
-  exportDescription: '',
   exportType: '',
-  id: null,
-  recipient: '',
-  signatureCustomer: null,
-  signatureUser: null,
-  token: null,
-  tokenExpiresAt: null,
-  totalAmount: '',
-  totalProductQuantity: null,
-  updatedAt: '',
-  user: '',
-  // {
-  //   id: 1,
-  //   name: 'hoangduy',
-  //   email: 'hoangnhatbaduy2001@gmail.com',
-  //   date_of_birth: '2024-09-22',
-  //   password: '$2a$12$LLl8E0IZtAe6GagN./KE/eZdu6rSU4IOHDCk/upzUMk12PaJZrVXe'
-  // }
+  totalProductQuantity: 0,
+  totalAmount: 0,
+  exportDescription: '0',
+  recipient: '0',
   userID: null,
-  userId: null,
-  warehouse: null,
-  // {
-  //   id: 1,
-  //   name: 'KHO 1',
-  //   address: '123 thuy khue',
-  //   createdAt: '2024-09-30T16:03:02.000Z',
-  //   updatedAt: '2024-09-30T16:03:02.000Z'
-  // }
-  warehouseDispatchDetails: [],
-  warehouseID: 1
+  warehouseID: null,
+  customerID: null,
+  dispatches: []
 };
 
-function WarehouseDispatchForm({ userLogin }) {
-  const [formValue, _] = useState(INITIAL_STATE);
+function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
+  const [formValue, setFormValue] = useState(INITIAL_STATE);
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
   const isAddMode = Boolean(mode === 'add');
@@ -64,14 +37,26 @@ function WarehouseDispatchForm({ userLogin }) {
   const { data: WHDPdata } = useQuery({
     queryKey: ['WHDPData', WHDPid],
     queryFn: () => warehouseDispatchApi.getOne(WHDPid),
-    enabled: mode === 'update' && Boolean(WHDPid),
+    enabled: !isAddMode && Boolean(WHDPid),
     keepPreviousData: true
   });
+
+  useEffect(() => {
+    if (WHDPdata) {
+      const newValue = { ...WHDPdata.data, dispatches: WHDPdata.data.warehouseDispatchDetails };
+      delete newValue.warehouseDispatchDetails;
+      setFormValue(newValue);
+    }
+  }, [WHDPdata]);
 
   const handleCreateOrUpdateWHDP = useMutation({
     mutationFn: (data) => {
       if (isAddMode) return warehouseDispatchApi.createWarehouseDispatch(data);
       return warehouseDispatchApi.updateWarehouseDispatch({ id: WHDPid, body: data });
+    },
+    onSuccess: () => {
+      refetchClient();
+      onClose();
     }
   });
 
@@ -85,7 +70,7 @@ function WarehouseDispatchForm({ userLogin }) {
 
   return (
     <Formik
-      initialValues={isAddMode ? formValue : WHDPdata?.data || formValue}
+      initialValues={formValue}
       enableReinitialize
       validationSchema={Yup.object().shape({})}
       onSubmit={(values) => {
@@ -95,20 +80,20 @@ function WarehouseDispatchForm({ userLogin }) {
             exportDate: values.exportDate,
             exportType: values.exportType,
             totalProductQuantity: calculateTotalQuantity(values.dispatches),
-            totalAmount: values.warehouseDispatchDetails.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
+            totalAmount: values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
             exportDescription: values.exportDescription,
             recipient: values.recipient,
             userID: userLogin.id,
             warehouseID: values.warehouseID,
             customerID: values.customerID,
-            warehouseDispatchDetails: values.warehouseDispatchDetails.map((dispatch) => ({
+            warehouseDispatchDetails: values.dispatches.map((dispatch) => ({
               quantity: dispatch.quantity,
               product: dispatch.product
             }))
           }
         };
         handleCreateOrUpdateWHDP.mutate(formattedData, {
-          onSuccess: () => alert('Tạo phiếu xuất kho thành công!'),
+          onSuccess: () => alert(isAddMode ? 'Tạo phiếu xuất kho thành công!' : 'Cập nhập phiếu xuất kho thành công!'),
           onError: (error) => alert(error.message)
         });
       }}
@@ -239,7 +224,7 @@ function WarehouseDispatchForm({ userLogin }) {
           <FieldArray name="dispatches">
             {({ push, remove }) => (
               <>
-                {values.warehouseDispatchDetails.map((dispatch, index) => (
+                {values.dispatches.map((dispatch, index) => (
                   <DispatchItem
                     key={index}
                     index={index}
@@ -255,6 +240,7 @@ function WarehouseDispatchForm({ userLogin }) {
                     errors={errors}
                   />
                 ))}
+
                 <Button onClick={() => push({ quantity: '', product: '', price: 0, totalPriceProduct: 0 })} color="primary">
                   Thêm biển bảng
                 </Button>
