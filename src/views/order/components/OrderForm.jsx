@@ -9,6 +9,24 @@ import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import { toast } from 'react-toastify';
 import OrderItem from './OrderItem';
+
+const validationSchema = Yup.object().shape({
+  purchaseDate: Yup.date().required('Vui lòng chọn ngày nhập kho'),
+  purchaseType: Yup.string().required('Vui lòng chọn loại nhập kho'),
+  warehouseID: Yup.string().required('Vui lòng chọn kho'),
+  supplierId: Yup.string().required('Vui lòng chọn nhà cung cấp'),
+  purchaseVATAmount: Yup.number().min(0, 'VAT không thể âm').max(100, 'VAT không thể lớn hơn 100%').required('Vui lòng nhập VAT'),
+  paymentStatus: Yup.string().required('Vui lòng chọn trạng thái thanh toán'),
+  orderDetail: Yup.array()
+    .of(
+      Yup.object().shape({
+        product: Yup.string().required('Vui lòng chọn sản phẩm'),
+        quantity: Yup.number().min(1, 'Số lượng phải lớn hơn 0').required('Vui lòng nhập số lượng')
+      })
+    )
+    .min(1, 'Cần ít nhất một sản phẩm'),
+  note: Yup.string().nullable() // Ghi chú không bắt buộc
+});
 function OrderForm({ formState, userLogin, handleCloseDialog, createOrderMutation, suppliersData, ProductsData, refetch }) {
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -24,17 +42,21 @@ function OrderForm({ formState, userLogin, handleCloseDialog, createOrderMutatio
       <Formik
         initialValues={formState}
         enableReinitialize
-        validationSchema={Yup.object().shape({})}
+        validationSchema={validationSchema}
         onSubmit={(values) => {
+          const totalBeforeVAT = values.orderDetail.reduce((acc, item) => acc + Number(item.totalPriceProduct || 0), 0); // Tổng tiền trước VAT
+          const vatAmount = (totalBeforeVAT * (values.purchaseVATAmount || 0)) / 100; // Tính số tiền VAT
+          const totalAfterVAT = totalBeforeVAT + vatAmount; // Tổng tiền sau VAT
+
           const formattedData = {
             purchaseOd: {
               orderCode: getCurrentDateTime(),
               purchaseDate: values.purchaseDate,
               purchaseType: values.purchaseType,
               purchaseQuantity: calculateTotalQuantity(values.orderDetail),
-              purchaseTotalAmount: 1,
-              purchaseVATAmount: values.purchaseVATAmount,
-              purchaseTotalAmountAfterVAT: values.purchaseTotalAmountAfterVAT,
+              purchaseTotalAmount: totalBeforeVAT,
+              purchaseVATAmount: vatAmount,
+              purchaseTotalAmountAfterVAT: totalAfterVAT,
               note: values.note,
               paymentStatus: values.paymentStatus,
               userId: userLogin.id,
@@ -46,7 +68,6 @@ function OrderForm({ formState, userLogin, handleCloseDialog, createOrderMutatio
               }))
             }
           };
-
           createOrderMutation.mutate(formattedData, {
             onSuccess: () => {
               handleCloseDialog();
@@ -113,6 +134,20 @@ function OrderForm({ formState, userLogin, handleCloseDialog, createOrderMutatio
                   }
                 }}
                 options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))}
+                touched={touched}
+                errors={errors}
+              />
+              <SelectField
+                name="paymentStatus"
+                label="Trạng thái thanh toán"
+                value={values.paymentStatus}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                options={[
+                  { value: 'paid', label: 'Đã thanh toán' },
+                  { value: 'unpaid', label: 'Chưa thanh toán' },
+                  { value: 'non-payment', label: 'Không thanh toán' }
+                ]}
                 touched={touched}
                 errors={errors}
               />
@@ -235,11 +270,42 @@ function OrderForm({ formState, userLogin, handleCloseDialog, createOrderMutatio
             <Box sx={{ mt: 8, bgcolor: '#E3F2FD', pt: 6, pb: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={8}></Grid>
+
+                {/* Tổng số tiền trước VAT */}
                 <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1">Tổng số tiền:</Typography>
                   <Typography variant="body1" sx={{ fontWeight: '700' }}>
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                      .format(values.orderDetail.reduce((acc, item) => acc + (item.purchaseTotalAmount || 0), 0))
+                      .format(values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0))
+                      .replace('₫', 'đ')}
+                  </Typography>
+                </Grid>
+
+                {/* Tính VAT dựa trên tổng tiền trước VAT */}
+                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1">VAT ({values.purchaseVATAmount}%):</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: '700' }}>
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+                      .format(
+                        (values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) *
+                          (values.purchaseVATAmount || 0)) /
+                          100
+                      )
+                      .replace('₫', 'đ')}
+                  </Typography>
+                </Grid>
+
+                {/* Tính tổng tiền sau VAT */}
+                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1">Tổng tiền sau VAT:</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: '700' }}>
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+                      .format(
+                        values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) +
+                          (values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) *
+                            (values.purchaseVATAmount || 0)) /
+                            100
+                      )
                       .replace('₫', 'đ')}
                   </Typography>
                 </Grid>
