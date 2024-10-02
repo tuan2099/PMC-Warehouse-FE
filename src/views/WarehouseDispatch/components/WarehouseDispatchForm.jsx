@@ -1,15 +1,67 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
 import { Box, Typography, Grid, Button } from '@mui/material';
+import { useSearchParams } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
+
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import DispatchItem from './DispatchItem';
-import { toast } from 'react-toastify';
-function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, handleCloseDialog }) {
+
+import warehouseDispatchApi from 'api/warehouseDispatch';
+
+const INITIAL_STATE = {
+  exportCode: '',
+  exportDate: '',
+  exportType: '',
+  totalProductQuantity: 0,
+  totalAmount: 0,
+  exportDescription: '0',
+  recipient: '0',
+  userID: null,
+  warehouseID: null,
+  customerID: null,
+  dispatches: []
+};
+
+function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
+  const [formValue, setFormValue] = useState(INITIAL_STATE);
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get('mode');
+  const isAddMode = Boolean(mode === 'add');
+  const WHDPid = searchParams.get('id');
+
+  const { data: WHDPdata } = useQuery({
+    queryKey: ['WHDPData', WHDPid],
+    queryFn: () => warehouseDispatchApi.getOne(WHDPid),
+    enabled: !isAddMode && Boolean(WHDPid),
+    keepPreviousData: true
+  });
+
+  useEffect(() => {
+    if (WHDPdata) {
+      const newValue = { ...WHDPdata.data, dispatches: WHDPdata.data.warehouseDispatchDetails };
+      delete newValue.warehouseDispatchDetails;
+      setFormValue(newValue);
+    }
+  }, [WHDPdata]);
+
+  const handleCreateOrUpdateWHDP = useMutation({
+    mutationFn: (data) => {
+      if (isAddMode) return warehouseDispatchApi.createWarehouseDispatch(data);
+      return warehouseDispatchApi.updateWarehouseDispatch({ id: WHDPid, body: data });
+    },
+    onSuccess: () => {
+      refetchClient();
+      onClose();
+    }
+  });
+
+
   const getCurrentDateTime = () => {
     const now = new Date();
     return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
@@ -19,7 +71,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, 
     Array.isArray(dispatches) ? dispatches.reduce((total, dispatch) => total + Number(dispatch.quantity || 0), 0) : 0;
   return (
     <Formik
-      initialValues={formState}
+      initialValues={formValue}
       enableReinitialize
       validationSchema={Yup.object().shape({})}
       onSubmit={(values) => {
@@ -36,12 +88,17 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, 
             userID: userLogin.id,
             warehouseID: values.warehouseID,
             customerID: values.customerID,
-            dispatches: values.dispatches.map((dispatch) => ({
+            warehouseDispatchDetails: values.dispatches.map((dispatch) => ({
               quantity: dispatch.quantity,
               product: dispatch.product
             }))
           }
         };
+
+        handleCreateOrUpdateWHDP.mutate(formattedData, {
+          onSuccess: () => alert(isAddMode ? 'Tạo phiếu xuất kho thành công!' : 'Cập nhập phiếu xuất kho thành công!'),
+          onError: (error) => alert(error.message)
+
         createWarehouseMutation.mutate(formattedData, {
           onSuccess: () => {
             handleCloseDialog();
@@ -66,6 +123,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, 
               progress: undefined
             });
           }
+
         });
       }}
     >
@@ -79,7 +137,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, 
               name="exportCode"
               label="Mã xuất kho"
               type="text"
-              value={getCurrentDateTime()}
+              value={isAddMode ? getCurrentDateTime() : values.exportCode}
               handleBlur={handleBlur}
               handleChange={handleChange}
               touched={touched}
@@ -229,6 +287,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, 
                     errors={errors}
                   />
                 ))}
+
                 <Button onClick={() => push({ quantity: '', product: '', price: 0, totalPriceProduct: 0 })} color="primary">
                   Thêm biển bảng
                 </Button>
@@ -241,11 +300,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, 
               <Grid item xs={8}></Grid>
               <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1">Tổng số tiền:</Typography>
-                <Typography variant="body1" sx={{ fontWeight: '700' }}>
-                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                    .format(values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0))
-                    .replace('₫', 'đ')}
-                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: '700' }}></Typography>
               </Grid>
             </Grid>
           </Box>
@@ -253,7 +308,7 @@ function WarehouseDispatchForm({ formState, createWarehouseMutation, userLogin, 
           <Box sx={{ mt: 2 }}>
             <AnimateButton>
               <Button disableElevation size="large" type="submit" variant="contained" color="secondary">
-                Tạo phiếu xuất kho
+                {isAddMode ? 'Tạo phiếu xuất kho' : 'Cập nhập phiếu xuất kho'}
               </Button>
             </AnimateButton>
           </Box>
