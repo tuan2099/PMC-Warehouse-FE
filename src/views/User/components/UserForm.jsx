@@ -47,7 +47,6 @@ function UserForm({
       return customerApi.getAllCustomer();
     }
   });
-
   return (
     <>
       <Formik
@@ -68,7 +67,6 @@ function UserForm({
                   name: values.name,
                   email: values.email,
                   date_of_birth: values.date_of_birth || '',
-                  password: values.password,
                   role: values.role,
                   warehouseId: values.warehouseId,
                   customerId: values.customerId || []
@@ -129,43 +127,41 @@ function UserForm({
               )}
             </FormControl>
 
-            <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-password-register">Password</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password-register"
-                type={showPassword ? 'text' : 'password'}
-                value={values.password}
-                name="password"
-                label="Password"
-                onBlur={handleBlur}
-                onChange={(e) => {
-                  handleChange(e);
-                  changePassword(e.target.value);
-                }}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                      size="large"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                inputProps={{}}
-              />
-              {touched.password && errors.password && (
-                <FormHelperText error id="standard-weight-helper-text-password-register">
-                  {errors.password}
-                </FormHelperText>
-              )}
-            </FormControl>
-
             {isEdit.length === 0 ? (
-              ''
+              <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ ...theme.typography.customInput }}>
+                <InputLabel htmlFor="outlined-adornment-password-register">Password</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password-register"
+                  type={showPassword ? 'text' : 'password'}
+                  value={values.password}
+                  name="password"
+                  label="Password"
+                  onBlur={handleBlur}
+                  onChange={(e) => {
+                    handleChange(e);
+                    changePassword(e.target.value);
+                  }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        size="large"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  inputProps={{}}
+                />
+                {touched.password && errors.password && (
+                  <FormHelperText error id="standard-weight-helper-text-password-register">
+                    {errors.password}
+                  </FormHelperText>
+                )}
+              </FormControl>
             ) : (
               <>
                 <FormControl fullWidth error={Boolean(touched.role && errors.role)} sx={{ ...theme.typography.customSelect }}>
@@ -198,8 +194,8 @@ function UserForm({
                     label="Age"
                     inputProps={{}}
                   >
-                    {/* {WarehouseData?.data &&
-                      WarehouseData?.data?.map((item) => {
+                    {WarehouseData?.data &&
+                      WarehouseData?.data?.data?.map((item) => {
                         return (
                           <MenuItem key={item.id} value={item.id}>
                             {item.name}
@@ -221,8 +217,8 @@ function UserForm({
                     label="Age"
                     inputProps={{}}
                   >
-                    {/* {CustomerData
-                      ? CustomerData?.data?.map((item) => {
+                    {CustomerData
+                      ? CustomerData?.data?.data?.map((item) => {
                           return (
                             <MenuItem key={item.id} value={item.id}>
                               {item.name}

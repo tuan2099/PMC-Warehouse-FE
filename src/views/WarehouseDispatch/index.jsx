@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Button, IconButton, Box } from '@mui/material';
@@ -19,7 +20,6 @@ function WarehouseDispatch() {
   const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
   const [openDialog, setOpenDialog] = useState();
   const [viewItem, setViewItem] = useState();
-
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const page = searchParams.get('page');
@@ -35,7 +35,6 @@ function WarehouseDispatch() {
     { field: 'user', headerName: 'Người tạo', with: 200, valueGetter: (params) => params.name },
     { field: 'warehouse', headerName: 'Kho hàng', with: 200, valueGetter: (params) => params.name },
     { field: 'customer', headerName: 'Khách hàng', with: 200, valueGetter: (params) => params.name },
-
     {
       field: 'actions',
       headerName: 'Actions',
@@ -82,6 +81,7 @@ function WarehouseDispatch() {
 
   const handleCloseDialog = () => {
     setOpenDialog(null);
+
     navigate('', { replace: true });
   };
 
@@ -96,6 +96,7 @@ function WarehouseDispatch() {
   const handleDeleteWHDP = (id) => {
     window.confirm('Are you sure you want to delete');
     deleteWHDPMutation.mutate(id);
+
   };
 
   const { data: userDetail } = useQuery({
@@ -123,7 +124,14 @@ function WarehouseDispatch() {
         </Button>
 
         <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
-          <WarehouseDispatchForm userLogin={userLogin} refetchClient={refetch} onClose={handleCloseDialog} />
+
+          <WarehouseDispatchForm
+            formState={formState}
+            createWarehouseMutation={createWarehouseMutation}
+            userLogin={userLogin}
+            handleCloseDialog={handleCloseDialog}
+          />
+
         </AddItemDialog>
 
         <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
@@ -131,7 +139,7 @@ function WarehouseDispatch() {
         </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable columns={columns} data={warehouseDispatch} />
+          <DataTable columns={columns} rows={warehouseDispatch?.data?.data} />
         </Box>
       </MainCard>
     </>

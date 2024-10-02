@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Box, Tabs, Tab, Grid, Typography } from '@mui/material';
 import CustomTabPanel from 'ui-component/CustomTabPanel';

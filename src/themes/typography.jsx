@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /**
  * Typography used in theme
  * @param {JsonObject} theme theme customization object

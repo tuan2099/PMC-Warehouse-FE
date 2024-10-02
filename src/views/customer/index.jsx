@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 
 import { useSearchParams } from 'react-router-dom';
@@ -59,21 +60,26 @@ function Customer() {
     }
   };
 
-  // Gọi API lấy danh sách khách hàng
+  const authUser = JSON.parse(localStorage.getItem('auth_user'));
+
   const { data: customerData, refetch } = useQuery({
-    queryKey: ['customer', page], // Tên key truy vấn
+    queryKey: ['customer', page, authUser.id, authUser.role], // Thêm id và role vào queryKey
     queryFn: async () => {
-      const response = await customerApi.getAllCustomer(); // Gọi API
+      // Gọi API với id và role được truyền vào
+      const response = await customerApi.getAllCustomer(page, authUser.id, authUser.role);
       return response; // Trả về kết quả từ API
     },
     onSuccess: (data) => {
+      // Kiểm tra xem trang hiện tại có vượt quá tổng số trang không, nếu có thì điều chỉnh lại
       if (page && +page > data.data.meta.totalPages) {
-        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+        setSearchParams({
+          ...Object.fromEntries([...searchParams]),
+          page: data.data.meta.totalPages.toString()
+        });
       }
     },
-    keepPreviousData: true // Giữ dữ liệu trước khi có dữ liệu mới
+    keepPreviousData: true // Giữ dữ liệu cũ trước khi có dữ liệu mới
   });
-
   // Cấu hình cột cho bảng dữ liệu
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -173,8 +179,7 @@ function Customer() {
       }
       return customerApi.updateCustomer(Number(customerId), values); // Gọi API cập nhật
     },
-    onSuccess: (customer) => {
-      console.log(customer);
+    onSuccess: () => {
       alert('Cập nhật dự án thành công'); // Thông báo thành công
       refetch(); // Lấy lại danh sách khách hàng mới
     }
@@ -203,7 +208,7 @@ function Customer() {
 
         {/* Bảng dữ liệu dự án */}
         <Box sx={{ width: '100%', height: '600px' }}>
-          <DataTable columns={columns} data={customerData} />
+          <DataTable columns={columns} rows={customerData?.data?.data} />
         </Box>
       </MainCard>
     </>

@@ -67,6 +67,14 @@ const users = {
       url: '/transfer',
       icon: icons.IconBuildingWarehouse,
       breadcrumbs: false
+    },
+    {
+      id: 'Orders',
+      title: 'Nhập kho',
+      type: 'item',
+      url: '/orders',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
     }
   ]
 };

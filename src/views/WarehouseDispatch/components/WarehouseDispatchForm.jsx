@@ -11,6 +11,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import DispatchItem from './DispatchItem';
+
 import warehouseDispatchApi from 'api/warehouseDispatch';
 
 const INITIAL_STATE = {
@@ -60,6 +61,7 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
     }
   });
 
+
   const getCurrentDateTime = () => {
     const now = new Date();
     return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
@@ -67,7 +69,6 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
 
   const calculateTotalQuantity = (dispatches) =>
     Array.isArray(dispatches) ? dispatches.reduce((total, dispatch) => total + Number(dispatch.quantity || 0), 0) : 0;
-
   return (
     <Formik
       initialValues={formValue}
@@ -83,6 +84,7 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
             totalAmount: values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0),
             exportDescription: values.exportDescription,
             recipient: values.recipient,
+            customerEmail: values.customerEmail,
             userID: userLogin.id,
             warehouseID: values.warehouseID,
             customerID: values.customerID,
@@ -92,15 +94,42 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
             }))
           }
         };
+
         handleCreateOrUpdateWHDP.mutate(formattedData, {
           onSuccess: () => alert(isAddMode ? 'Tạo phiếu xuất kho thành công!' : 'Cập nhập phiếu xuất kho thành công!'),
           onError: (error) => alert(error.message)
+
+        createWarehouseMutation.mutate(formattedData, {
+          onSuccess: () => {
+            handleCloseDialog();
+            toast.success('Tạo phiếu xuất kho thành công, vui lòng check mail của dự án để xác nhận đơn', {
+              position: 'top-right',
+              autoClose: 3000, // Tự động đóng sau 3 giây
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined
+            });
+          },
+          onError: (error) => {
+            toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`, {
+              position: 'top-right',
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined
+            });
+          }
+
         });
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue }) => (
         <form noValidate onSubmit={handleSubmit}>
-          <Typography variant="h3" gutterBottom>
+          <Typography variant="h4" gutterBottom sx={{ mt: 2, mb: 4 }}>
             Thông tin xuất kho
           </Typography>
           <div className="Form-add-warehouse">
@@ -114,6 +143,30 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
               touched={touched}
               errors={errors}
               disabled
+            />
+            <SelectField
+              name="warehouseID"
+              label="Chọn kho"
+              value={values.warehouseID}
+              handleBlur={handleBlur}
+              handleChange={(event) => {
+                handleChange(event);
+                const warehouse = userLogin?.user_warehouses.find((wh) => wh.id === event.target.value);
+                if (warehouse) {
+                  setFieldValue(
+                    'dispatches',
+                    warehouse.warehouse_inventories.map((inventory) => ({
+                      quantity: '',
+                      product: inventory.id,
+                      price: inventory.salePrice,
+                      totalPriceProduct: 0
+                    }))
+                  );
+                }
+              }}
+              options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))}
+              touched={touched}
+              errors={errors}
             />
             <InputField
               name="exportDate"
@@ -160,6 +213,31 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
               touched={touched}
               errors={errors}
             />
+          </div>
+          <Typography variant="h4" gutterBottom sx={{ mb: 1, mt: 4 }}>
+            Thông tin dự án
+          </Typography>
+          <div className="Form-add-warehouse">
+            <SelectField
+              name="customerID"
+              label="Chọn dự án"
+              value={values.customerID}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              options={userLogin?.user_customers?.map((item) => ({ value: item.id, label: item.name }))}
+              touched={touched}
+              errors={errors}
+            />
+            <InputField
+              name="customerEmail"
+              label="Email khách hàng"
+              type="email"
+              value={values.customerEmail}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
             <InputField
               name="recipient"
               label="Người nhận"
@@ -170,6 +248,11 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
               touched={touched}
               errors={errors}
             />
+          </div>
+          <Typography variant="h4" gutterBottom sx={{ mb: 1, mt: 4 }}>
+            Nhân viên
+          </Typography>
+          <div className="Form-add-warehouse">
             <InputField
               name="userID"
               label="Người xuất kho"
@@ -181,43 +264,9 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
               errors={errors}
               disabled
             />
-            <SelectField
-              name="customerID"
-              label="Chọn dự án"
-              value={values.customerID}
-              handleBlur={handleBlur}
-              handleChange={handleChange}
-              options={userLogin?.user_customers?.map((item) => ({ value: item.id, label: item.name }))}
-              touched={touched}
-              errors={errors}
-            />
-            <SelectField
-              name="warehouseID"
-              label="Chọn kho"
-              value={values.warehouseID}
-              handleBlur={handleBlur}
-              handleChange={(event) => {
-                handleChange(event);
-                const warehouse = userLogin?.user_warehouses.find((wh) => wh.id === event.target.value);
-                if (warehouse) {
-                  setFieldValue(
-                    'dispatches',
-                    warehouse.warehouse_inventories.map((inventory) => ({
-                      quantity: '',
-                      product: inventory.id,
-                      price: inventory.salePrice,
-                      totalPriceProduct: 0
-                    }))
-                  );
-                }
-              }}
-              options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))}
-              touched={touched}
-              errors={errors}
-            />
           </div>
 
-          <Typography variant="h3" gutterBottom sx={{ mt: 2, mb: 4 }}>
+          <Typography variant="h4" gutterBottom sx={{ mt: 2, mb: 4 }}>
             Thêm biển bảng
           </Typography>
 
@@ -229,9 +278,7 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
                     key={index}
                     index={index}
                     dispatch={dispatch}
-                    ListProductFormWarehouse={
-                      userLogin?.user_warehouses.find((wh) => wh.id === values.warehouseID)?.warehouse_inventories || []
-                    }
+                    ListProductFormWarehouse={userLogin?.user_warehouses.find((wh) => wh.id === values.warehouseID) || []}
                     handleBlur={handleBlur}
                     handleChange={handleChange}
                     setFieldValue={setFieldValue}

@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/prop-types */
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import TablePagination from './Pagination';

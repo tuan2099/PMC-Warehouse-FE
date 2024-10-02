@@ -16,6 +16,8 @@ const Customer = Loadable(lazy(() => import('views/customer/index')));
 import ProtectedRoute from './ProtectedRoute';
 import Suppliers from 'views/Suppliers';
 import Transfer from 'views/Transfer';
+import Option from 'views/options';
+import Order from 'views/order';
 // sample page routing
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -85,6 +87,22 @@ const MainRoutes = {
       element: (
         <ProtectedRoute>
           <Transfer />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: 'options',
+      element: (
+        <ProtectedRoute>
+          <Option />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: '/orders',
+      element: (
+        <ProtectedRoute>
+          <Order />
         </ProtectedRoute>
       )
     }
