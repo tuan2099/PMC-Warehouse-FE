@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
@@ -31,11 +31,18 @@ const INITIAL_STATE = {
 
 function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleCloseDialog }) {
   const [formValue, setFormValue] = useState(INITIAL_STATE);
-
   const [searchParams] = useSearchParams();
-  const mode = searchParams.get('mode');
-  const isAddMode = Boolean(mode === 'add');
+  const isAddMode = searchParams.get('mode') === 'add';
   const WHDPid = searchParams.get('id');
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+  };
+  const exportCodeRef = useRef(null); // useRef để lưu mã xuất kho một lần
+  if (!exportCodeRef.current) {
+    exportCodeRef.current = getCurrentDateTime();
+  }
 
   const { data: WHDPdata } = useQuery({
     queryKey: ['WHDPData', WHDPid],
@@ -45,12 +52,11 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
   });
 
   const formatDateForInput = (dateString) => {
-    const date = new Date(dateString); // Chuyển đổi chuỗi thành đối tượng Date
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Lấy tháng và thêm '0' nếu cần
-    const day = String(date.getDate()).padStart(2, '0'); // Lấy ngày và thêm '0' nếu cần
-    const year = date.getFullYear(); // Lấy năm
-
-    return `${year}-${month}-${day}`; // Trả về định dạng yyyy-MM-dd
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
   };
 
   useEffect(() => {
@@ -58,11 +64,13 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
       const newValue = {
         ...WHDPdata.data,
         exportDate: formatDateForInput(WHDPdata.data.exportDate) || '',
-        warehouseID: WHDPdata.data.warehouse.id || null,
-        customerID: WHDPdata.data.customer.id || null,
+        warehouseID: WHDPdata.data.warehouse?.id || null,
+        customerID: WHDPdata.data.customer?.id || null,
         dispatches: WHDPdata.data.warehouseDispatchDetails.map((dispatch) => ({
           quantity: dispatch.quantity,
-          product: dispatch.product
+          product: dispatch.product,
+          price: dispatch.price || 0,
+          totalPriceProduct: dispatch.totalPriceProduct || 0
         }))
       };
       setFormValue(newValue);
@@ -78,13 +86,9 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
     }
   });
 
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
-  };
-
   const calculateTotalQuantity = (dispatches) =>
     Array.isArray(dispatches) ? dispatches.reduce((total, dispatch) => total + Number(dispatch.quantity || 0), 0) : 0;
+
   return (
     <Formik
       initialValues={formValue}
@@ -93,7 +97,7 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
       onSubmit={(values) => {
         const formattedData = {
           warehouseDcp: {
-            exportCode: getCurrentDateTime(),
+            exportCode: exportCodeRef.current,
             exportDate: values.exportDate,
             exportType: values.exportType,
             totalProductQuantity: calculateTotalQuantity(values.dispatches),
@@ -175,7 +179,7 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
               name="exportCode"
               label="Mã xuất kho"
               type="text"
-              value={isAddMode ? getCurrentDateTime() : values.exportCode}
+              value={isAddMode ? exportCodeRef.current : values.exportCode}
               handleBlur={handleBlur}
               handleChange={handleChange}
               touched={touched}
