@@ -4,7 +4,18 @@ import React from 'react';
 import { Box, Button, FormControl, Autocomplete, TextField, useTheme } from '@mui/material';
 import InputField from 'ui-component/InputField';
 
-function DispatchItem({ dispatch, index, ListProductFormWarehouse, handleBlur, handleChange, setFieldValue, remove, touched, errors }) {
+function DispatchItem({
+  dispatch,
+  index,
+  ListProductFormWarehouse,
+  handleBlur,
+  handleChange,
+  setFieldValue,
+  remove,
+  touched,
+  errors,
+  values
+}) {
   const theme = useTheme(); // theme setting
   return (
     <Box key={index} sx={{ mb: 2 }}>
@@ -13,12 +24,15 @@ function DispatchItem({ dispatch, index, ListProductFormWarehouse, handleBlur, h
           <Autocomplete
             id={`dispatch-product-${index}`}
             options={ListProductFormWarehouse?.warehouse_inventories || []}
-            getOptionLabel={(option) => `${option.productName} (${option.quantity})`}
+            getOptionLabel={(option) => {
+              return option?.productName ? `${option.productName} (${option.quantity})` : `${option}`;
+            }}
+            value={ListProductFormWarehouse?.warehouse_inventories?.[index]?.productName || null}
             onChange={(event, newValue) => {
-              setFieldValue(`dispatches.${index}.quantity`, newValue ? newValue.quantity : '');
               setFieldValue(`dispatches.${index}.product`, newValue ? newValue.id : '');
+              setFieldValue(`dispatches.${index}.quantity`, newValue ? newValue.quantity : '');
               setFieldValue(`dispatches.${index}.price`, newValue ? newValue.salePrice : 0);
-              setFieldValue(`dispatches.${index}.totalPriceProduct`, newValue ? newValue.salePrice * dispatch.quantity : 0);
+              setFieldValue(`dispatches.${index}.totalPriceProduct`, newValue ? newValue.salePrice * values.dispatches[index].quantity : 0);
             }}
             renderInput={(params) => <TextField {...params} label="Tên sản phẩm" />}
           />

@@ -6,12 +6,12 @@ import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
 import { Box, Typography, Grid, Button } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import DispatchItem from './DispatchItem';
-
+import { toast } from 'react-toastify';
 import warehouseDispatchApi from 'api/warehouseDispatch';
 
 const INITIAL_STATE = {
@@ -25,11 +25,13 @@ const INITIAL_STATE = {
   userID: null,
   warehouseID: null,
   customerID: null,
+  customerEmail: '',
   dispatches: []
 };
 
-function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
+function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleCloseDialog }) {
   const [formValue, setFormValue] = useState(INITIAL_STATE);
+
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
   const isAddMode = Boolean(mode === 'add');
@@ -42,25 +44,39 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
     keepPreviousData: true
   });
 
+  const formatDateForInput = (dateString) => {
+    const date = new Date(dateString); // Chuyển đổi chuỗi thành đối tượng Date
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Lấy tháng và thêm '0' nếu cần
+    const day = String(date.getDate()).padStart(2, '0'); // Lấy ngày và thêm '0' nếu cần
+    const year = date.getFullYear(); // Lấy năm
+
+    return `${year}-${month}-${day}`; // Trả về định dạng yyyy-MM-dd
+  };
+
   useEffect(() => {
     if (WHDPdata) {
-      const newValue = { ...WHDPdata.data, dispatches: WHDPdata.data.warehouseDispatchDetails };
-      delete newValue.warehouseDispatchDetails;
+      const newValue = {
+        ...WHDPdata.data,
+        exportDate: formatDateForInput(WHDPdata.data.exportDate) || '',
+        warehouseID: WHDPdata.data.warehouse.id || null,
+        customerID: WHDPdata.data.customer.id || null,
+        dispatches: WHDPdata.data.warehouseDispatchDetails.map((dispatch) => ({
+          quantity: dispatch.quantity,
+          product: dispatch.product
+        }))
+      };
       setFormValue(newValue);
     }
   }, [WHDPdata]);
 
-  const handleCreateOrUpdateWHDP = useMutation({
+  const handleUpdateWHDP = useMutation({
     mutationFn: (data) => {
-      if (isAddMode) return warehouseDispatchApi.createWarehouseDispatch(data);
       return warehouseDispatchApi.updateWarehouseDispatch({ id: WHDPid, body: data });
     },
     onSuccess: () => {
-      refetchClient();
-      onClose();
+      handleCloseDialog();
     }
   });
-
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -88,43 +104,65 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
             userID: userLogin.id,
             warehouseID: values.warehouseID,
             customerID: values.customerID,
-            warehouseDispatchDetails: values.dispatches.map((dispatch) => ({
+            dispatches: values.dispatches.map((dispatch) => ({
               quantity: dispatch.quantity,
               product: dispatch.product
             }))
           }
         };
-
-        handleCreateOrUpdateWHDP.mutate(formattedData, {
-          onSuccess: () => alert(isAddMode ? 'Tạo phiếu xuất kho thành công!' : 'Cập nhập phiếu xuất kho thành công!'),
-          onError: (error) => alert(error.message)
-
-        createWarehouseMutation.mutate(formattedData, {
-          onSuccess: () => {
-            handleCloseDialog();
-            toast.success('Tạo phiếu xuất kho thành công, vui lòng check mail của dự án để xác nhận đơn', {
-              position: 'top-right',
-              autoClose: 3000, // Tự động đóng sau 3 giây
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
-            });
-          },
-          onError: (error) => {
-            toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`, {
-              position: 'top-right',
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
-            });
-          }
-
-        });
+        if (isAddMode) {
+          createWarehouseMutation.mutate(formattedData, {
+            onSuccess: () => {
+              handleCloseDialog();
+              toast.success('Tạo phiếu xuất kho thành công, vui lòng check mail của dự án để xác nhận đơn', {
+                position: 'top-right',
+                autoClose: 3000, // Tự động đóng sau 3 giây
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined
+              });
+            },
+            onError: (error) => {
+              toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`, {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined
+              });
+            }
+          });
+        } else {
+          handleUpdateWHDP.mutate(formattedData, {
+            onSuccess: () => {
+              handleCloseDialog();
+              toast.success(isAddMode ? 'Tạo phiếu xuất kho thành công!' : 'Cập nhập phiếu xuất kho thành công!', {
+                position: 'top-right',
+                autoClose: 3000, // Tự động đóng sau 3 giây
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined
+              });
+            },
+            onError: (error) => {
+              toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`, {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined
+              });
+            }
+          });
+        }
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue }) => (
@@ -147,7 +185,7 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
             <SelectField
               name="warehouseID"
               label="Chọn kho"
-              value={values.warehouseID}
+              value={values.warehouseID} // Đảm bảo giá trị này được lấy từ Formik
               handleBlur={handleBlur}
               handleChange={(event) => {
                 handleChange(event);
@@ -164,10 +202,11 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
                   );
                 }
               }}
-              options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))}
+              options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))} // Đảm bảo các tùy chọn được hiển thị
               touched={touched}
               errors={errors}
             />
+
             <InputField
               name="exportDate"
               label="Ngày xuất kho"
@@ -300,7 +339,15 @@ function WarehouseDispatchForm({ userLogin, refetchClient, onClose }) {
               <Grid item xs={8}></Grid>
               <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1">Tổng số tiền:</Typography>
-                <Typography variant="body1" sx={{ fontWeight: '700' }}></Typography>
+                <Typography variant="body1" sx={{ fontWeight: '700' }}>
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+                    .format(
+                      (values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) *
+                        (values.totalProductQuantity || 0)) /
+                        100
+                    )
+                    .replace('₫', 'đ')}
+                </Typography>
               </Grid>
             </Grid>
           </Box>
