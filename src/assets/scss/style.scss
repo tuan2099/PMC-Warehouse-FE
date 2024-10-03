@@ -165,3 +165,12 @@
     margin: 20px auto;
   }
 }
+
+.MuiDataGrid-toolbarQuickFilter {
+  border-radius: 50px;
+  padding: 5px 10px;
+  border: 1px solid rgb(211, 211, 211);
+  .MuiInput-underline::before {
+    border: none !important;
+  }
+}
