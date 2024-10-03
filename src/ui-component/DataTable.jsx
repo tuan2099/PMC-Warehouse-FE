@@ -32,8 +32,8 @@ const CustomDensitySelector = ({ apiRef }) => {
       </IconButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         <MenuItem onClick={() => handleDensityChange('compact')}>Nhỏ</MenuItem>
-        <MenuItem onClick={() => handleDensityChange('comfortable')}>Bự</MenuItem>
-        <MenuItem onClick={() => handleDensityChange('standard')}>Siêu bự</MenuItem>
+        <MenuItem onClick={() => handleDensityChange('standard')}> bự</MenuItem>
+        <MenuItem onClick={() => handleDensityChange('comfortable')}>Siêu Bự</MenuItem>
       </Menu>
     </>
   );
