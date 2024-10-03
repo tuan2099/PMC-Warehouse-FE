@@ -25,7 +25,7 @@ function WarehouseDispatch() {
   const page = searchParams.get('page');
 
   const columns = [
-    { field: 'exportCode', headerName: 'CODE', width: 350 },
+    { field: 'exportCode', headerName: 'CODE', width: 150 },
     { field: 'exportDate', headerName: 'Ngày xuất', width: 250 },
     { field: 'exportType', headerName: 'Phân loại', width: 250 },
     { field: 'totalProductQuantity', headerName: 'Tổng số lượng', width: 200 },
