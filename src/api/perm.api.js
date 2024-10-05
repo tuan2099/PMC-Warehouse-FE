@@ -3,19 +3,19 @@ import http from 'utils/http';
 
 const permApi = {
   getAllPerm() {
-    return http.get('/permissions');
+    return http.get('/permission');
   },
   getPermById(id) {
-    return http.get(`/permissions/${id}`);
+    return http.get(`/permission/${id}`);
   },
   createPerm(body) {
-    return http.post('/permissions', body);
+    return http.post('/permission', body);
   },
   deletePerm(id) {
-    return http.delete(`/permissions/${id}`);
+    return http.delete(`/permission/${id}`);
   },
   updatePerm(id, body) {
-    return http.put(`/permissions/${id}`, body);
+    return http.put(`/permission/${id}`, body);
   }
 };
 
