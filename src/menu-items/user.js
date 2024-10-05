@@ -75,6 +75,14 @@ const users = {
       url: '/orders',
       icon: icons.IconBuildingWarehouse,
       breadcrumbs: false
+    },
+    {
+      id: 'Permissions',
+      title: 'Quản lý quyền hạn',
+      type: 'item',
+      url: '/permissions',
+      icon: icons.IconBuildingWarehouse,
+      breadcrumbs: false
     }
   ]
 };

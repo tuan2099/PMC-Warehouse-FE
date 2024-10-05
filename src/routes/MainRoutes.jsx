@@ -18,6 +18,7 @@ import Suppliers from 'views/Suppliers';
 import Transfer from 'views/Transfer';
 import Option from 'views/options';
 import Order from 'views/order';
+import Permission from 'views/permission';
 // sample page routing
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -103,6 +104,14 @@ const MainRoutes = {
       element: (
         <ProtectedRoute>
           <Order />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: 'permissions',
+      element: (
+        <ProtectedRoute>
+          <Permission />
         </ProtectedRoute>
       )
     }
