@@ -30,7 +30,7 @@ const MainRoutes = {
     {
       path: '/',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['hi']} moduleName="xuất kho">
           <DashboardDefault />
         </ProtectedRoute>
       )

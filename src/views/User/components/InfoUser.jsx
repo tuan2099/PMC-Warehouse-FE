@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import UserCustomer from './UserCustomer';
-import InfoUserContent from './infoUserContent';
+import Permissionuser from './Permissionuser';
 import UserWarehouse from './UserWarehouse';
 import Userdispatch from './Userdispatch';
 
@@ -28,6 +28,7 @@ function InfoUser({ isEdit }) {
       'aria-controls': `simple-tabpanel-${index}`
     };
   }
+
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -42,7 +43,7 @@ function InfoUser({ isEdit }) {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <InfoUserContent dataUser={''} />
+          <Permissionuser dataPermission={isEdit.permission} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           <UserCustomer dataCustomer={isEdit.user_customers} />
