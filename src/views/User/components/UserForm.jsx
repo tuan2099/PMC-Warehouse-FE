@@ -201,7 +201,7 @@ function UserForm({
                             {item.name}
                           </MenuItem>
                         );
-                      })} */}
+                      })}
                   </Select>
                 </FormControl>
                 <FormControl fullWidth error={Boolean(touched.customerId && errors.customerId)} sx={{ ...theme.typography.customSelect }}>
@@ -225,7 +225,7 @@ function UserForm({
                             </MenuItem>
                           );
                         })
-                      : []} */}
+                      : []}
                   </Select>
                 </FormControl>
               </>

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IconKey, IconUserBolt, IconBuildingWarehouse } from '@tabler/icons-react';
 // import PeopleIcon from '@mui/icons-material/People';
 const icons = {
@@ -9,7 +10,7 @@ const icons = {
 const users = {
   id: 'pages',
   title: 'Quản lý kho',
-  caption: 'Pages Caption',
+  caption: 'Quản lý kho',
   type: 'group',
   children: [
     {

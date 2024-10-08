@@ -33,7 +33,7 @@ function InfoUser({ isEdit }) {
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab label="Thông tin cá nhân" {...a11yProps(0)} />
+            <Tab label="Quyền hạn" {...a11yProps(0)} />
             <Tab label="Khách đang quản lý" {...a11yProps(1)} />
             <Tab label="Đơn hàng đã xuất" {...a11yProps(2)} />
             <Tab label="Đơn hàng đã nhập" {...a11yProps(3)} />
@@ -42,11 +42,9 @@ function InfoUser({ isEdit }) {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          {/* thông tin cá nhân */}
           <InfoUserContent dataUser={''} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          {/* khách quản lý  */}
           <UserCustomer dataCustomer={isEdit.user_customers} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
