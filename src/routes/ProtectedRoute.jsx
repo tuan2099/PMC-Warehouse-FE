@@ -39,6 +39,13 @@ const ProtectedRoute = ({ children, requiredPermissions, moduleName }) => {
 
   // Giả định quyền của người dùng được trả về trong userData (ví dụ: userData.permissions)
   const userPermissions = userData?.data?.data.permission || {};
+  const userRole = userData?.data?.data.role || ''; // Lấy role của user (ví dụ: ADMIN)
+
+  // Nếu người dùng có role là ADMIN, cho phép truy cập tất cả các trang
+  if (userRole === 'ADMIN') {
+    return children; // ADMIN có thể truy cập mọi trang
+  }
+
   // Hàm kiểm tra xem người dùng có ít nhất một quyền trong mảng requiredPermissions không
   const hasAnyPermission = (module, permissions) => {
     const userModulePermissions = userPermissions?.[module] || [];

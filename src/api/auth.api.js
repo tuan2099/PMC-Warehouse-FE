@@ -26,6 +26,9 @@ const userApi = {
   },
   resetPassWord(body) {
     return http.post('/users/resetpassword', body);
+  },
+  setPermissions(permissions) {
+    return http.post('/users/setperm', permissions);
   }
 };
 

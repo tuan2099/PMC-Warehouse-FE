@@ -43,7 +43,7 @@ function InfoUser({ isEdit }) {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <Permissionuser dataPermission={isEdit.permission} />
+          <Permissionuser dataPermission={isEdit.permission} idUser={isEdit.id} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           <UserCustomer dataCustomer={isEdit.user_customers} />
