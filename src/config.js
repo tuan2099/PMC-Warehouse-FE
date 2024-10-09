@@ -1,10 +1,32 @@
+export const DASHBOARD_PATH = '/dashboard/default';
+export const HORIZONTAL_MAX_ITEM = 7;
+
+export const MenuOrientation = {
+  VERTICAL: 'vertical',
+  HORIZONTAL: 'horizontal'
+};
+
+export const ThemeMode = {
+  LIGHT: 'light',
+  DARK: 'dark'
+};
+
+export const ThemeDirection = {
+  LTR: 'ltr',
+  RTL: 'rtl'
+};
+
 const config = {
-  // basename: only at build time to set, and Don't add '/' at end off BASENAME for breadcrumbs, also Don't put only '/' use blank('') instead,
-  // like '/berry-material-react/react/default'
-  basename: '/',
-  defaultPath: '/dashboard/default',
+  menuOrientation: MenuOrientation.VERTICAL,
+  miniDrawer: false,
   fontFamily: `'Roboto', sans-serif`,
-  borderRadius: 12
+  borderRadius: 5,
+  outlinedFilled: true,
+  mode: ThemeMode.LIGHT,
+  presetColor: 'theme2',
+  i18n: 'en',
+  themeDirection: ThemeDirection.LTR,
+  container: false
 };
 
 export default config;

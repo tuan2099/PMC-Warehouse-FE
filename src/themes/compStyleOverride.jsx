@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export default function componentStyleOverrides(theme) {
   const bgColor = theme.colors?.grey50;
   return {

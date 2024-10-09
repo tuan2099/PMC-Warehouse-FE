@@ -1,10 +1,22 @@
 /* eslint-disable prettier/prettier */
-import { IconKey, IconUserBolt, IconBuildingWarehouse } from '@tabler/icons-react';
+import {
+  IconKey,
+  IconUserBolt,
+  IconBuildingWarehouse,
+  IconBrandProducthunt,
+  IconArrowAutofitRight,
+  IconArrowAutofitLeft,
+  IconBuildingLighthouse
+} from '@tabler/icons-react';
 // import PeopleIcon from '@mui/icons-material/People';
 const icons = {
   IconKey,
   IconUserBolt,
-  IconBuildingWarehouse
+  IconBuildingWarehouse,
+  IconBrandProducthunt,
+  IconArrowAutofitRight,
+  IconArrowAutofitLeft,
+  IconBuildingLighthouse
 };
 
 const users = {
@@ -34,7 +46,7 @@ const users = {
       title: 'Danh sách biển bảng',
       type: 'item',
       url: '/products',
-      icon: icons.IconBuildingWarehouse,
+      icon: icons.IconBrandProducthunt,
       breadcrumbs: false
     },
     {
@@ -42,7 +54,7 @@ const users = {
       title: 'Xuất kho',
       type: 'item',
       url: '/warehouse-dispatch',
-      icon: icons.IconBuildingWarehouse,
+      icon: icons.IconArrowAutofitRight,
       breadcrumbs: false
     },
     {
@@ -50,7 +62,7 @@ const users = {
       title: 'Dự án',
       type: 'item',
       url: '/customer',
-      icon: icons.IconBuildingWarehouse,
+      icon: icons.IconBuildingLighthouse,
       breadcrumbs: false
     },
     {
@@ -74,7 +86,7 @@ const users = {
       title: 'Nhập kho',
       type: 'item',
       url: '/orders',
-      icon: icons.IconBuildingWarehouse,
+      icon: icons.IconArrowAutofitLeft,
       breadcrumbs: false
     },
     {

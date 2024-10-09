@@ -76,13 +76,13 @@ const DataTable = ({ columns, data, ...props }) => {
           checkboxSelection
           hideFooter
           slots={{
-            toolbar: () => <CustomToolbar apiRef={apiRef} /> // Use custom toolbar
+            toolbar: () => <CustomToolbar apiRef={apiRef} />
           }}
           slotProps={{
             toolbar: {
               showQuickFilter: true,
               quickFilterProps: {
-                debounceMs: 500 // Set debounce to prevent too many updates
+                debounceMs: 500
               }
             }
           }}
