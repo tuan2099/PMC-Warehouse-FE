@@ -6,7 +6,9 @@ import InputField from 'ui-component/InputField';
 
 function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, remove, touched, errors, ProductsData }) {
   const theme = useTheme(); // theme setting
-  console.log(ProductsData);
+
+  console.log(dispatch);
+
   return (
     <>
       <Box key={index} sx={{ mb: 2 }}>
@@ -16,7 +18,7 @@ function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, r
               id={`dispatch-product-${index}`}
               options={ProductsData || []}
               getOptionLabel={(option) => `${option.name} `}
-              onChange={(event, newValue) => {
+              onChange={(_, newValue) => {
                 setFieldValue(`orderDetail.${index}.quantity`, newValue ? newValue.quantity : '');
                 setFieldValue(`orderDetail.${index}.product`, newValue ? newValue.id : '');
                 setFieldValue(`orderDetail.${index}.price`, newValue ? newValue.salePrice : 0);

@@ -1,101 +1,182 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
-import * as Yup from 'yup';
 import { Formik, FieldArray } from 'formik';
 import { Box, Typography, Button, Grid } from '@mui/material';
+import { toast } from 'react-toastify';
+import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
-import { toast } from 'react-toastify';
 import OrderItem from './OrderItem';
+import { ORDER_VALIDATE } from 'store/validate';
+import orderApi from 'api/order.api';
 
-const validationSchema = Yup.object().shape({
-  purchaseDate: Yup.date().required('Vui lòng chọn ngày nhập kho'),
-  purchaseType: Yup.string().required('Vui lòng chọn loại nhập kho'),
-  warehouseID: Yup.string().required('Vui lòng chọn kho'),
-  supplierId: Yup.string().required('Vui lòng chọn nhà cung cấp'),
-  purchaseVATAmount: Yup.number().min(0, 'VAT không thể âm').max(100, 'VAT không thể lớn hơn 100%').required('Vui lòng nhập VAT'),
-  paymentStatus: Yup.string().required('Vui lòng chọn trạng thái thanh toán'),
-  orderDetail: Yup.array()
-    .of(
-      Yup.object().shape({
-        product: Yup.string().required('Vui lòng chọn sản phẩm'),
-        quantity: Yup.number().min(1, 'Số lượng phải lớn hơn 0').required('Vui lòng nhập số lượng')
-      })
-    )
-    .min(1, 'Cần ít nhất một sản phẩm'),
-  note: Yup.string().nullable() // Ghi chú không bắt buộc
-});
-function OrderForm({ formState, userLogin, handleCloseDialog, createOrderMutation, suppliersData, ProductsData, refetch }) {
+const INITIAL_STATE = {
+  name: '',
+  orderCode: '',
+  purchaseDate: '',
+  purchaseType: '',
+  purchaseQuantity: '',
+  purchaseTotalAmount: '',
+  purchaseVATAmount: '',
+  purchaseTotalAmountAfterVAT: '',
+  note: '',
+  paymentStatus: '',
+  supplierId: '',
+  userId: '',
+  warehouseID: '',
+  orderDetail: [
+    {
+      product: '',
+      quantity: '',
+      price: '',
+      totalPriceProduct: ''
+    }
+  ]
+};
+
+function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, suppliersData, ProductsData, refetch, updateOrderMutation }) {
+  const [formState, setFormState] = useState(INITIAL_STATE);
+  const [searchParams] = useSearchParams();
+  const isAddMode = searchParams.get('mode') === 'add';
+  const ODid = searchParams.get('id');
   const getCurrentDateTime = () => {
     const now = new Date();
     return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
   };
 
+  const { data: OrderData } = useQuery({
+    queryKey: ['OrderDetail', ODid],
+    queryFn: () => orderApi.getOrderDetails(ODid),
+    enabled: !isAddMode && Boolean(ODid),
+    keepPreviousData: true
+  });
+
   const calculateTotalQuantity = (orderDetail) => {
     Array.isArray(orderDetail) ? orderDetail.reduce((total, dispatch) => total + Number(dispatch.quantity || 0), 0) : 0;
   };
 
+  const formatDateForInput = (dateString) => {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+
+  useEffect(() => {
+    if (OrderData) {
+      const newValue = {
+        ...OrderData.data,
+        purchaseDate: formatDateForInput(OrderData.data.purchaseDate) || '',
+        orderDetail: OrderData.data.purchaseordersdetails.map((dispatch) => ({
+          quantity: dispatch.quantity,
+          product: dispatch.product_order_details[0].productID,
+          price: dispatch.price || 0,
+          totalPriceProduct: dispatch.totalPriceProduct || 0
+        }))
+      };
+      delete newValue.updatedAt;
+      delete newValue.user;
+      delete newValue.warehouse;
+      delete newValue.purchaseordersdetails;
+      delete newValue.createdAt;
+      delete newValue.id;
+      setFormState(newValue);
+    }
+  }, [OrderData]);
+
+  const handleSubmitForm = (values) => {
+    const totalBeforeVAT = values.orderDetail.reduce((acc, item) => acc + Number(item.totalPriceProduct || 0), 0); // Tổng tiền trước VAT
+    const vatAmount = (totalBeforeVAT * (values.purchaseVATAmount || 0)) / 100; // Tính số tiền VAT
+    const totalAfterVAT = totalBeforeVAT + vatAmount; // Tổng tiền sau VAT
+
+    const formattedData = {
+      purchaseOd: {
+        orderCode: getCurrentDateTime(),
+        purchaseDate: values.purchaseDate,
+        purchaseType: values.purchaseType,
+        purchaseQuantity: calculateTotalQuantity(values.orderDetail),
+        purchaseTotalAmount: totalBeforeVAT,
+        purchaseVATAmount: vatAmount,
+        purchaseTotalAmountAfterVAT: totalAfterVAT,
+        note: values.note,
+        paymentStatus: values.paymentStatus,
+        userId: userLogin.id,
+        warehouseID: values.warehouseID,
+        supplierID: values.supplierId,
+        orderDetail: values.orderDetail.map((dispatch) => ({
+          quantity: dispatch.quantity,
+          product: dispatch.product
+        }))
+      }
+    };
+    if (isAddMode) {
+      createOrderMutation.mutate(formattedData, {
+        onSuccess: () => {
+          handleCloseDialog();
+          toast.success('Tạo phiếu nhập kho thành công', {
+            position: 'top-right',
+            autoClose: 3000, // Tự động đóng sau 3 giây
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          refetch();
+        },
+        onError: (error) => {
+          toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`, {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+        }
+      });
+    } else {
+      updateOrderMutation.mutate(
+        { ODid, formattedData },
+        {
+          onSuccess: () => {
+            handleCloseDialog();
+            toast.success('Cập nhập phiếu nhập kho thành công', {
+              position: 'top-right',
+              autoClose: 3000, // Tự động đóng sau 3 giây
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined
+            });
+            refetch();
+          },
+          onError: (error) => {
+            toast.error(`Cập nhập phiếu xuất kho thất bại: ${error.message}`, {
+              position: 'top-right',
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined
+            });
+          }
+        }
+      );
+    }
+  };
+
   return (
     <div>
-      <Formik
-        initialValues={formState}
-        enableReinitialize
-        validationSchema={validationSchema}
-        onSubmit={(values) => {
-          const totalBeforeVAT = values.orderDetail.reduce((acc, item) => acc + Number(item.totalPriceProduct || 0), 0); // Tổng tiền trước VAT
-          const vatAmount = (totalBeforeVAT * (values.purchaseVATAmount || 0)) / 100; // Tính số tiền VAT
-          const totalAfterVAT = totalBeforeVAT + vatAmount; // Tổng tiền sau VAT
-
-          const formattedData = {
-            purchaseOd: {
-              orderCode: getCurrentDateTime(),
-              purchaseDate: values.purchaseDate,
-              purchaseType: values.purchaseType,
-              purchaseQuantity: calculateTotalQuantity(values.orderDetail),
-              purchaseTotalAmount: totalBeforeVAT,
-              purchaseVATAmount: vatAmount,
-              purchaseTotalAmountAfterVAT: totalAfterVAT,
-              note: values.note,
-              paymentStatus: values.paymentStatus,
-              userId: userLogin.id,
-              warehouseID: values.warehouseID,
-              supplierID: values.supplierId,
-              orderDetail: values.orderDetail.map((dispatch) => ({
-                quantity: dispatch.quantity,
-                product: dispatch.product
-              }))
-            }
-          };
-          createOrderMutation.mutate(formattedData, {
-            onSuccess: () => {
-              handleCloseDialog();
-              toast.success('Tạo phiếu nhập kho thành công', {
-                position: 'top-right',
-                autoClose: 3000, // Tự động đóng sau 3 giây
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined
-              });
-              refetch();
-            },
-            onError: (error) => {
-              toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`, {
-                position: 'top-right',
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined
-              });
-            }
-          });
-        }}
-      >
+      <Formik initialValues={formState} enableReinitialize onSubmit={handleSubmitForm}>
         {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Typography variant="h4" gutterBottom sx={{ mt: 2, mb: 4 }}>

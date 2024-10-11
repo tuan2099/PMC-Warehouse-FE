@@ -28,7 +28,7 @@ function DispatchItem({
               return option?.productName ? `${option.productName} (${option.quantity})` : `${option}`;
             }}
             value={ListProductFormWarehouse?.warehouse_inventories?.[index]?.productName || null}
-            onChange={(event, newValue) => {
+            onChange={(_, newValue) => {
               setFieldValue(`dispatches.${index}.product`, newValue ? newValue.id : '');
               setFieldValue(`dispatches.${index}.quantity`, newValue ? newValue.quantity : '');
               setFieldValue(`dispatches.${index}.price`, newValue ? newValue.salePrice : 0);

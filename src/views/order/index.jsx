@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { Button, IconButton, Box } from '@mui/material';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
+import { Add as AddIcon, Search as SearchIcon, ModeEdit as ModeEditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 import MainCard from 'ui-component/cards/MainCard';
 import DataTable from 'ui-component/DataTable';
 import AddItemDialog from 'ui-component/AddItemDialog';
@@ -16,33 +18,11 @@ import OrderDetail from './components/OrderDetail';
 import OrderForm from './components/OrderForm';
 import suppliersApi from 'api/suppliers.api';
 
-const INITIAL_STATE = {
-  name: '',
-  orderCode: '',
-  purchaseDate: '',
-  purchaseType: '',
-  purchaseQuantity: '',
-  purchaseTotalAmount: '',
-  purchaseVATAmount: '',
-  purchaseTotalAmountAfterVAT: '',
-  note: '',
-  paymentStatus: '',
-  supplierId: '',
-  userId: '',
-  warehouseID: '',
-  orderDetail: [
-    {
-      product: '',
-      quantity: ''
-    }
-  ]
-};
-
 function Order() {
   const [openDialog, setOpenDialog] = useState();
-  const [formState, setFormState] = useState(INITIAL_STATE);
   const [viewItem, setViewItem] = useState();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const page = searchParams.get('page');
   const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
 
@@ -63,6 +43,25 @@ function Order() {
       width: 220,
       renderCell: ({ id }) => (
         <>
+          <IconButton
+            aria-label="delete"
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              window.confirm('Are you sure you want to delete');
+              deleteOrderMutation.mutate(id);
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              handleOpenDialog('dialog1');
+              navigate(`?mode=update&id=${id}`, { replace: true });
+            }}
+          >
+            <ModeEditIcon />
+          </IconButton>
           <IconButton
             onClick={() => {
               handleOpenDialog('dialog2');
@@ -87,11 +86,23 @@ function Order() {
     mutationFn: (body) => orderApi.createOrder(body)
   });
 
+  const updateOrderMutation = useMutation({
+    mutationFn: (id, body) => orderApi.updateOrder(id, body)
+  });
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: (id) => orderApi.deleteOrder(id),
+    onSuccess: () => {
+      refetch();
+    }
+  });
+
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
   };
 
   const handleCloseDialog = () => {
+    navigate('', { replace: true });
     setOpenDialog(null);
   };
 
@@ -125,6 +136,7 @@ function Order() {
         sx={{ mb: 2 }}
         variant="outlined"
         onClick={() => {
+          navigate(`?mode=add`, { replace: true });
           handleOpenDialog('dialog1');
         }}
         startIcon={<AddIcon />}
@@ -134,8 +146,8 @@ function Order() {
 
       <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
         <OrderForm
-          formState={formState}
           createOrderMutation={createOrderMutation}
+          updateOrderMutation={updateOrderMutation}
           userLogin={userLogin}
           handleCloseDialog={handleCloseDialog}
           suppliersData={suppliersData}
@@ -149,7 +161,7 @@ function Order() {
       </ViewDetailDialog>
 
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataTable columns={columns} rows={OrderData?.data?.data} />
+        <DataTable columns={columns} data={OrderData} />
       </Box>
     </MainCard>
   );
