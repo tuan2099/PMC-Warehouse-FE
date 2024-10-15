@@ -29,10 +29,13 @@ function DispatchItem({
             }}
             value={ListProductFormWarehouse?.warehouse_inventories?.[index]?.productName || null}
             onChange={(event, newValue) => {
+              const price = newValue ? newValue.salePrice : 0;
+              const quantity = values.dispatches[index].quantity || 0;
+
               setFieldValue(`dispatches.${index}.product`, newValue ? newValue.id : '');
               setFieldValue(`dispatches.${index}.quantity`, newValue ? newValue.quantity : '');
-              setFieldValue(`dispatches.${index}.price`, newValue ? newValue.salePrice : 0);
-              setFieldValue(`dispatches.${index}.totalPriceProduct`, newValue ? newValue.salePrice * values.dispatches[index].quantity : 0);
+              setFieldValue(`dispatches.${index}.price`, price);
+              setFieldValue(`dispatches.${index}.totalPriceProduct`, price * quantity);
             }}
             renderInput={(params) => <TextField {...params} label="Tên sản phẩm" />}
           />
