@@ -17,6 +17,7 @@ function DispatchItem({
   values
 }) {
   const theme = useTheme(); // theme setting
+
   return (
     <Box key={index} sx={{ mb: 2 }}>
       <div className="form-add-detail">
@@ -24,6 +25,7 @@ function DispatchItem({
           <Autocomplete
             id={`dispatch-product-${index}`}
             options={ListProductFormWarehouse?.warehouse_inventories || []}
+            // defaultValue={}
             getOptionLabel={(option) => {
               return option?.productName ? `${option.productName} (${option.quantity})` : `${option}`;
             }}
