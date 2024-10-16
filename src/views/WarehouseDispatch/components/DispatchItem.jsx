@@ -17,6 +17,7 @@ function DispatchItem({
   values
 }) {
   const theme = useTheme(); // theme setting
+
   return (
     <Box key={index} sx={{ mb: 2 }}>
       <div className="form-add-detail">
@@ -24,14 +25,15 @@ function DispatchItem({
           <Autocomplete
             id={`dispatch-product-${index}`}
             options={ListProductFormWarehouse?.warehouse_inventories || []}
+            // defaultValue={}
             getOptionLabel={(option) => {
               return option?.productName ? `${option.productName} (${option.quantity})` : `${option}`;
             }}
             value={ListProductFormWarehouse?.warehouse_inventories?.[index]?.productName || null}
+
             onChange={(event, newValue) => {
               const price = newValue ? newValue.salePrice : 0;
               const quantity = values.dispatches[index].quantity || 0;
-
               setFieldValue(`dispatches.${index}.product`, newValue ? newValue.id : '');
               setFieldValue(`dispatches.${index}.quantity`, newValue ? newValue.quantity : '');
               setFieldValue(`dispatches.${index}.price`, price);

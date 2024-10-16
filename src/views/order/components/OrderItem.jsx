@@ -1,12 +1,26 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, FormControl, Autocomplete, TextField, useTheme } from '@mui/material';
 import InputField from 'ui-component/InputField';
+import { useSearchParams } from 'react-router-dom';
 
 function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, remove, touched, errors, ProductsData }) {
   const theme = useTheme(); // theme setting
-  console.log(ProductsData);
+  const [searchParams] = useSearchParams();
+  const isAddMode = searchParams.get('mode') === 'add';
+
+  const product = ProductsData.find((item) => item.id === dispatch.product);
+
+  useEffect(() => {
+    if (!isAddMode && dispatch.product) {
+      setFieldValue(`orderDetail.${index}.quantity`, dispatch.quantity || '');
+      setFieldValue(`orderDetail.${index}.product`, product.id || '');
+      setFieldValue(`orderDetail.${index}.price`, product.salePrice || 0);
+      setFieldValue(`orderDetail.${index}.totalPriceProduct`, product.salePrice * dispatch.quantity || 0);
+    }
+  }, [isAddMode, dispatch]);
+
   return (
     <>
       <Box key={index} sx={{ mb: 2 }}>
@@ -15,8 +29,9 @@ function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, r
             <Autocomplete
               id={`dispatch-product-${index}`}
               options={ProductsData || []}
-              getOptionLabel={(option) => `${option.name} `}
-              onChange={(event, newValue) => {
+              getOptionLabel={(option) => option.name || product?.name || ''}
+              defaultValue={dispatch}
+              onChange={(_, newValue) => {
                 setFieldValue(`orderDetail.${index}.quantity`, newValue ? newValue.quantity : '');
                 setFieldValue(`orderDetail.${index}.product`, newValue ? newValue.id : '');
                 setFieldValue(`orderDetail.${index}.price`, newValue ? newValue.salePrice : 0);
