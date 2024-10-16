@@ -27,6 +27,7 @@ const INITIAL_STATE = {
   paymentStatus: '',
   supplierId: '',
   userId: '',
+  vat: '',
   warehouseID: '',
   orderDetail: [
     {
@@ -111,9 +112,11 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
         orderDetail: values.orderDetail.map((dispatch) => ({
           quantity: dispatch.quantity,
           product: dispatch.product
-        }))
+        })),
+        vat: values.vat
       }
     };
+
     if (isAddMode) {
       createOrderMutation.mutate(formattedData, {
         onSuccess: () => {
@@ -142,35 +145,8 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
         }
       });
     } else {
-      updateOrderMutation.mutate(
-        { ODid, formattedData },
-        {
-          onSuccess: () => {
-            handleCloseDialog();
-            toast.success('Cập nhập phiếu nhập kho thành công', {
-              position: 'top-right',
-              autoClose: 3000, // Tự động đóng sau 3 giây
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
-            });
-            refetch();
-          },
-          onError: (error) => {
-            toast.error(`Cập nhập phiếu xuất kho thất bại: ${error.message}`, {
-              position: 'top-right',
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
-            });
-          }
-        }
-      );
+      console.log(formattedData);
+      updateOrderMutation.mutate({ id: ODid, body: formattedData });
     }
   };
 
@@ -294,11 +270,16 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
               />
               <InputField
                 name="purchaseVATAmount"
-                label="VAT"
+                label="VAT (%)"
                 type="number"
-                value={values.purchaseVATAmount}
+                value={values.vat}
                 handleBlur={handleBlur}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  setFieldValue('vat', e.target.value);
+                  const total = values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0);
+                  const purchaseVATAmount = total + (total * e.target.value) / 100;
+                  setFieldValue('purchaseVATAmount', purchaseVATAmount);
+                }}
                 touched={touched}
                 errors={errors}
               />
@@ -364,7 +345,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
 
                 {/* Tính VAT dựa trên tổng tiền trước VAT */}
                 <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1">VAT ({values.purchaseVATAmount}%):</Typography>
+                  <Typography variant="body1">VAT ({values.vat}%):</Typography>
                   <Typography variant="body1" sx={{ fontWeight: '700' }}>
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
                       .format(
@@ -381,12 +362,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                   <Typography variant="body1">Tổng tiền sau VAT:</Typography>
                   <Typography variant="body1" sx={{ fontWeight: '700' }}>
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                      .format(
-                        values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) +
-                          (values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) *
-                            (values.purchaseVATAmount || 0)) /
-                            100
-                      )
+                      .format(values.purchaseVATAmount)
                       .replace('₫', 'đ')}
                   </Typography>
                 </Grid>

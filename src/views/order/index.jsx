@@ -87,7 +87,33 @@ function Order() {
   });
 
   const updateOrderMutation = useMutation({
-    mutationFn: (id, body) => orderApi.updateOrder(id, body)
+    mutationFn: (data) => {
+      return orderApi.updateOrder(data.id, data.body);
+    },
+    onSuccess: () => {
+      handleCloseDialog();
+      toast.success('Cập nhập phiếu nhập kho thành công', {
+        position: 'top-right',
+        autoClose: 3000, // Tự động đóng sau 3 giây
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined
+      });
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Cập nhập phiếu xuất kho thất bại: ${error.message}`, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined
+      });
+    }
   });
 
   const deleteOrderMutation = useMutation({
