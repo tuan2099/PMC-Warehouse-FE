@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable prettier/prettier */
 import React from 'react';
 import PropTypes from 'prop-types'; // Để kiểm tra kiểu dữ liệu của props
@@ -10,9 +11,9 @@ import userApi from 'api/auth.api';
 function Permissionuser({ dataPermission, idUser }) {
   // Sử dụng React Query để lấy dữ liệu phân quyền từ API
   const { data: PermData, refetch } = useQuery({
-    queryKey: ['permission'], // QueryKey của React Query
-    queryFn: () => permApi.getAllPerm(), // Gọi API phân quyền
-    keepPreviousData: true // Giữ dữ liệu cũ trước khi có dữ liệu mới
+    queryKey: ['permission'],
+    queryFn: () => permApi.getAllPerm(),
+    keepPreviousData: true
   });
 
   // Tạo một object initialValues từ dữ liệu permissions
@@ -20,7 +21,7 @@ function Permissionuser({ dataPermission, idUser }) {
     const initialValues = {};
     permissions.forEach((permission) => {
       const isChecked = userPermissions[permission.name]?.includes(permission.action) || false;
-      initialValues[`${permission.name}_${permission.id}`] = isChecked; // Sử dụng id làm tên unique cho checkbox
+      initialValues[`${permission.name}_${permission.id}`] = isChecked;
     });
     return initialValues;
   };
@@ -46,31 +47,30 @@ function Permissionuser({ dataPermission, idUser }) {
   });
 
   const handleSubmit = (values) => {
-    // Lấy danh sách các quyền đã chọn (ID của quyền)
     const selectedPermissions = Object.keys(values)
-      .filter((key) => values[key]) // Lọc những quyền nào có checked = true
-      .map((key) => key.split('_')[1]); // Lấy ID của quyền từ tên của checkbox (ví dụ: 'nhap_kho_4' => lấy 4)
+      .filter((key) => values[key])
+      .map((key) => key.split('_')[1]);
     const payload = {
       userId: idUser,
-      selectedPermissions: selectedPermissions.map(Number) // Chuyển thành mảng số
+      selectedPermissions: selectedPermissions.map(Number)
     };
     addUserPermissions.mutate(payload);
   };
 
-  if (!PermData) {
-    return <div>Loading...</div>;
+  // Kiểm tra nếu không có dữ liệu hoặc dữ liệu không hợp lệ
+  if (!PermData || !Array.isArray(PermData?.data?.data) || PermData.data.data.length === 0) {
+    return <div>Chưa có quyền nào được thêm.</div>;
   }
 
   const safeDataPermission = dataPermission || {};
-  const initialValues = generateInitialValues(PermData.data, safeDataPermission);
-  const groupedPermissions = groupPermissionsByName(PermData.data);
+  const initialValues = generateInitialValues(PermData.data.data, safeDataPermission);
+  const groupedPermissions = groupPermissionsByName(PermData.data.data);
 
   return (
     <Formik enableReinitialize={true} initialValues={initialValues} onSubmit={handleSubmit}>
       {({ values, handleChange }) => (
         <Form>
           <Grid container spacing={2}>
-            {/* Render các nhóm phân quyền */}
             {Object.keys(groupedPermissions).map((moduleName) => (
               <React.Fragment key={moduleName}>
                 <Grid item xs={12} sm={4}>
@@ -84,10 +84,10 @@ function Permissionuser({ dataPermission, idUser }) {
                         <Checkbox
                           checked={values[`${moduleName}_${permission.id}`]}
                           onChange={handleChange}
-                          name={`${moduleName}_${permission.id}`} // Sử dụng ID làm phần unique cho tên
+                          name={`${moduleName}_${permission.id}`}
                         />
                       }
-                      label={permission.action.charAt(0).toUpperCase() + permission.action.slice(1)} // In hoa chữ cái đầu của action
+                      label={permission.action.charAt(0).toUpperCase() + permission.action.slice(1)}
                     />
                   ))}
                 </Grid>
@@ -105,9 +105,9 @@ function Permissionuser({ dataPermission, idUser }) {
   );
 }
 
-// Định nghĩa propTypes để kiểm tra kiểu dữ liệu của props
 Permissionuser.propTypes = {
-  dataPermission: PropTypes.object // Định nghĩa dataPermission là object
+  dataPermission: PropTypes.object,
+  idUser: PropTypes.number
 };
 
 export default Permissionuser;
