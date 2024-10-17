@@ -27,7 +27,7 @@ const INITIAL_STATE = {
   paymentStatus: '',
   supplierId: '',
   userId: '',
-  vat: '',
+  vat: 0,
   warehouseID: '',
   orderDetail: [
     {
@@ -72,6 +72,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
     if (OrderData) {
       const newValue = {
         ...OrderData.data,
+        supplierId: OrderData.data.supplierId,
         purchaseDate: formatDateForInput(OrderData.data.purchaseDate) || '',
         orderDetail: OrderData.data.purchaseordersdetails.map((dispatch) => ({
           quantity: dispatch.quantity,
@@ -89,6 +90,8 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
       setFormState(newValue);
     }
   }, [OrderData]);
+
+  console.log(formState);
 
   const handleSubmitForm = (values) => {
     const totalBeforeVAT = values.orderDetail.reduce((acc, item) => acc + Number(item.totalPriceProduct || 0), 0); // Tổng tiền trước VAT
@@ -320,6 +323,8 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                       touched={touched}
                       errors={errors}
                       ProductsData={ProductsData?.data?.data}
+                      vat={values.vat}
+                      orderDetail={values.orderDetail}
                     />
                   ))}
                   <Button onClick={() => push({ quantity: '', product: '', price: 0, totalPriceProduct: 0 })} color="primary">

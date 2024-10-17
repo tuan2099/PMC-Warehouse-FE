@@ -5,7 +5,7 @@ import { Box, Button, FormControl, Autocomplete, TextField, useTheme } from '@mu
 import InputField from 'ui-component/InputField';
 import { useSearchParams } from 'react-router-dom';
 
-function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, remove, touched, errors, ProductsData }) {
+function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, remove, touched, errors, ProductsData, vat, orderDetail }) {
   const theme = useTheme(); // theme setting
   const [searchParams] = useSearchParams();
   const isAddMode = searchParams.get('mode') === 'add';
@@ -13,6 +13,9 @@ function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, r
   const product = ProductsData.find((item) => item.id === dispatch.product);
 
   useEffect(() => {
+    const total = orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0);
+    const purchaseVATAmount = total + (total * vat) / 100;
+    setFieldValue('purchaseVATAmount', purchaseVATAmount);
     if (!isAddMode && dispatch.product) {
       setFieldValue(`orderDetail.${index}.quantity`, dispatch.quantity || '');
       setFieldValue(`orderDetail.${index}.product`, product.id || '');
