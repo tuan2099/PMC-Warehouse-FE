@@ -4,7 +4,6 @@ import { useSearchParams } from 'react-router-dom';
 import { Box, Button, IconButton } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useQuery, useMutation } from '@tanstack/react-query';
-
 import MainCard from 'ui-component/cards/MainCard';
 import InfoUser from './components/InfoUser';
 import UserForm from './components/UserForm';
@@ -121,7 +120,7 @@ function User() {
 
   // Lấy dữ liệu user bằng ID
   const getUserMutation = useMutation({
-    mutationFn: userApi.getUserById,
+    mutationFn: (body) => userApi.getUserById(body),
     onSuccess: (data) => {
       setIsEdit(data?.data?.data);
       setFormState({
@@ -148,12 +147,6 @@ function User() {
     event.preventDefault();
   };
 
-  const changePassword = () => {
-    const temp = strengthIndicator(value);
-    setStrength(temp);
-    setLevel(strengthColor(temp));
-  };
-
   // Tạo user
   const addUserMutation = useMutation({
     mutationFn: (body) => userApi.adduser(body),
@@ -164,8 +157,8 @@ function User() {
   });
 
   // Cập nhật user
-  const handleUpdateUser = (rowId) => {
-    getUserMutation.mutate(rowId);
+  const handleUpdateUser = (id) => {
+    getUserMutation.mutate(id);
     handleOpenDialog('dialog1');
   };
 
@@ -195,7 +188,6 @@ function User() {
           updateUserMutation={updateUserMutation}
           handleClickShowPassword={handleClickShowPassword}
           handleMouseDownPassword={handleMouseDownPassword}
-          changePassword={changePassword}
           isEdit={isEdit}
           formState={formState}
           showPassword={showPassword}

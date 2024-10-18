@@ -1,63 +1,65 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import userApi from 'api/auth.api';
+import { Box, Container, Typography } from '@mui/material';
 
 const ProtectedRoute = ({ children, requiredPermissions, moduleName }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const authToken = localStorage.getItem('auth_token');
-
-  // Sử dụng React Query để lấy dữ liệu người dùng
+  const userID = JSON.parse(localStorage.getItem('auth_user'));
   const {
     data: userData,
     isLoading,
     error
   } = useQuery({
-    queryKey: ['customer'],
+    queryKey: ['user'],
     queryFn: async () => {
-      const response = await userApi.getUserById(userID.id); // Giả định userID.id có sẵn trong ứng dụng
+      const response = await userApi.getUserById(userID.id);
       return response;
     },
     keepPreviousData: true
   });
 
-  // Kiểm tra nếu người dùng chưa đăng nhập
   if (!isAuthenticated && !authToken) {
     return <Navigate to="/pages/login/login3" state={{ from: window.location.pathname }} replace />;
   }
 
-  // Hiển thị loading khi đang lấy dữ liệu người dùng
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  // Hiển thị lỗi nếu xảy ra lỗi khi lấy dữ liệu người dùng
   if (error) {
     return <div>Error loading user data: {error.message}</div>;
   }
 
-  // Giả định quyền của người dùng được trả về trong userData (ví dụ: userData.permissions)
   const userPermissions = userData?.data?.data.permission || {};
-  const userRole = userData?.data?.data.role || ''; // Lấy role của user (ví dụ: ADMIN)
+  const userRole = userData?.data?.data.role || '';
 
-  // Nếu người dùng có role là ADMIN, cho phép truy cập tất cả các trang
   if (userRole === 'ADMIN') {
-    return children; // ADMIN có thể truy cập mọi trang
+    return children;
   }
 
-  // Hàm kiểm tra xem người dùng có ít nhất một quyền trong mảng requiredPermissions không
   const hasAnyPermission = (module, permissions) => {
     const userModulePermissions = userPermissions?.[module] || [];
     return permissions.some((permission) => userModulePermissions.includes(permission));
   };
 
-  // Kiểm tra quyền của người dùng cho module cụ thể
   if (requiredPermissions && !hasAnyPermission(moduleName, requiredPermissions)) {
-    return <div>Bạn không có quyền truy cập vào trang này.</div>;
+    return (
+      <Container maxWidth="sm">
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh" textAlign="center">
+          <Typography variant="h4" fontWeight="bold">
+            Bạn không có quyền truy cập vào trang này.
+          </Typography>
+        </Box>
+      </Container>
+    );
   }
 
-  // Nếu đã đăng nhập và có quyền, hiển thị nội dung
   return children;
 };
 

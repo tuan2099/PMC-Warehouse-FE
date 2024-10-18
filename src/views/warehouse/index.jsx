@@ -1,16 +1,9 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 
-import { useSearchParams } from 'react-router-dom';
 import MainCard from 'ui-component/cards/MainCard';
-import { Box, Dialog, DialogContent, Toolbar, AppBar, Button, IconButton } from '@mui/material';
-import {
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  ModeEdit as ModeEditIcon,
-  Close as CloseIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+import { Box, Button, IconButton } from '@mui/material';
+import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import warehouseApi from '../../api/warehouse.api';
@@ -22,7 +15,6 @@ import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 
 import DataTable from 'ui-component/DataTable';
 
-
 const INITIAL_STATE = {
   name: '',
   address: '',
@@ -32,12 +24,14 @@ const INITIAL_STATE = {
 };
 
 function Warehouse() {
-  const [isEdit, setIsEdit] = useState();
+  const [isEdit, setIsEdit] = useState(false);
   const [warehouseId, setWarehouseId] = useState();
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState(INITIAL_STATE);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = searchParams.get('page');
+
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalRows, setTotalRows] = useState(0);
 
   // Cấu hình các cột cho bảng dữ liệu kho hàng
 
@@ -83,6 +77,7 @@ function Warehouse() {
       setFormState(INITIAL_STATE);
       setIsEdit(false);
     } else if (dialogId === 'dialog2') {
+      setFormState(INITIAL_STATE);
       setWarehouseId(null);
       setIsEdit(false);
     }
@@ -106,13 +101,8 @@ function Warehouse() {
   };
 
   const { data: WarehouseData, refetch } = useQuery({
-    queryKey: ['warehouse'],
-    queryFn: () => warehouseApi.getAllWarehouse(page),
-    onSuccess: (data) => {
-      if (page && +page > data.data.meta.totalPages) {
-        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
-      }
-    },
+    queryKey: ['warehouse', page, pageSize],
+    queryFn: () => warehouseApi.getAllWarehouse(page, pageSize),
     keepPreviousData: true
   });
 
@@ -191,7 +181,16 @@ function Warehouse() {
         </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable rows={WarehouseData?.data?.data} columns={columns} />
+          <DataTable
+            rows={WarehouseData?.data?.data}
+            columns={columns}
+            page={page}
+            pageSize={pageSize}
+            totalRows={totalRows}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+            meta={WarehouseData?.data?.meta}
+          />
         </Box>
       </MainCard>
     </>

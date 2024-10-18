@@ -4,8 +4,8 @@ import http from 'utils/http';
 const URL = 'warehouses';
 
 const warehouseApi = {
-  getAllWarehouse(page) {
-    return http.get(`/${URL}?page=${page || 1}`);
+  getAllWarehouse(page, pageSize) {
+    return http.get(`/${URL}?page=${page || 1}&pageSize=${pageSize}`);
   },
   addWarehouse(body) {
     return http.post(`/${URL}`, body);

@@ -26,7 +26,6 @@ function UserForm({
   addUserMutation,
   handleClickShowPassword,
   handleMouseDownPassword,
-  changePassword,
   isEdit,
   formState,
   showPassword,
@@ -139,7 +138,6 @@ function UserForm({
                   onBlur={handleBlur}
                   onChange={(e) => {
                     handleChange(e);
-                    changePassword(e.target.value);
                   }}
                   endAdornment={
                     <InputAdornment position="end">

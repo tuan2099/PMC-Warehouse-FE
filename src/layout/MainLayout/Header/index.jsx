@@ -25,7 +25,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
   const userID = JSON.parse(localStorage.getItem('auth_user'));
   // Gọi api dự án
   const { data: userData } = useQuery({
-    queryKey: ['customer'],
+    queryKey: ['user'],
     queryFn: async () => {
       const response = await userApi.getUserById(userID.id);
       return response;

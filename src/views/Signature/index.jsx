@@ -4,7 +4,7 @@ import SignatureCanvas from 'react-signature-canvas';
 import { useFormik } from 'formik';
 import warehouseDispatchApi from 'api/warehouseDispatch';
 import { useParams, useLocation } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import AuthWrapper1 from 'views/pages/AuthWrapper1';
 import { Link } from 'react-router-dom';
 import Divider from '@mui/material/Divider';
@@ -17,7 +17,6 @@ import Logo from 'ui-component/Logo';
 import { Box } from '@mui/system';
 import { Button } from '@mui/material';
 import { DeleteOutline, SaveAltOutlined } from '@mui/icons-material';
-import userApi from 'api/auth.api';
 
 const SignaturePage = () => {
   const [sign, setSign] = useState();
@@ -33,12 +32,6 @@ const SignaturePage = () => {
     }
   });
   // Khởi tạo Formik
-
-  const { data: userData } = useQuery({
-    queryKey: ['user', id],
-    queryFn: () => userApi.getUserById(id),
-    enabled: Boolean(id)
-  });
 
   const downMD = useMediaQuery((theme) => theme.breakpoints.down('md'));
 

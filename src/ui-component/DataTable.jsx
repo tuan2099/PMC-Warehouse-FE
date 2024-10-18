@@ -64,7 +64,7 @@ function CustomToolbar({ apiRef }) {
   );
 }
 
-const DataTable = ({ columns, data, ...props }) => {
+const DataTable = ({ columns, data, totalRows, page, pageSize, ...props }) => {
   const apiRef = useGridApiRef();
   return (
     <>
@@ -72,9 +72,17 @@ const DataTable = ({ columns, data, ...props }) => {
         <DataGrid
           apiRef={apiRef}
           rows={data?.data?.data}
+          pagination
+          paginationMode="server"
           columns={columns}
           checkboxSelection
-          hideFooter
+          rowCount={totalRows}
+          page={page}
+          pageSize={pageSize}
+          onPaginationModelChange={(model) => {
+            onPageChange(model.page);
+            onPageSizeChange(model.pageSize);
+          }}
           slots={{
             toolbar: () => <CustomToolbar apiRef={apiRef} />
           }}
