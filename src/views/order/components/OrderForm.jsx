@@ -72,7 +72,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
     if (OrderData) {
       const newValue = {
         ...OrderData.data,
-        supplierId: OrderData.data.supplierId,
+        supplierId: OrderData.data.supplierID,
         purchaseDate: formatDateForInput(OrderData.data.purchaseDate) || '',
         orderDetail: OrderData.data.purchaseordersdetails.map((dispatch) => ({
           quantity: dispatch.quantity,
@@ -90,8 +90,6 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
       setFormState(newValue);
     }
   }, [OrderData]);
-
-  console.log(formState);
 
   const handleSubmitForm = (values) => {
     const totalBeforeVAT = values.orderDetail.reduce((acc, item) => acc + Number(item.totalPriceProduct || 0), 0); // Tổng tiền trước VAT
@@ -148,7 +146,6 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
         }
       });
     } else {
-      console.log(formattedData);
       updateOrderMutation.mutate({ id: ODid, body: formattedData });
     }
   };

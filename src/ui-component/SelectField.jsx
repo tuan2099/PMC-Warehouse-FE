@@ -16,6 +16,7 @@ import { FormControl, InputLabel, Select, MenuItem, FormHelperText, useTheme } f
 
 function SelectField({ name, label, value, handleBlur, handleChange, options, touched, errors }) {
   const theme = useTheme(); // theme setting
+
   return (
     <>
       <FormControl fullWidth error={Boolean(touched[name] && errors[name])} sx={{ ...theme.typography.customSelect }}>
