@@ -31,7 +31,6 @@ function Warehouse() {
 
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
-  const [totalRows, setTotalRows] = useState(0);
 
   // Cấu hình các cột cho bảng dữ liệu kho hàng
 
@@ -102,9 +101,10 @@ function Warehouse() {
 
   const { data: WarehouseData, refetch } = useQuery({
     queryKey: ['warehouse', page, pageSize],
-    queryFn: () => warehouseApi.getAllWarehouse(page, pageSize),
+    queryFn: () => warehouseApi.getAllWarehouse(page + 1, pageSize),
     keepPreviousData: true
   });
+  console.log(WarehouseData?.data?.meta);
 
   const deleteWarehouseMutation = useMutation({
     mutationFn: warehouseApi.deleteWarehouse,
@@ -185,8 +185,8 @@ function Warehouse() {
             rows={WarehouseData?.data?.data}
             columns={columns}
             page={page}
-            pageSize={pageSize}
-            totalRows={totalRows}
+            pageSize={WarehouseData?.data?.meta?.itemsPerPage}
+            totalRows={WarehouseData?.data?.meta.totalItems}
             onPageChange={setPage}
             onPageSizeChange={setPageSize}
             meta={WarehouseData?.data?.meta}

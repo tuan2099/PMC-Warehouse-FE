@@ -64,7 +64,7 @@ function CustomToolbar({ apiRef }) {
   );
 }
 
-const DataTable = ({ columns, data, totalRows, page, pageSize, ...props }) => {
+const DataTable = ({ columns, data, totalRows, page, pageSize, onPageChange, onPageSizeChange, ...props }) => {
   const apiRef = useGridApiRef();
   return (
     <>
@@ -83,6 +83,7 @@ const DataTable = ({ columns, data, totalRows, page, pageSize, ...props }) => {
             onPageChange(model.page);
             onPageSizeChange(model.pageSize);
           }}
+          rowsPerPageOptions={[5, 10, 20]}
           slots={{
             toolbar: () => <CustomToolbar apiRef={apiRef} />
           }}
@@ -96,9 +97,6 @@ const DataTable = ({ columns, data, totalRows, page, pageSize, ...props }) => {
           }}
           {...props}
         />
-      </div>
-      <div className="mt-3 flex gap-3 border-t border-inputColor py-3">
-        <TablePagination count={+data?.data?.meta?.totalPages || 1 || 0} />
       </div>
     </>
   );
