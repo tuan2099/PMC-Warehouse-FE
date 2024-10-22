@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, FieldArray } from 'formik';
 import { Box, Typography, Button, Grid } from '@mui/material';
 import { toast } from 'react-toastify';
@@ -23,7 +24,7 @@ const INITIAL_STATE = {
     }
   ]
 };
-function TransferForm() {
+function TransferForm({ userLogin }) {
   const [formState, setFormState] = useState(INITIAL_STATE);
   const [searchParams] = useSearchParams();
   const isAddMode = searchParams.get('mode') === 'add';
@@ -43,6 +44,26 @@ function TransferForm() {
       return null;
     }
   });
+
+  useEffect(() => {}, [TransferData]);
+
+  const handleSubmitForm = (values) => {
+    const formatData = {
+      transferCode: getCurrentDateTime(),
+      transferDate: values.transferDate,
+      fromWarehouseID: values.fromWarehouseID,
+      toWarehouseID: values.toWarehouseID,
+      note: values.note,
+      userId: userLogin.id,
+      transferDetail: values.transferDetail.map((detail) => ({
+        quantity: detail.quantity,
+        product: detail.product
+      }))
+    };
+
+    if (isAddMode) {
+    }
+  };
   return (
     <>
       <Formik initialValues={formState} enableReinitialize onSubmit={handleSubmitForm}>
@@ -167,7 +188,7 @@ function TransferForm() {
               )}
             </FieldArray> */}
 
-            <Box sx={{ mt: 8, bgcolor: '#E3F2FD', pt: 6, pb: 3 }}>
+            {/* <Box sx={{ mt: 8, bgcolor: '#E3F2FD', pt: 6, pb: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={8}></Grid>
 
@@ -202,7 +223,7 @@ function TransferForm() {
                   </Typography>
                 </Grid>
               </Grid>
-            </Box>
+            </Box> */}
 
             <Box sx={{ mt: 2 }}>
               <Button disableElevation size="large" type="submit" variant="contained" color="secondary">

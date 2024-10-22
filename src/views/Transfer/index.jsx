@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { Button, IconButton, Box } from '@mui/material';
 import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
@@ -77,6 +77,16 @@ const Suppliers = () => {
     }
   };
 
+  const createTransferMutation = useMutation({
+    mutationFn: (body) => transferApi.createTransfer(body)
+  });
+
+  const updateTransferMutation = useMutation({
+    mutationFn: (data) => {
+      return transferApi.updateTransfer(data.id, data.body);
+    }
+  });
+
   const userLogin = userDetail?.data?.data;
 
   return (
@@ -94,7 +104,7 @@ const Suppliers = () => {
       </Button>
 
       <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
-        <TransferForm userLogin={userLogin} />
+        <TransferForm userLogin={userLogin} createTransferMutation={createTransferMutation} />
       </AddItemDialog>
 
       <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>

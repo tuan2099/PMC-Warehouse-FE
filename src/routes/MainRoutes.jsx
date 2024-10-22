@@ -38,7 +38,7 @@ const MainRoutes = {
     {
       path: 'products',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="sản phẩm">
+        <ProtectedRoute requiredPermissions={[]} moduleName="sản phẩm">
           <ProductsManager />
         </ProtectedRoute>
       )
