@@ -7,7 +7,6 @@ import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import { Box } from '@mui/system';
-import TablePagination from './Pagination';
 
 const CustomDensitySelector = ({ apiRef }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -64,26 +63,26 @@ function CustomToolbar({ apiRef }) {
   );
 }
 
-const DataTable = ({ columns, data, totalRows, page, pageSize, onPageChange, onPageSizeChange, ...props }) => {
+const DataTable = ({ columns, data, totalRows, isLoading, page, pageSize, onPageChange, onPageSizeChange, ...props }) => {
   const apiRef = useGridApiRef();
   return (
     <>
-      <div style={{ height: 525, width: '100%', overflowX: 'auto' }}>
+      <div style={{ width: '100%', overflowX: 'auto', height: '65vh' }}>
         <DataGrid
           apiRef={apiRef}
           rows={data?.data?.data}
           pagination
-          paginationMode="server"
           columns={columns}
           checkboxSelection
           rowCount={totalRows}
+          paginationMode="server"
           page={page}
+          loading={isLoading}
           pageSize={pageSize}
           onPaginationModelChange={(model) => {
             onPageChange(model.page);
             onPageSizeChange(model.pageSize);
           }}
-          rowsPerPageOptions={[5, 10, 20]}
           slots={{
             toolbar: () => <CustomToolbar apiRef={apiRef} />
           }}

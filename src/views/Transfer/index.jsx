@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -14,6 +15,7 @@ const Suppliers = () => {
   const [openDialog, setOpenDialog] = useState();
   const [viewItem, setViewItem] = useState();
 
+  // eslint-disable-next-line no-unused-vars
   const [searchParams, _] = useSearchParams();
   const page = searchParams.get('page');
 
@@ -58,6 +60,7 @@ const Suppliers = () => {
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
+      console.log('hi');
     } else if (dialogId === 'dialog2') {
       setViewItem('');
     }
@@ -66,7 +69,7 @@ const Suppliers = () => {
   return (
     <MainCard title="Suppliers">
       <Button sx={{ mb: 2 }} variant="outlined" startIcon={<AddIcon />}>
-        Tạo Đơn xuất
+        Tạo Đơn chuyển
       </Button>
 
       <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>

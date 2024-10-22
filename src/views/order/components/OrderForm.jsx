@@ -151,7 +151,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
   };
 
   return (
-    <div>
+    <>
       <Formik initialValues={formState} enableReinitialize onSubmit={handleSubmitForm}>
         {({ errors, handleBlur, handleChange, handleSubmit, touched, values, setFieldValue }) => (
           <form noValidate onSubmit={handleSubmit}>
@@ -379,7 +379,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
           </form>
         )}
       </Formik>
-    </div>
+    </>
   );
 }
 

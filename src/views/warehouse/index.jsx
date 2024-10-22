@@ -14,7 +14,6 @@ import AddItemDialog from 'ui-component/AddItemDialog';
 import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 
 import DataTable from 'ui-component/DataTable';
-
 const INITIAL_STATE = {
   name: '',
   address: '',
@@ -30,7 +29,7 @@ function Warehouse() {
   const [formState, setFormState] = useState(INITIAL_STATE);
 
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
 
   // Cấu hình các cột cho bảng dữ liệu kho hàng
 
@@ -38,9 +37,6 @@ function Warehouse() {
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Tên kho', width: 350 },
     { field: 'address', headerName: 'Địa chỉ kho', width: 250 },
-    { field: 'note', headerName: 'Ghi chú', width: 250 },
-    { field: 'createdAt', headerName: 'Ngày tạo', width: 200 },
-    { field: 'updatedAt', headerName: 'Ngày cập nhật gần nhất', with: 200 },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -99,12 +95,15 @@ function Warehouse() {
     getWarehouseMutation.mutate(rowID);
   };
 
-  const { data: WarehouseData, refetch } = useQuery({
+  const {
+    data: WarehouseData,
+    refetch,
+    isLoading
+  } = useQuery({
     queryKey: ['warehouse', page, pageSize],
     queryFn: () => warehouseApi.getAllWarehouse(page + 1, pageSize),
     keepPreviousData: true
   });
-  console.log(WarehouseData?.data?.meta);
 
   const deleteWarehouseMutation = useMutation({
     mutationFn: warehouseApi.deleteWarehouse,
@@ -150,7 +149,7 @@ function Warehouse() {
       refetch(); // Lấy lại danh sách kho hàng sau khi cập nhật
     }
   });
-
+  console.log(WarehouseData?.data?.meta);
   return (
     <>
       <MainCard title="Quản lý kho hàng">
@@ -182,14 +181,14 @@ function Warehouse() {
 
         <Box sx={{ height: '100%', width: '100%' }}>
           <DataTable
-            rows={WarehouseData?.data?.data}
+            rows={WarehouseData?.data?.data || []}
             columns={columns}
             page={page}
-            pageSize={WarehouseData?.data?.meta?.itemsPerPage}
-            totalRows={WarehouseData?.data?.meta.totalItems}
+            pageSize={pageSize}
+            totalRows={WarehouseData?.data?.meta.totalItems || 0}
             onPageChange={setPage}
             onPageSizeChange={setPageSize}
-            meta={WarehouseData?.data?.meta}
+            isLoading={isLoading}
           />
         </Box>
       </MainCard>
