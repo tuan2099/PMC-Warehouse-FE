@@ -4,20 +4,24 @@ import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { Button, IconButton, Box } from '@mui/material';
 import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 import transferApi from 'api/transfer.api';
 import MainCard from 'ui-component/cards/MainCard';
 import DataTable from 'ui-component/DataTable';
 import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 import TransferDetail from './components/TransferDetail';
+import AddItemDialog from 'ui-component/AddItemDialog';
+import TransferForm from './components/TransferForm';
+import userApi from 'api/auth.api';
 
 const Suppliers = () => {
   const [openDialog, setOpenDialog] = useState();
   const [viewItem, setViewItem] = useState();
-
-  // eslint-disable-next-line no-unused-vars
   const [searchParams, _] = useSearchParams();
   const page = searchParams.get('page');
+  const navigate = useNavigate();
+  const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -53,6 +57,13 @@ const Suppliers = () => {
     keepPreviousData: true
   });
 
+  const { data: userDetail } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => {
+      return userApi.getUserById(userDataLogin.id);
+    }
+  });
+
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
   };
@@ -66,11 +77,25 @@ const Suppliers = () => {
     }
   };
 
+  const userLogin = userDetail?.data?.data;
+
   return (
     <MainCard title="Suppliers">
-      <Button sx={{ mb: 2 }} variant="outlined" startIcon={<AddIcon />}>
+      <Button
+        sx={{ mb: 2 }}
+        variant="outlined"
+        onClick={() => {
+          navigate(`?mode=add`, { replace: true });
+          handleOpenDialog('dialog1');
+        }}
+        startIcon={<AddIcon />}
+      >
         Tạo Đơn chuyển
       </Button>
+
+      <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
+        <TransferForm userLogin={userLogin} />
+      </AddItemDialog>
 
       <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
         <TransferDetail data={viewItem} />
