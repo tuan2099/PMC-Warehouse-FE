@@ -24,6 +24,8 @@ function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, r
     }
   }, [isAddMode, dispatch]);
 
+  console.log(dispatch);
+
   return (
     <>
       <Box key={index} sx={{ mb: 2 }}>
