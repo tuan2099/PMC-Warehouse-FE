@@ -191,21 +191,7 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
               label="Chọn kho"
               value={values.warehouseID} // Đảm bảo giá trị này được lấy từ Formik
               handleBlur={handleBlur}
-              handleChange={(event) => {
-                handleChange(event);
-                const warehouse = userLogin?.user_warehouses.find((wh) => wh.id === event.target.value);
-                if (warehouse) {
-                  setFieldValue(
-                    'dispatches',
-                    warehouse.warehouse_inventories.map((inventory) => ({
-                      quantity: '',
-                      product: inventory.id,
-                      price: inventory.salePrice,
-                      totalPriceProduct: 0
-                    }))
-                  );
-                }
-              }}
+              handleChange={handleChange}
               options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))} // Đảm bảo các tùy chọn được hiển thị
               touched={touched}
               errors={errors}
@@ -328,10 +314,16 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
                     remove={remove}
                     touched={touched}
                     errors={errors}
+                    values={values}
                   />
                 ))}
 
-                <Button onClick={() => push({ quantity: '', product: '', price: 0, totalPriceProduct: 0 })} color="primary">
+                <Button
+                  onClick={() => {
+                    if (values.warehouseID) push({ quantity: '', product: '', price: 0, totalPriceProduct: 0 });
+                  }}
+                  color="primary"
+                >
                   Thêm biển bảng
                 </Button>
               </>

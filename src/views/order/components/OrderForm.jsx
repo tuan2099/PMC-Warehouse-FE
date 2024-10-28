@@ -27,7 +27,7 @@ const INITIAL_STATE = {
   paymentStatus: '',
   supplierId: '',
   userId: '',
-  vat: '',
+  vat: 0,
   warehouseID: '',
   orderDetail: [
     {
@@ -72,6 +72,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
     if (OrderData) {
       const newValue = {
         ...OrderData.data,
+        supplierId: OrderData.data.supplierID,
         purchaseDate: formatDateForInput(OrderData.data.purchaseDate) || '',
         orderDetail: OrderData.data.purchaseordersdetails.map((dispatch) => ({
           quantity: dispatch.quantity,
@@ -145,7 +146,6 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
         }
       });
     } else {
-      console.log(formattedData);
       updateOrderMutation.mutate({ id: ODid, body: formattedData });
     }
   };
@@ -320,6 +320,8 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                       touched={touched}
                       errors={errors}
                       ProductsData={ProductsData?.data?.data}
+                      vat={values.vat}
+                      orderDetail={values.orderDetail}
                     />
                   ))}
                   <Button onClick={() => push({ quantity: '', product: '', price: 0, totalPriceProduct: 0 })} color="primary">

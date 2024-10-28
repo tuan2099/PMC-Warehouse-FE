@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, FormControl, Autocomplete, TextField, useTheme } from '@mui/material';
 import InputField from 'ui-component/InputField';
+import { useSearchParams } from 'react-router-dom';
 
 function DispatchItem({
   dispatch,
@@ -17,6 +18,19 @@ function DispatchItem({
   values
 }) {
   const theme = useTheme(); // theme setting
+  const [searchParams] = useSearchParams();
+  const isAddMode = searchParams.get('mode') === 'add';
+  const ProductsData = ListProductFormWarehouse?.warehouse_inventories;
+  const product = ProductsData.find((item) => item.id === dispatch.product);
+
+  useEffect(() => {
+    if (!isAddMode && dispatch.product) {
+      setFieldValue(`dispatches.${index}.product`, dispatch.product);
+      setFieldValue(`dispatches.${index}.quantity`, dispatch.quantity);
+      setFieldValue(`dispatches.${index}.price`, dispatch.price);
+      setFieldValue(`dispatches.${index}.totalPriceProduct`, dispatch.price * dispatch.quantity);
+    }
+  }, [dispatch, isAddMode]);
 
   return (
     <Box key={index} sx={{ mb: 2 }}>
@@ -25,13 +39,12 @@ function DispatchItem({
           <Autocomplete
             id={`dispatch-product-${index}`}
             options={ListProductFormWarehouse?.warehouse_inventories || []}
-            // defaultValue={}
+            defaultValue={dispatch}
             getOptionLabel={(option) => {
-              return option?.productName ? `${option.productName} (${option.quantity})` : `${option}`;
+              return option?.productName || product?.productName || '';
             }}
             value={ListProductFormWarehouse?.warehouse_inventories?.[index]?.productName || null}
-
-            onChange={(event, newValue) => {
+            onChange={(_, newValue) => {
               const price = newValue ? newValue.salePrice : 0;
               const quantity = values.dispatches[index].quantity || 0;
               setFieldValue(`dispatches.${index}.product`, newValue ? newValue.id : '');
