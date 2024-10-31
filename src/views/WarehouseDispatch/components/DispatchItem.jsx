@@ -25,12 +25,13 @@ function DispatchItem({
 
   useEffect(() => {
     if (!isAddMode && dispatch.product) {
+      console.log(product);
       setFieldValue(`dispatches.${index}.product`, dispatch.product);
       setFieldValue(`dispatches.${index}.quantity`, dispatch.quantity);
-      setFieldValue(`dispatches.${index}.price`, dispatch.price);
-      setFieldValue(`dispatches.${index}.totalPriceProduct`, dispatch.price * dispatch.quantity);
+      setFieldValue(`dispatches.${index}.price`, product.salePrice);
+      setFieldValue(`dispatches.${index}.totalPriceProduct`, product.salePrice * dispatch.quantity);
     }
-  }, [dispatch, isAddMode]);
+  }, [isAddMode]);
 
   return (
     <Box key={index} sx={{ mb: 2 }}>
