@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { Formik, FieldArray } from 'formik';
 import { Box, Typography, Button, Grid } from '@mui/material';
@@ -11,7 +11,6 @@ import { useQuery } from '@tanstack/react-query';
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import OrderItem from './OrderItem';
-import { ORDER_VALIDATE } from 'store/validate';
 import orderApi from 'api/order.api';
 
 const INITIAL_STATE = {

@@ -31,15 +31,13 @@ function UserForm({
   showPassword,
   handleCloseDialog
 }) {
-  const theme = useTheme(); // theme setting
-  // get api all warehouse
+  const theme = useTheme();
   const { data: WarehouseData } = useQuery({
     queryKey: ['warehouse'],
     queryFn: () => {
       return warehouseApi.getAllWarehouse();
     }
   });
-
   const { data: CustomerData } = useQuery({
     queryKey: ['customer'],
     queryFn: () => {
@@ -51,14 +49,10 @@ function UserForm({
       <Formik
         initialValues={formState}
         enableReinitialize
-        // validation form
         validationSchema={Yup.object().shape({
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required')
-          // password: Yup.string().max(255).required('Password is required')
         })}
-        // setting submit
         onSubmit={(values) => {
-          // convert data
           const transformValuesToApiFormat = (values) => {
             return {
               users: [
@@ -193,7 +187,7 @@ function UserForm({
                     inputProps={{}}
                   >
                     {WarehouseData?.data &&
-                      WarehouseData?.data?.data?.map((item) => {
+                      WarehouseData?.data?.map((item) => {
                         return (
                           <MenuItem key={item.id} value={item.id}>
                             {item.name}

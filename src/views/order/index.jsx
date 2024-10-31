@@ -94,7 +94,7 @@ function Order() {
       handleCloseDialog();
       toast.success('Cập nhập phiếu nhập kho thành công', {
         position: 'top-right',
-        autoClose: 3000, // Tự động đóng sau 3 giây
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

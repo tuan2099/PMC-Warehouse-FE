@@ -4,15 +4,12 @@ import React, { useState } from 'react';
 import MainCard from 'ui-component/cards/MainCard';
 import { Box, Button, IconButton } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
-
 import { useMutation, useQuery } from '@tanstack/react-query';
 import warehouseApi from '../../api/warehouse.api';
 import WarehouseForm from './components/WarehouseForm';
 import InfoWarehouse from './components/InfoWarehouse';
-
 import AddItemDialog from 'ui-component/AddItemDialog';
 import ViewDetailDialog from 'ui-component/ViewDetailDialog';
-
 import DataTable from 'ui-component/DataTable';
 const INITIAL_STATE = {
   name: '',
@@ -149,7 +146,6 @@ function Warehouse() {
       refetch(); // Lấy lại danh sách kho hàng sau khi cập nhật
     }
   });
-  console.log(WarehouseData?.data?.meta);
   return (
     <>
       <MainCard title="Quản lý kho hàng">
