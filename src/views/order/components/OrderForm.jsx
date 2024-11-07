@@ -349,11 +349,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                   <Typography variant="body1">VAT ({values.vat}%):</Typography>
                   <Typography variant="body1" sx={{ fontWeight: '700' }}>
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                      .format(
-                        (values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) *
-                          (values.purchaseVATAmount || 0)) /
-                          100
-                      )
+                      .format(values.purchaseVATAmount - values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0))
                       .replace('₫', 'đ')}
                   </Typography>
                 </Grid>

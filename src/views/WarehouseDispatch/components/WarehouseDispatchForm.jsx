@@ -337,11 +337,7 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
                 <Typography variant="body1">Tổng số tiền:</Typography>
                 <Typography variant="body1" sx={{ fontWeight: '700' }}>
                   {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                    .format(
-                      (values.dispatches.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) *
-                        (values.totalProductQuantity || 0)) /
-                        100
-                    )
+                    .format(values.dispatches.reduce((acc, item) => acc + item.totalPriceProduct, 0))
                     .replace('₫', 'đ')}
                 </Typography>
               </Grid>
