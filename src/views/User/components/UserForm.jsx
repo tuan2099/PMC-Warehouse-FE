@@ -16,11 +16,11 @@ import {
   MenuItem
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
 import warehouseApi from 'api/warehouse.api';
 import customerApi from 'api/customer.api';
 import { useQuery } from '@tanstack/react-query';
+
 function UserForm({
   updateUserMutation,
   addUserMutation,
@@ -44,6 +44,23 @@ function UserForm({
       return customerApi.getAllCustomer();
     }
   });
+
+  const transformValuesToApiFormat = (values) => {
+    return {
+      users: [
+        {
+          name: values.name,
+          email: values.email,
+          password: values.password,
+          date_of_birth: values.date_of_birth || '',
+          role: values.role || '',
+          warehouseId: values.warehouseId || [],
+          customerId: values.customerId || []
+        }
+      ]
+    };
+  };
+
   return (
     <>
       <Formik
@@ -53,20 +70,6 @@ function UserForm({
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required')
         })}
         onSubmit={(values) => {
-          const transformValuesToApiFormat = (values) => {
-            return {
-              users: [
-                {
-                  name: values.name,
-                  email: values.email,
-                  date_of_birth: values.date_of_birth || '',
-                  role: values.role,
-                  warehouseId: values.warehouseId,
-                  customerId: values.customerId || []
-                }
-              ]
-            };
-          };
           if (isEdit.length === 0) {
             addUserMutation.mutate(transformValuesToApiFormat(values), {
               onSuccess: (values) => {
@@ -230,11 +233,9 @@ function UserForm({
             )}
 
             <Box sx={{ mt: 2 }}>
-              <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  {isEdit.length === 0 ? 'Tạo người dùng' : 'Cập nhật người dùng'}
-                </Button>
-              </AnimateButton>
+              <Button disableElevation disabled={isSubmitting} size="large" type="submit" variant="contained" color="secondary">
+                {isEdit.length === 0 ? 'Tạo người dùng' : 'Cập nhật người dùng'}
+              </Button>
             </Box>
           </form>
         )}

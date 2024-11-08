@@ -145,8 +145,8 @@ function Order() {
   });
 
   const { data: ProductsData } = useQuery({
-    queryKey: ['products', page], // Khóa truy vấn
-    queryFn: async () => await productsApi.getAllProducts(page), // Hàm gọi API lấy tất cả sản phẩm
+    queryKey: ['products', page],
+    queryFn: async () => await productsApi.getAllProducts(page),
     onSuccess: (data) => {
       if (page && +page > data.data.meta.totalPages) {
         setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });

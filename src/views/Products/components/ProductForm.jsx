@@ -2,14 +2,14 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
 import { Button, Box, FormHelperText } from '@mui/material';
-import { Formik } from 'formik'; // Thư viện hỗ trợ quản lý form và các giá trị của form
-import AnimateButton from 'ui-component/extended/AnimateButton'; // Thư viện tùy chỉnh cho nút có hiệu ứng animation
-import * as Yup from 'yup'; // Thư viện hỗ trợ kiểm tra và xác thực dữ liệu
+import { Formik } from 'formik';
+import AnimateButton from 'ui-component/extended/AnimateButton';
+import * as Yup from 'yup';
 
-import InputField from 'ui-component/InputField'; // Thành phần tùy chỉnh cho các trường input
-import SelectField from 'ui-component/SelectField'; // Thành phần tùy chỉnh cho các trường select
+import InputField from 'ui-component/InputField';
+import SelectField from 'ui-component/SelectField';
 
-function ProductForm({ formState, productID, isEdit, createProductMutation, updateProductMutation }) {
+function ProductForm({ formState, productID, isEdit, createProductMutation, updateProductMutation, handleCloseDialog }) {
   // Xác thực dữ liệu form bằng Yup
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Tên sản phẩm là bắt buộc'), // Xác thực trường 'name'
@@ -24,7 +24,6 @@ function ProductForm({ formState, productID, isEdit, createProductMutation, upda
     note: Yup.string().required('Ghi chú là bắt buộc') // Xác thực trường 'note'
   });
 
-  // Các lựa chọn cho trường trạng thái sản phẩm
   const statusOptions = [
     { value: 'available', label: 'Còn hàng' }, // Trạng thái 'Còn hàng'
     { value: 'unavailable', label: 'Hết hàng' }, // Trạng thái 'Hết hàng'
@@ -35,21 +34,19 @@ function ProductForm({ formState, productID, isEdit, createProductMutation, upda
     <Formik
       initialValues={formState} // Giá trị ban đầu của form lấy từ prop 'formState'
       enableReinitialize // Cập nhật lại form khi giá trị formState thay đổi
-      validationSchema={validationSchema} // Định nghĩa xác thực form
-      // Xử lý khi người dùng submit form
+      validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting }) => {
         const transformValues = {
-          product: [values] // Chuyển đổi giá trị form thành một mảng với key 'product'
+          product: [values]
         };
-        setSubmitting(true); // Bật trạng thái đang submit
+        setSubmitting(true);
         if (isEdit) {
-          // Nếu đang ở chế độ chỉnh sửa, gọi API cập nhật
           updateProductMutation.mutate({ productId: productID.id, values });
         } else {
-          // Nếu ở chế độ tạo mới, gọi API tạo sản phẩm
           createProductMutation.mutate(transformValues);
         }
-        setSubmitting(false); // Tắt trạng thái submit
+        setSubmitting(false);
+        handleCloseDialog();
       }}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
@@ -146,30 +143,6 @@ function ProductForm({ formState, productID, isEdit, createProductMutation, upda
             handleBlur={handleBlur}
             handleChange={handleChange}
             options={statusOptions}
-            touched={touched}
-            errors={errors}
-          />
-
-          {/* Trường nhập số lượng tối thiểu */}
-          <InputField
-            name="minimumQuantity"
-            label="Số lượng tối thiểu"
-            type="number"
-            value={values.minimumQuantity}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            touched={touched}
-            errors={errors}
-          />
-
-          {/* Trường nhập số lượng tối đa */}
-          <InputField
-            name="maximumQuantity"
-            label="Số lượng tối đa"
-            type="number"
-            value={values.maximumQuantity}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
             touched={touched}
             errors={errors}
           />

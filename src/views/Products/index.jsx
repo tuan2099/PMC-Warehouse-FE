@@ -74,7 +74,6 @@ function Products() {
     }
   ];
 
-  // Lấy tất cả sản phẩm từ API thông qua `useQuery`
   const { data: ProductsData, refetch } = useQuery({
     queryKey: ['products', page], // Khóa truy vấn
     queryFn: async () => await productsApi.getAllProducts(page), // Hàm gọi API lấy tất cả sản phẩm
@@ -188,6 +187,7 @@ function Products() {
             createProductMutation={createProductMutation}
             formState={formState}
             productID={productID}
+            handleCloseDialog={handleCloseDialog}
           />
         </AddItemDialog>
 

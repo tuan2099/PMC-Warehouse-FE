@@ -14,6 +14,7 @@ import TransferDetail from './components/TransferDetail';
 import AddItemDialog from 'ui-component/AddItemDialog';
 import TransferForm from './components/TransferForm';
 import userApi from 'api/auth.api';
+import productsApi from '../../api/product.api';
 
 const Suppliers = () => {
   const [openDialog, setOpenDialog] = useState();
@@ -64,6 +65,17 @@ const Suppliers = () => {
     }
   });
 
+  const { data: ProductsData } = useQuery({
+    queryKey: ['products', page],
+    queryFn: async () => await productsApi.getAllProducts(page),
+    onSuccess: (data) => {
+      if (page && +page > data.data.meta.totalPages) {
+        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
+      }
+    },
+    keepPreviousData: true
+  });
+
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
   };
@@ -104,7 +116,7 @@ const Suppliers = () => {
       </Button>
 
       <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
-        <TransferForm userLogin={userLogin} createTransferMutation={createTransferMutation} />
+        <TransferForm ProductsData={ProductsData} userLogin={userLogin} createTransferMutation={createTransferMutation} />
       </AddItemDialog>
 
       <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>

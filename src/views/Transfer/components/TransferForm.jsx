@@ -2,13 +2,14 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react';
 import { Formik, FieldArray } from 'formik';
-import { Box, Typography, Button, Grid } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import transferApi from 'api/transfer.api';
+import TransferItem from './TransferIttem';
 
 const INITIAL_STATE = {
   transferCode: '',
@@ -24,11 +25,13 @@ const INITIAL_STATE = {
     }
   ]
 };
-function TransferForm({ userLogin }) {
+
+function TransferForm({ userLogin, createTransferMutation, ProductsData }) {
   const [formState, setFormState] = useState(INITIAL_STATE);
   const [searchParams] = useSearchParams();
   const isAddMode = searchParams.get('mode') === 'add';
   const TPid = searchParams.get('id');
+
   const getCurrentDateTime = () => {
     const now = new Date();
     return `PC-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
@@ -45,23 +48,37 @@ function TransferForm({ userLogin }) {
     }
   });
 
-  useEffect(() => {}, [TransferData]);
+  useEffect(() => {
+    setFormState();
+  }, [TransferData]);
 
   const handleSubmitForm = (values) => {
-    const formatData = {
-      transferCode: getCurrentDateTime(),
-      transferDate: values.transferDate,
-      fromWarehouseID: values.fromWarehouseID,
-      toWarehouseID: values.toWarehouseID,
-      note: values.note,
-      userId: userLogin.id,
-      transferDetail: values.transferDetail.map((detail) => ({
-        quantity: detail.quantity,
-        product: detail.product
-      }))
+    const formattedData = {
+      transferData: {
+        transferCode: getCurrentDateTime(),
+        transferDate: values.transferDate,
+        fromWarehouseID: values.fromWarehouseID,
+        toWarehouseID: values.toWarehouseID,
+        note: values.note,
+        userId: userLogin.id,
+        transferDetail: values.transferDetail.map((detail) => ({
+          quantity: detail.quantity,
+          product: detail.product
+        }))
+      }
     };
 
     if (isAddMode) {
+      createTransferMutation.mutate(formattedData, {
+        onSuccess: () => {
+          toast.success('Tạo phiếu thành công');
+          refetch();
+        },
+        onError: (error) => {
+          toast.error(`Tạo phiếu thất bại: ${error.message}`);
+        }
+      });
+      handleCloseDialog();
     }
   };
   return (
@@ -96,7 +113,7 @@ function TransferForm({ userLogin }) {
               />
               <SelectField
                 name="fromWarehouseID"
-                label="Chọn kho"
+                label="Kho gốc"
                 value={values.fromWarehouseID}
                 handleBlur={handleBlur}
                 handleChange={(event) => {
@@ -120,7 +137,7 @@ function TransferForm({ userLogin }) {
               />
               <SelectField
                 name="toWarehouseID"
-                label="Chọn kho"
+                label="Kho đến"
                 value={values.toWarehouseID}
                 handleBlur={handleBlur}
                 handleChange={(event) => {
@@ -164,11 +181,11 @@ function TransferForm({ userLogin }) {
               Thêm biển bảng
             </Typography>
 
-            {/* <FieldArray name="orderDetail">
+            <FieldArray name="transferDetail">
               {({ push, remove }) => (
                 <>
-                  {values.orderDetail.map((dispatch, index) => (
-                    <OrderItem
+                  {values.transferDetail.map((dispatch, index) => (
+                    <TransferItem
                       key={index}
                       index={index}
                       dispatch={dispatch}
@@ -186,44 +203,7 @@ function TransferForm({ userLogin }) {
                   </Button>
                 </>
               )}
-            </FieldArray> */}
-
-            {/* <Box sx={{ mt: 8, bgcolor: '#E3F2FD', pt: 6, pb: 3 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={8}></Grid>
-
-                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1">Tổng số tiền:</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: '700' }}>
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                      .format(values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0))
-                      .replace('₫', 'đ')}
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1">VAT ({values.vat}%):</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: '700' }}>
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                      .format(
-                        (values.orderDetail.reduce((acc, item) => acc + (item.totalPriceProduct || 0), 0) *
-                          (values.purchaseVATAmount || 0)) /
-                          100
-                      )
-                      .replace('₫', 'đ')}
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1">Tổng tiền sau VAT:</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: '700' }}>
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                      .format(values.purchaseVATAmount)
-                      .replace('₫', 'đ')}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box> */}
+            </FieldArray>
 
             <Box sx={{ mt: 2 }}>
               <Button disableElevation size="large" type="submit" variant="contained" color="secondary">
