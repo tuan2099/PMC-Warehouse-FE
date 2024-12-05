@@ -24,11 +24,7 @@ function Warehouse() {
   const [warehouseId, setWarehouseId] = useState();
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState(INITIAL_STATE);
-
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-
-  // Cấu hình các cột cho bảng dữ liệu kho hàng
+  const userID = JSON.parse(localStorage.getItem('auth_user'));
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -92,14 +88,15 @@ function Warehouse() {
     getWarehouseMutation.mutate(rowID);
   };
 
-  const {
-    data: WarehouseData,
-    refetch,
-    isLoading
-  } = useQuery({
-    queryKey: ['warehouse', page, pageSize],
-    queryFn: () => warehouseApi.getAllWarehouse(page + 1, pageSize),
-    keepPreviousData: true
+  const { data: WarehouseData, isLoading } = useQuery({
+    queryKey: ['warehouse'],
+    queryFn: () => {
+      const headers = {
+        role: userID.role,
+        id: userID.id
+      };
+      return warehouseApi.getAllWarehouse(headers);
+    }
   });
 
   const deleteWarehouseMutation = useMutation({
@@ -176,16 +173,7 @@ function Warehouse() {
         </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable
-            rows={WarehouseData?.data?.data || []}
-            columns={columns}
-            page={page}
-            pageSize={pageSize}
-            totalRows={WarehouseData?.data?.meta.totalItems || 0}
-            onPageChange={setPage}
-            onPageSizeChange={setPageSize}
-            isLoading={isLoading}
-          />
+          <DataTable rows={WarehouseData?.data} columns={columns} isLoading={isLoading} />
         </Box>
       </MainCard>
     </>
