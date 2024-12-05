@@ -6,6 +6,7 @@ import UserCustomer from './UserCustomer';
 // import Permissionuser from './Permissionuser';
 import UserWarehouse from './UserWarehouse';
 // import Userdispatch from './Userdispatch';
+import orderApi from 'api/order.api';
 import warehouseApi from 'api/warehouse.api';
 import customerApi from 'api/customer.api';
 import { useQuery } from '@tanstack/react-query';
@@ -38,11 +39,19 @@ function InfoUser({ isEdit }) {
   });
 
   const { data: UserCustomerData } = useQuery({
-    queryKey: ['userCustomer', isFinite.id],
+    queryKey: ['userCustomer', isEdit.id],
     queryFn: () => customerApi.getCustomerByUser(isEdit.id),
     enabled: !!isEdit.id
   });
 
+  const {data : UserOrderData} = useQuery({
+    queryKey: ['userOrder', isEdit.id],
+    queryFn: () => orderApi.getOrderByUsers(isEdit.id),
+    enabled: !!isEdit.id
+  });
+
+
+  console.log(UserOrderData);
   return (
     <>
       <Box sx={{ width: '100%' }}>
