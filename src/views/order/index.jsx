@@ -92,27 +92,11 @@ function Order() {
     },
     onSuccess: () => {
       handleCloseDialog();
-      toast.success('Cập nhập phiếu nhập kho thành công', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined
-      });
+      toast.success('Cập nhập phiếu thành công');
       refetch();
     },
     onError: (error) => {
-      toast.error(`Cập nhập phiếu xuất kho thất bại: ${error.message}`, {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined
-      });
+      toast.error(`Cập nhập phiếu thất bại: ${error.message}`);
     }
   });
 

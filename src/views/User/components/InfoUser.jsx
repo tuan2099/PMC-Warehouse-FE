@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import UserCustomer from './UserCustomer';
-import Permissionuser from './Permissionuser';
+// import Permissionuser from './Permissionuser';
 import UserWarehouse from './UserWarehouse';
-import Userdispatch from './Userdispatch';
+// import Userdispatch from './Userdispatch';
+import warehouseApi from 'api/warehouse.api';
+import customerApi from 'api/customer.api';
+import { useQuery } from '@tanstack/react-query';
 
-// hàm setting tab Mui
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -29,6 +31,18 @@ function InfoUser({ isEdit }) {
     };
   }
 
+  const { data: UserWarehouseData } = useQuery({
+    queryKey: ['userWarehouses', isEdit.id],
+    queryFn: () => warehouseApi.getWarehouseByUser(isEdit.id),
+    enabled: !!isEdit?.id
+  });
+
+  const { data: UserCustomerData } = useQuery({
+    queryKey: ['userCustomer', isFinite.id],
+    queryFn: () => customerApi.getCustomerByUser(isEdit.id),
+    enabled: !!isEdit.id
+  });
+
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -43,13 +57,13 @@ function InfoUser({ isEdit }) {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <Permissionuser dataPermission={isEdit.permission} idUser={isEdit.id} />
+          {/* <Permissionuser dataPermission={isEdit.permission} idUser={isEdit.id} /> */}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          <UserCustomer dataCustomer={isEdit.user_customers} />
+          <UserCustomer dataCustomer={UserCustomerData?.data?.result} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
-          <Userdispatch dataWarehouseDispatch={isEdit.warehouse_dispatches} />
+          {/* <Userdispatch dataWarehouseDispatch={isEdit.warehouse_dispatches} /> */}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={3}>
           Đơn hàng đã nhập
@@ -58,7 +72,7 @@ function InfoUser({ isEdit }) {
           Đơn đã chuyển
         </CustomTabPanel>
         <CustomTabPanel value={value} index={5}>
-          <UserWarehouse dataWarehouse={isEdit.user_warehouses} />
+          <UserWarehouse dataWarehouse={UserWarehouseData?.data?.result} />
         </CustomTabPanel>
       </Box>
     </>

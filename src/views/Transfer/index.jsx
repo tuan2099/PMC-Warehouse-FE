@@ -19,7 +19,7 @@ import productsApi from '../../api/product.api';
 const Suppliers = () => {
   const [openDialog, setOpenDialog] = useState();
   const [viewItem, setViewItem] = useState();
-  const [searchParams, _] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get('page');
   const navigate = useNavigate();
   const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
@@ -52,9 +52,9 @@ const Suppliers = () => {
     }
   ];
 
-  const { data: transferData } = useQuery({
-    queryKey: ['transfer', page],
-    queryFn: () => transferApi.getAll(page),
+  const { data: transferData, refetch } = useQuery({
+    queryKey: ['transfer'],
+    queryFn: () => transferApi.getAllTransfer(),
     keepPreviousData: true
   });
 
@@ -83,7 +83,7 @@ const Suppliers = () => {
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
-      console.log('hi');
+      console.log();
     } else if (dialogId === 'dialog2') {
       setViewItem('');
     }
@@ -93,14 +93,13 @@ const Suppliers = () => {
     mutationFn: (body) => transferApi.createTransfer(body)
   });
 
-  const updateTransferMutation = useMutation({
-    mutationFn: (data) => {
-      return transferApi.updateTransfer(data.id, data.body);
-    }
-  });
+  // const updateTransferMutation = useMutation({
+  //   mutationFn: (data) => {
+  //     return transferApi.updateTransfer(data.id, data.body);
+  //   }
+  // });
 
   const userLogin = userDetail?.data?.data;
-
   return (
     <MainCard title="Suppliers">
       <Button
@@ -116,7 +115,7 @@ const Suppliers = () => {
       </Button>
 
       <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
-        <TransferForm ProductsData={ProductsData} userLogin={userLogin} createTransferMutation={createTransferMutation} />
+        <TransferForm refetch={refetch} ProductsData={ProductsData} userLogin={userLogin} createTransferMutation={createTransferMutation} />
       </AddItemDialog>
 
       <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>

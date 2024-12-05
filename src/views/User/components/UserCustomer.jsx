@@ -43,18 +43,22 @@ function CustomNoRowsOverlay() {
   );
 }
 
-function UserCustomer({ dataCustomer }) {
+function UserCustomer(dataCustomer) {
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'name', headerName: 'Tên', width: 350 }
+    { field: 'customer_name', headerName: 'Tên', width: 350 },
+    { field: 'customer_position', headerName: 'PM', width: 350 },
+    { field: 'customer_address', headerName: 'Địa chỉ', width: 350 },
+    { field: 'customer_phone', headerName: 'Điện thoại', width: 350 },
+    { field: 'representative', headerName: 'Người đại diện', width: 350 }
   ];
+
   return (
     <>
       <Box>
         <DataGrid
-          rows={dataCustomer}
+          rows={dataCustomer?.dataCustomer}
           columns={columns}
-          pageSize={5}
           checkboxSelection
           slots={{ noRowsOverlay: CustomNoRowsOverlay }}
           sx={{ height: '500px' }}

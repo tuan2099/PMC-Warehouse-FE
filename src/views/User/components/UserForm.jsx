@@ -32,16 +32,25 @@ function UserForm({
   handleCloseDialog
 }) {
   const theme = useTheme();
+  const userID = JSON.parse(localStorage.getItem('auth_user'));
   const { data: WarehouseData } = useQuery({
     queryKey: ['warehouse'],
     queryFn: () => {
-      return warehouseApi.getAllWarehouse();
+      const headers = {
+        role: userID.role,
+        id: userID.id
+      };
+      return warehouseApi.getAllWarehouse(headers);
     }
   });
   const { data: CustomerData } = useQuery({
     queryKey: ['customer'],
     queryFn: () => {
-      return customerApi.getAllCustomer();
+      const headers = {
+        role: userID.role,
+        id: userID.id
+      };
+      return customerApi.getAllCustomer(headers);
     }
   });
 
@@ -60,7 +69,6 @@ function UserForm({
       ]
     };
   };
-
   return (
     <>
       <Formik
@@ -213,7 +221,7 @@ function UserForm({
                     inputProps={{}}
                   >
                     {CustomerData
-                      ? CustomerData?.data?.data?.map((item) => {
+                      ? CustomerData?.data?.map((item) => {
                           return (
                             <MenuItem key={item.id} value={item.id}>
                               {item.name}

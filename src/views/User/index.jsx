@@ -26,7 +26,6 @@ function User() {
   const [showPassword, setShowPassword] = useState(false);
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState(INITIAL_STATE);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get('page');
 
@@ -60,7 +59,6 @@ function User() {
     }
   ];
 
-  // lấy dữ liệu tất cả user
   const { data: userData, refetch } = useQuery({
     queryKey: ['users', page],
     queryFn: () => userApi.getAllUser(page),
@@ -105,7 +103,6 @@ function User() {
     }
   };
 
-  // Hàm xoá dữ liệu user
   const deletePurchasesMutation = useMutation({
     mutationFn: userApi.deleteUser,
     onSuccess: () => {
@@ -118,9 +115,8 @@ function User() {
     deletePurchasesMutation.mutate(rowId);
   };
 
-  // Lấy dữ liệu user bằng ID
   const getUserMutation = useMutation({
-    mutationFn: (body) => userApi.getUserById(body),
+    mutationFn: (id) => userApi.getUserById(id),
     onSuccess: (data) => {
       setIsEdit(data?.data?.data);
       setFormState({
@@ -138,7 +134,6 @@ function User() {
     getUserMutation.mutate(rowId);
   };
 
-  // hàm kiểu tra độ mạnh của mật khẩu
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -147,7 +142,6 @@ function User() {
     event.preventDefault();
   };
 
-  // Tạo user
   const addUserMutation = useMutation({
     mutationFn: (body) => userApi.adduser(body),
     onSuccess: () => {
@@ -156,7 +150,6 @@ function User() {
     }
   });
 
-  // Cập nhật user
   const handleUpdateUser = (id) => {
     getUserMutation.mutate(id);
     handleOpenDialog('dialog1');
@@ -200,7 +193,7 @@ function User() {
       </ViewDetailDialog>
 
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataTable columns={columns} rows={userData?.data?.data} />
+        <DataTable columns={columns} rows={userData?.data?.users} />
       </Box>
     </MainCard>
   );

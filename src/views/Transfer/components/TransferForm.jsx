@@ -49,7 +49,12 @@ function TransferForm({ userLogin, createTransferMutation, ProductsData }) {
   });
 
   useEffect(() => {
-    setFormState();
+    if (TransferData) {
+      const newValue = {
+        ...TransferData.data
+      };
+      setFormState(newValue);
+    }
   }, [TransferData]);
 
   const handleSubmitForm = (values) => {
@@ -81,6 +86,7 @@ function TransferForm({ userLogin, createTransferMutation, ProductsData }) {
       handleCloseDialog();
     }
   };
+
   return (
     <>
       <Formik initialValues={formState} enableReinitialize onSubmit={handleSubmitForm}>

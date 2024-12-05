@@ -2,8 +2,13 @@
 import http from 'utils/http';
 
 const customerApi = {
-  getAllCustomer(page, id, role) {
-    return http.get(`/customers?page=${page || 1}&id=${id}&role=${role}`);
+  getAllCustomer(customHeaders) {
+    return http.get(`/customers`, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...customHeaders
+      }
+    });
   },
   getCustomer(id) {
     return http.get(`/customers/${id}`);
@@ -16,6 +21,9 @@ const customerApi = {
   },
   updateCustomer(id, body) {
     return http.put(`/customers/${id}`, body);
+  },
+  getCustomerByUser(id) {
+    return http.get(`/customers/user/${id}`);
   }
 };
 

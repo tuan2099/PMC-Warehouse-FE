@@ -121,27 +121,11 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
       createOrderMutation.mutate(formattedData, {
         onSuccess: () => {
           handleCloseDialog();
-          toast.success('Tạo phiếu nhập kho thành công', {
-            position: 'top-right',
-            autoClose: 3000, // Tự động đóng sau 3 giây
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
-          });
+          toast.success('Tạo phiếu thành công');
           refetch();
         },
         onError: (error) => {
-          toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`, {
-            position: 'top-right',
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
-          });
+          toast.error(`Tạo phiếu xuất kho thất bại: ${error.message}`);
         }
       });
     } else {

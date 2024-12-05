@@ -38,7 +38,7 @@ const MainRoutes = {
     {
       path: 'products',
       element: (
-        <ProtectedRoute requiredPermissions={[]} moduleName="sản phẩm">
+        <ProtectedRoute>
           <ProductsManager />
         </ProtectedRoute>
       )
@@ -46,7 +46,7 @@ const MainRoutes = {
     {
       path: 'users',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="người dùng">
+        <ProtectedRoute>
           <UserManager />
         </ProtectedRoute>
       )
@@ -54,7 +54,7 @@ const MainRoutes = {
     {
       path: 'warehouses',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="nhà kho">
+        <ProtectedRoute>
           <WarehouseManager />
         </ProtectedRoute>
       )
@@ -62,7 +62,7 @@ const MainRoutes = {
     {
       path: 'warehouse-dispatch',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="xuất kho">
+        <ProtectedRoute>
           <WarehouseDispatch />
         </ProtectedRoute>
       )
@@ -70,7 +70,7 @@ const MainRoutes = {
     {
       path: 'customer',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="khách hàng">
+        <ProtectedRoute>
           <Customer />
         </ProtectedRoute>
       )
@@ -78,7 +78,7 @@ const MainRoutes = {
     {
       path: 'suppliers',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="nhà cung cấp">
+        <ProtectedRoute>
           <Suppliers />
         </ProtectedRoute>
       )
@@ -86,7 +86,7 @@ const MainRoutes = {
     {
       path: 'transfer',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="chuyển kho">
+        <ProtectedRoute>
           <Transfer />
         </ProtectedRoute>
       )
@@ -94,7 +94,7 @@ const MainRoutes = {
     {
       path: 'options',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="cài đặt">
+        <ProtectedRoute>
           <Option />
         </ProtectedRoute>
       )
@@ -102,7 +102,7 @@ const MainRoutes = {
     {
       path: 'orders',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="nhập kho">
+        <ProtectedRoute>
           <Order />
         </ProtectedRoute>
       )
@@ -110,7 +110,7 @@ const MainRoutes = {
     {
       path: 'permissions',
       element: (
-        <ProtectedRoute requiredPermissions={['view']} moduleName="quyền hạn">
+        <ProtectedRoute>
           <Permission />
         </ProtectedRoute>
       )

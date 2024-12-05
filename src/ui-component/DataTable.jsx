@@ -75,7 +75,6 @@ const DataTable = ({ columns, data, totalRows, isLoading, page, pageSize, onPage
           columns={columns}
           checkboxSelection
           rowCount={totalRows}
-          paginationMode="server"
           page={page}
           loading={isLoading}
           pageSize={pageSize}

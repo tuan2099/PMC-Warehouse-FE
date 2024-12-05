@@ -4,8 +4,13 @@ import http from 'utils/http';
 const URL = 'warehouses';
 
 const warehouseApi = {
-  getAllWarehouse(page, pageSize) {
-    return http.get(`/${URL}?page=${page || 1}&pageSize=${pageSize}`);
+  getAllWarehouse(customHeaders) {
+    return http.get(`/${URL}`, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...customHeaders
+      }
+    });
   },
   addWarehouse(body) {
     return http.post(`/${URL}`, body);
@@ -18,6 +23,9 @@ const warehouseApi = {
   },
   getWarehouseById(id) {
     return http.get(`/${URL}/${id}`);
+  },
+  getWarehouseByUser(id) {
+    return http.get(`/${URL}/user/${id}`);
   }
 };
 
