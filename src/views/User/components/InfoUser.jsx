@@ -5,12 +5,14 @@ import { Box, Tabs, Tab } from '@mui/material';
 import UserCustomer from './UserCustomer';
 // import Permissionuser from './Permissionuser';
 import UserWarehouse from './UserWarehouse';
-// import Userdispatch from './Userdispatch';
+import Userdispatch from './Userdispatch';
 import orderApi from 'api/order.api';
 import warehouseApi from 'api/warehouse.api';
 import customerApi from 'api/customer.api';
+import warehouseDispatchApi from 'api/warehouseDispatch';
 import { useQuery } from '@tanstack/react-query';
-
+import UserOder from './UserOder';
+import Transfer from './Transfer';
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -44,14 +46,19 @@ function InfoUser({ isEdit }) {
     enabled: !!isEdit.id
   });
 
-  const {data : UserOrderData} = useQuery({
+  const { data: UserOrderData } = useQuery({
     queryKey: ['userOrder', isEdit.id],
     queryFn: () => orderApi.getOrderByUsers(isEdit.id),
     enabled: !!isEdit.id
   });
 
+  const { data: dispatchData } = useQuery({
+    queryKey: ['userDispatch', isEdit.id],
+    queryFn: () => warehouseDispatchApi.getdispatchByUser(isEdit.id),
+    enabled: !!isEdit.id
+  });
 
-  console.log(UserOrderData);
+  console.log(dispatchData);
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -72,13 +79,13 @@ function InfoUser({ isEdit }) {
           <UserCustomer dataCustomer={UserCustomerData?.data?.result} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
-          {/* <Userdispatch dataWarehouseDispatch={isEdit.warehouse_dispatches} /> */}
+          <Userdispatch dataWarehouseDispatch={dispatchData?.data?.result} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={3}>
-          Đơn hàng đã nhập
+          <UserOder dataOrder={UserOrderData?.data?.result} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={4}>
-          Đơn đã chuyển
+          <Transfer />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={5}>
           <UserWarehouse dataWarehouse={UserWarehouseData?.data?.result} />

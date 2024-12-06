@@ -26,8 +26,6 @@ function User() {
   const [showPassword, setShowPassword] = useState(false);
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState(INITIAL_STATE);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = searchParams.get('page');
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -60,13 +58,8 @@ function User() {
   ];
 
   const { data: userData, refetch } = useQuery({
-    queryKey: ['users', page],
-    queryFn: () => userApi.getAllUser(page),
-    onSuccess: (data) => {
-      if (page && +page > data.data.meta.totalPages) {
-        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
-      }
-    },
+    queryKey: ['users'],
+    queryFn: () => userApi.getAllUser(),
     keepPreviousData: true
   });
 
@@ -111,21 +104,22 @@ function User() {
   });
 
   const handleDeleteUser = (rowId) => {
-    window.confirm('Are you sure you want to delete');
-    deletePurchasesMutation.mutate(rowId);
+    if (window.confirm('Are you sure you want to delete?')) {
+      deletePurchasesMutation.mutate(rowId);
+    }
   };
 
   const getUserMutation = useMutation({
-    mutationFn: (id) => userApi.getUserById(id),
+    mutationFn: (body) => userApi.getUserById(body),
     onSuccess: (data) => {
-      setIsEdit(data?.data?.data);
+      const dataConfig = data?.data?.data;
+      setIsEdit(dataConfig);
       setFormState({
-        name: data?.data?.data?.name,
-        email: data?.data?.data?.email,
-        password: data?.data?.data?.password,
-        role: data?.data?.data?.role,
-        warehouseId: data.data.data?.user_warehouses.map((warehouse) => warehouse.id),
-        customerId: data.data.data?.user_customers.map((customer) => customer.id)
+        name: dataConfig.name,
+        email: dataConfig.email,
+        role: dataConfig.role,
+        warehouseId: dataConfig.user_warehouses.map((warehouse) => warehouse.id),
+        customerId: dataConfig.user_customers.map((customer) => customer.id)
       });
     }
   });
@@ -163,7 +157,6 @@ function User() {
       return userApi.updateUser(Number(userId), values);
     },
     onSuccess: (user) => {
-      console.log(user);
       alert('Cập nhật người dùng thành công!');
       refetch();
     }

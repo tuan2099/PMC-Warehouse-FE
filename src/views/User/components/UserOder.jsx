@@ -1,11 +1,9 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import DataTable from 'ui-component/DataTable';
 import { Box, Button, IconButton, Drawer, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 
-const DispatchDetailsDrawer = ({ open, onClose, products }) => {
+const OrderDetailsDrawer = ({ open, onClose, products }) => {
   return (
     <Drawer anchor="right" open={open} onClose={onClose} sx={{ zIndex: 99999 }}>
       <div style={{ width: 1000, padding: 20 }}>
@@ -34,17 +32,17 @@ const DispatchDetailsDrawer = ({ open, onClose, products }) => {
   );
 };
 
-function Userdispatch(dataWarehouseDispatch) {
+function UserOrder({ dataOrder }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentProducts, setCurrentProducts] = useState([]);
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'exportCode', headerName: 'Mã đơn', width: 150 },
-    { field: 'totalAmount', headerName: 'Tổng tiền', width: 250 },
-    { field: 'exportDate', headerName: 'Ngày xuất', width: 200 },
-    { field: 'recipient', headerName: 'Người nhận', width: 250 },
-    { field: 'customerEmail', headerName: 'Email khách hàng', width: 350 },
+    { field: 'orderCode', headerName: 'Mã đơn nhập', width: 150 },
+    { field: 'purchaseDate', headerName: 'Ngày nhập', width: 350 },
+    { field: 'paymentStatus', headerName: 'Trạng thái thanh toán', width: 250 },
+    { field: 'user_name', headerName: 'Người tạo đơn', width: 350 },
+    { field: 'warehouse_name', headerName: 'Kho', width: 350 },
     {
       field: 'actions',
       headerName: '',
@@ -70,13 +68,13 @@ function Userdispatch(dataWarehouseDispatch) {
 
   return (
     <>
-      <Box sx={{ height: '100%', width: '100%' }}>
-        <DataTable rows={dataWarehouseDispatch?.dataWarehouseDispatch} columns={columns} />
+      <Box>
+        <DataTable rows={dataOrder} columns={columns} />
       </Box>
 
-      <DispatchDetailsDrawer open={drawerOpen} onClose={handleCloseDrawer} products={currentProducts} />
+      <OrderDetailsDrawer open={drawerOpen} onClose={handleCloseDrawer} products={currentProducts} />
     </>
   );
 }
 
-export default Userdispatch;
+export default UserOrder;

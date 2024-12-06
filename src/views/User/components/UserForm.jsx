@@ -80,9 +80,7 @@ function UserForm({
         onSubmit={(values) => {
           if (isEdit.length === 0) {
             addUserMutation.mutate(transformValuesToApiFormat(values), {
-              onSuccess: (values) => {
-                console.log(values);
-              },
+              onSuccess: (values) => {},
               onError: (error) => {
                 alert(error.message);
               }

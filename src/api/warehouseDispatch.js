@@ -19,6 +19,9 @@ const warehouseDispatchApi = {
   },
   delete(id) {
     return http.delete(`/warehouse_dispatchs/${id}`);
+  },
+  getdispatchByUser(id) {
+    return http.get(`/warehouse_dispatchs/user/${id}`);
   }
 };
 

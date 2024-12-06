@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
 import { Box } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import DataTable from 'ui-component/DataTable';
 
 function UserWarehouse(dataWarehouse) {
   const columns = [
@@ -13,7 +13,7 @@ function UserWarehouse(dataWarehouse) {
   return (
     <>
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataGrid rows={dataWarehouse?.dataWarehouse} columns={columns} pageSize={5} checkboxSelection />
+        <DataTable rows={dataWarehouse?.dataWarehouse} columns={columns} />
       </Box>
     </>
   );
