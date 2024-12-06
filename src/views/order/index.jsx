@@ -122,6 +122,8 @@ function Order() {
       return userApi.getUserById(userDataLogin.id);
     }
   });
+
+  console.log('detail', userDetail)
   const { data: suppliersData } = useQuery({
     queryKey: ['suppliers'],
     queryFn: () => suppliersApi.getAllSuplliers(),

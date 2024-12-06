@@ -64,9 +64,8 @@ function User() {
   });
 
   // Mở dialog
-  const handleOpenDialog = (DialogId) => {
-    handlegetUser();
-    setOpenDialog(DialogId);
+  const handleOpenDialog = (dialogId) => {
+    setOpenDialog(dialogId);
     setIsEdit([]);
   };
 
@@ -74,25 +73,9 @@ function User() {
   const handleCloseDialog = (dialogId) => {
     setOpenDialog(null);
     if (dialogId === 'dialog1') {
-      setFormState({
-        name: '',
-        email: '',
-        password: '',
-        role: '',
-        warehouseId: [],
-        customerId: []
-      });
-      setIsEdit(false);
+      setFormState(INITIAL_STATE);
     } else if (dialogId === 'dialog2') {
-      setFormState({
-        name: '',
-        email: '',
-        password: '',
-        role: '',
-        warehouseId: [],
-        customerId: []
-      });
-      setIsEdit(false);
+      setFormState(INITIAL_STATE);
     }
   };
 
@@ -110,7 +93,9 @@ function User() {
   };
 
   const getUserMutation = useMutation({
-    mutationFn: (body) => userApi.getUserById(body),
+    mutationFn: (body) => {
+      return userApi.getUserById(body)
+    },
     onSuccess: (data) => {
       const dataConfig = data?.data?.data;
       setIsEdit(dataConfig);
@@ -124,6 +109,7 @@ function User() {
     }
   });
 
+  console.log(formState)
   const handlegetUser = (rowId) => {
     getUserMutation.mutate(rowId);
   };
@@ -144,8 +130,8 @@ function User() {
     }
   });
 
-  const handleUpdateUser = (id) => {
-    getUserMutation.mutate(id);
+  const handleUpdateUser = (rowId) => {
+    getUserMutation.mutate(rowId);
     handleOpenDialog('dialog1');
   };
 

@@ -58,7 +58,6 @@ function InfoUser({ isEdit }) {
     enabled: !!isEdit.id
   });
 
-  console.log(dispatchData);
   return (
     <>
       <Box sx={{ width: '100%' }}>

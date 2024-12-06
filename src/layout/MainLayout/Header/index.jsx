@@ -32,6 +32,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
     },
     keepPreviousData: true
   });
+
   return (
     <>
       {/* logo & toggler button */}
