@@ -97,19 +97,22 @@ function User() {
       return userApi.getUserById(body)
     },
     onSuccess: (data) => {
-      const dataConfig = data?.data?.data;
-      setIsEdit(dataConfig);
+      setIsEdit(data?.data?.data);
+      console.log(data)
+
       setFormState({
-        name: dataConfig.name,
-        email: dataConfig.email,
-        role: dataConfig.role,
-        warehouseId: dataConfig.user_warehouses.map((warehouse) => warehouse.id),
-        customerId: dataConfig.user_customers.map((customer) => customer.id)
+        name: data?.data?.data?.name,
+        email: data?.data?.data?.email,
+        role: data?.data?.data?.role,
+        // warehouseId:  data?.data?.data?.user_warehouses.map((warehouse) => warehouse.id),
+        // customerId:  data?.data?.data?.user_customers.map((customer) => customer.id)
+        warehouseId: [],
+        customerId: []
       });
+
     }
   });
 
-  console.log(formState)
   const handlegetUser = (rowId) => {
     getUserMutation.mutate(rowId);
   };
