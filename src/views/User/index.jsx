@@ -94,22 +94,18 @@ function User() {
 
   const getUserMutation = useMutation({
     mutationFn: (body) => {
-      return userApi.getUserById(body)
+      return userApi.getUserById(body);
     },
     onSuccess: (data) => {
       setIsEdit(data?.data?.data);
-      console.log(data)
-
+      console.log(data);
       setFormState({
-        name: data?.data?.data?.name,
-        email: data?.data?.data?.email,
-        role: data?.data?.data?.role,
-        // warehouseId:  data?.data?.data?.user_warehouses.map((warehouse) => warehouse.id),
-        // customerId:  data?.data?.data?.user_customers.map((customer) => customer.id)
-        warehouseId: [],
-        customerId: []
+        name: data?.data?.data?.name || '',
+        email: data?.data?.data?.email || '',
+        role: data?.data?.data?.role || '',
+        warehouseId: userData?.user_warehouses ? userData.user_warehouses.map((warehouse) => warehouse.id) : [],
+        customerId: userData?.user_customers ? userData.user_customers.map((customer) => customer.id) : []
       });
-
     }
   });
 
