@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import { Box } from '@mui/system';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { GridToolbar } from '@mui/x-data-grid';
 import React from 'react';
+import DataTable from 'ui-component/DataTable';
 
 function InventoryWarehouse({ inventoryWarehouse }) {
   const columns = [
@@ -14,17 +15,9 @@ function InventoryWarehouse({ inventoryWarehouse }) {
   return (
     <>
       <Box sx={{ height: '50vh%', width: '100%' }}>
-        <DataGrid
+        <DataTable
           rows={inventoryWarehouse}
           columns={columns}
-          pageSize={5}
-          checkboxSelection
-          slots={{ toolbar: GridToolbar }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true
-            }
-          }}
         />
       </Box>
     </>

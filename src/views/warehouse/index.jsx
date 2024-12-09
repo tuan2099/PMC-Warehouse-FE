@@ -88,7 +88,7 @@ function Warehouse() {
     getWarehouseMutation.mutate(rowID);
   };
 
-  const { data: WarehouseData, isLoading } = useQuery({
+  const { data: WarehouseData, isLoading, refetch, isError, error } = useQuery({
     queryKey: ['warehouse'],
     queryFn: () => {
       const headers = {
@@ -105,8 +105,8 @@ function Warehouse() {
       alert('Xóa kho hàng thành công');
       refetch();
     },
-    onError: () => {
-      alert('Xóa kho hàng thất bại');
+    onError: (error) => {
+      alert(error.response.data.error);
       refetch();
     }
   });
