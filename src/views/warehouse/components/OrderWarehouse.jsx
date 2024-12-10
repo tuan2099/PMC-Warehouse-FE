@@ -5,7 +5,7 @@ import { Box, Button, IconButton, Drawer, List, ListItem, ListItemText, Typograp
 import { Search as SearchIcon } from '@mui/icons-material';
 import DataTable from 'ui-component/DataTable';
 
-const DispatchDetailsDrawer = ({ open, onClose, products }) => {
+const OrderDetailsDrawer = ({ open, onClose, products }) => {
   return (
     <Drawer anchor="right" open={open} onClose={onClose} sx={{ zIndex: 99999 }}>
       <div style={{ width: 1000, padding: 20 }}>
@@ -34,18 +34,16 @@ const DispatchDetailsDrawer = ({ open, onClose, products }) => {
   );
 };
 
-function DispatchWarehouse({ disPatchData }) {
+function OrderWarehouse({ orderData }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentProducts, setCurrentProducts] = useState([]);
 
-  const dispatchCols = [
+  const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'exportCode', headerName: 'Mã xuất kho', width: 250 },
-    { field: 'exportDate', headerName: 'Ngày xuất', width: 250 },
-    { field: 'exportType', headerName: 'Kiểu xuất', width: 150 },
-    { field: 'totalProductQuantity', headerName: 'Tổng số lượng sản phẩm', width: 150 },
-    { field: 'exportDescription', headerName: 'Mô tả', width: 150 },
-    { field: 'recipient', headerName: 'Người nhận', width: 150 },
+    { field: 'orderCode', headerName: 'Mã đơn nhập', width: 150 },
+    { field: 'purchaseDate', headerName: 'Ngày nhập', width: 350 },
+    { field: 'paymentStatus', headerName: 'Trạng thái thanh toán', width: 250 },
+    { field: 'supplier', headerName: 'Nhà cung cấp', width: 350 },
     {
       field: 'actions',
       headerName: '',
@@ -71,11 +69,13 @@ function DispatchWarehouse({ disPatchData }) {
 
   return (
     <>
-      <DataTable rowHeight={70} rows={disPatchData} columns={dispatchCols} />
+      <Box>
+        <DataTable rows={orderData} columns={columns} />
+      </Box>
 
-      <DispatchDetailsDrawer open={drawerOpen} onClose={handleCloseDrawer} products={currentProducts} />
+      <OrderDetailsDrawer open={drawerOpen} onClose={handleCloseDrawer} products={currentProducts} />
     </>
   );
 }
 
-export default DispatchWarehouse;
+export default OrderWarehouse;

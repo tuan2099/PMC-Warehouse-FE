@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-
+import { useQuery } from '@tanstack/react-query';
 import { Box, Tabs, Tab, Grid, Typography } from '@mui/material';
-
+import warehouseDispatchApi from 'api/warehouseDispatch';
+import orderApi from 'api/order.api';
 import InventoryWarehouse from './InventoryWarehouse';
 import DispatchWarehouse from './DispatchWarehouse';
+import OrderWarehouse from './OrderWarehouse';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -19,7 +21,6 @@ function CustomTabPanel(props) {
 
 function InfoWarehouse({ warehouseId }) {
   const [value, setValue] = useState(0);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -31,6 +32,19 @@ function InfoWarehouse({ warehouseId }) {
     };
   }
 
+  const { data: DispatchWarehouseData } = useQuery({
+    queryKey: ['userDispatchWarehouses', warehouseId?.id],
+    queryFn: () => warehouseDispatchApi.getDispatchByWarehouse(warehouseId?.id),
+    enabled: !!warehouseId?.id
+  });
+
+  const { data: OrderWarehouseData } = useQuery({
+    queryKey: ['userOrderWarehouses', warehouseId?.id],
+    queryFn: () => orderApi.getOrderByWarehouse(warehouseId?.id),
+    enabled: !!warehouseId?.id
+  });
+
+  console.log(warehouseId);
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -58,10 +72,12 @@ function InfoWarehouse({ warehouseId }) {
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={1}>
-          <DispatchWarehouse disPatchData={warehouseId && warehouseId.warehouse_dispatches} />
+          <DispatchWarehouse disPatchData={DispatchWarehouseData && DispatchWarehouseData?.data?.result} />
         </CustomTabPanel>
 
-        <CustomTabPanel value={value} index={2}></CustomTabPanel>
+        <CustomTabPanel value={value} index={2}>
+          <OrderWarehouse orderData={OrderWarehouseData && OrderWarehouseData?.data?.result} />
+        </CustomTabPanel>
 
         <CustomTabPanel value={value} index={3}></CustomTabPanel>
 

@@ -18,7 +18,10 @@ const orderApi = {
     return http.delete(`/order/${orderId}`);
   },
   getOrderByUsers(id) {
-    return http.get(`/order/user/${id}`)
+    return http.get(`/order/user/${id}`);
+  },
+  getOrderByWarehouse(id) {
+    return http.get(`/order/warehouse/${id}`);
   }
 };
 
