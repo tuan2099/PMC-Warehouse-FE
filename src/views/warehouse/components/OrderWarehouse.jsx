@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { Box, Button, IconButton, Drawer, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';

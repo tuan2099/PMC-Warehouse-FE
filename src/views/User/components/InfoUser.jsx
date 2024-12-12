@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import UserCustomer from './UserCustomer';
@@ -13,6 +11,7 @@ import warehouseDispatchApi from 'api/warehouseDispatch';
 import { useQuery } from '@tanstack/react-query';
 import UserOder from './UserOder';
 import Transfer from './Transfer';
+import transferApi from 'api/transfer.api';
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -58,6 +57,12 @@ function InfoUser({ isEdit }) {
     enabled: !!isEdit.id
   });
 
+  const { data: TransferData } = useQuery({
+    queryKey: ['transferData', isEdit.id],
+    queryFn: () => transferApi.getTransferByUser(isEdit.id),
+    enabled: !!isEdit.id
+  });
+
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -84,7 +89,7 @@ function InfoUser({ isEdit }) {
           <UserOder dataOrder={UserOrderData?.data?.result} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={4}>
-          <Transfer />
+          <Transfer dataTransfer={TransferData?.data?.result} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={5}>
           <UserWarehouse dataWarehouse={UserWarehouseData?.data?.result} />

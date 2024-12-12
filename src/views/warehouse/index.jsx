@@ -88,7 +88,13 @@ function Warehouse() {
     getWarehouseMutation.mutate(rowID);
   };
 
-  const { data: WarehouseData, isLoading, refetch, isError, error } = useQuery({
+  const {
+    data: WarehouseData,
+    isLoading,
+    refetch,
+    isError,
+    error
+  } = useQuery({
     queryKey: ['warehouse'],
     queryFn: () => {
       const headers = {

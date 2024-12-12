@@ -1,10 +1,9 @@
-/* eslint-disable prettier/prettier */
 import http from 'utils/http';
 const URL = 'products';
 
 const productsApi = {
-  getAllProducts(page) {
-    return http.get(`/${URL}??page=${page || 1}`);
+  getAllProducts() {
+    return http.get(`/${URL}`);
   },
   getProduct(id) {
     return http.get(`/${URL}/${id}`);

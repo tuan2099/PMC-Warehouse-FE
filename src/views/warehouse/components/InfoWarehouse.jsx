@@ -8,6 +8,8 @@ import orderApi from 'api/order.api';
 import InventoryWarehouse from './InventoryWarehouse';
 import DispatchWarehouse from './DispatchWarehouse';
 import OrderWarehouse from './OrderWarehouse';
+import transferApi from 'api/transfer.api';
+import TransferWarehouse from './TransferWarehouse';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -44,7 +46,17 @@ function InfoWarehouse({ warehouseId }) {
     enabled: !!warehouseId?.id
   });
 
-  console.log(warehouseId);
+  const { data: TransferWarehosueData } = useQuery({
+    queryKey: ['userTransferWarehosue', warehouseId?.id],
+    queryFn: () => {
+      const headers = {
+        'warehouse-transfer': 'fromWarehouseID'
+      };
+      return transferApi.getTransferByWarehouse(warehouseId?.id, headers);
+    },
+    enabled: !!warehouseId?.id
+  });
+
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -53,8 +65,9 @@ function InfoWarehouse({ warehouseId }) {
             <Tab label="Thông tin kho" {...a11yProps(0)} />
             <Tab label="Số lượng đơn đã xuất" {...a11yProps(1)} />
             <Tab label="Số lượng đơn đã nhập" {...a11yProps(2)} />
-            <Tab label="Số đơn đã chuyển" {...a11yProps(3)} />
-            <Tab label="Số lượng sản phẩm tồn trong kho" {...a11yProps(4)} />
+            <Tab label="Số đơn đã chuyển đi" {...a11yProps(3)} />
+            <Tab label="Số đơn đã chuyển đến" {...a11yProps(4)} />
+            <Tab label="Số lượng sản phẩm tồn trong kho" {...a11yProps(5)} />
           </Tabs>
         </Box>
 
@@ -79,9 +92,15 @@ function InfoWarehouse({ warehouseId }) {
           <OrderWarehouse orderData={OrderWarehouseData && OrderWarehouseData?.data?.result} />
         </CustomTabPanel>
 
-        <CustomTabPanel value={value} index={3}></CustomTabPanel>
+        <CustomTabPanel value={value} index={3}>
+          <TransferWarehouse transferData={TransferWarehosueData?.data?.result} />
+        </CustomTabPanel>
 
         <CustomTabPanel value={value} index={4}>
+          <TransferWarehouse transferData={TransferWarehosueData?.data?.result} />
+        </CustomTabPanel>
+
+        <CustomTabPanel value={value} index={5}>
           <InventoryWarehouse inventoryWarehouse={warehouseId && warehouseId.warehouse_inventories} />
         </CustomTabPanel>
       </Box>
