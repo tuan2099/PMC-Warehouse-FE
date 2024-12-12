@@ -9,7 +9,7 @@ import InventoryWarehouse from './InventoryWarehouse';
 import DispatchWarehouse from './DispatchWarehouse';
 import OrderWarehouse from './OrderWarehouse';
 import transferApi from 'api/transfer.api';
-import TransferWarehouse from './TransferWarehouse';
+import TransferToWarehouse from './TransferToWarehouse';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -93,11 +93,11 @@ function InfoWarehouse({ warehouseId }) {
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={3}>
-          <TransferWarehouse transferData={TransferWarehosueData?.data?.result} />
+          <TransferToWarehouse transferData={TransferWarehosueData?.data?.result} />
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={4}>
-          <TransferWarehouse transferData={TransferWarehosueData?.data?.result} />
+          {/* <TransferFromWarehouse transferData={TransferWarehosueData?.data?.result} /> */}
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={5}>
