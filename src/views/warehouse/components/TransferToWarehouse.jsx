@@ -32,17 +32,16 @@ const TransferToWarehouseDrawer = ({ open, onClose, products }) => {
   );
 };
 
-function TransferToWarehouse({transferData}) {
-  console.log(transferData)
+function TransferToWarehouse({ transferData }) {
+  console.log(transferData);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentProducts, setCurrentProducts] = useState([]);
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'name', headerName: 'Mã đơn nhập', width: 150 },
-    { field: 'purchaseDate', headerName: 'Ngày nhập', width: 350 },
-    { field: 'paymentStatus', headerName: 'Trạng thái thanh toán', width: 250 },
-    { field: 'supplier', headerName: 'Nhà cung cấp', width: 350 },
+    { field: 'name', headerName: 'Tên', width: 150 },
+    { field: 'note', headerName: 'Ghi chú', width: 350 },
+    { field: 'toWarehouseID', headerName: 'Kho tới', width: 250 },
     {
       field: 'actions',
       headerName: '',
@@ -65,14 +64,15 @@ function TransferToWarehouse({transferData}) {
   const handleCloseDrawer = () => {
     setDrawerOpen(false);
   };
-  return <>
+  return (
+    <>
       <Box>
-      <DataTable rows={transferData} columns={columns} />
-    </Box>
+        <DataTable rows={transferData} columns={columns} />
+      </Box>
 
-    <TransferToWarehouseDrawer open={drawerOpen} onClose={handleCloseDrawer} products={currentProducts} />
-
-</>;
+      <TransferToWarehouseDrawer open={drawerOpen} onClose={handleCloseDrawer} products={currentProducts} />
+    </>
+  );
 }
 
 export default TransferToWarehouse;

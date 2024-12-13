@@ -25,6 +25,9 @@ const warehouseDispatchApi = {
   },
   getDispatchByWarehouse(id) {
     return http.get(`/warehouse_dispatchs/warehouse/${id}`);
+  },
+  getDispatchByCustomer() {
+    return http.get(`/warehouse_dispatchs/customer/${id}`);
   }
 };
 

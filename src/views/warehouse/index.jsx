@@ -1,6 +1,4 @@
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-
 import MainCard from 'ui-component/cards/MainCard';
 import { Box, Button, IconButton } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
@@ -132,8 +130,8 @@ function Warehouse() {
   });
 
   const handleUpdateWarehouse = (rowId) => {
-    getWarehouseMutation.mutate(rowId); // Lấy thông tin kho hàng
-    handleOpenDialog('dialog1'); // Mở dialog cập nhật
+    getWarehouseMutation.mutate(rowId);
+    handleOpenDialog('dialog1');
   };
 
   const updateWarehouseMutaiton = useMutation({
@@ -141,18 +139,16 @@ function Warehouse() {
       if (!warehouseId) {
         throw new Error('Warehouse ID is missing');
       }
-      return warehouseApi.updateWarehouse(Number(warehouseId), values); // Gọi API cập nhật kho hàng
+      return warehouseApi.updateWarehouse(Number(warehouseId), values);
     },
-    onSuccess: (warehouse) => {
-      console.log(warehouse);
+    onSuccess: () => {
       alert('Cập nhật kho thành công!');
-      refetch(); // Lấy lại danh sách kho hàng sau khi cập nhật
+      refetch();
     }
   });
   return (
     <>
       <MainCard title="Quản lý kho hàng">
-        {/* Nút tạo mới kho hàng */}
         <Button
           sx={{ mb: 2 }}
           variant="outlined"

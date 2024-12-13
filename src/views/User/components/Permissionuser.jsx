@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable prettier/prettier */
 import React from 'react';
 import PropTypes from 'prop-types'; // Để kiểm tra kiểu dữ liệu của props
 import { Formik, Form } from 'formik';

@@ -9,7 +9,7 @@ import ProductForm from './components/ProductForm';
 import AddItemDialog from 'ui-component/AddItemDialog';
 import ViewDetailDialog from 'ui-component/ViewDetailDialog';
 import DataTable from 'ui-component/DataTable';
-
+import InfoProduct from './components/infoProduct';
 const INITIAL_STATE = {
   name: '',
   size: '',
@@ -154,7 +154,6 @@ function Products() {
 
   const handleGetProduct = (rowId) => {
     getProductMutation.mutate(rowId);
-    handleOpenDialog('dialog1');
   };
 
   return (
@@ -175,7 +174,9 @@ function Products() {
           />
         </AddItemDialog>
 
-        <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}></ViewDetailDialog>
+        <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
+          <InfoProduct productID={productID} />
+        </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
           <DataTable rows={ProductsData?.data} columns={columns} />

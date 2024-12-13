@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Box, Tabs, Tab, Grid, Typography } from '@mui/material';
@@ -10,6 +8,7 @@ import DispatchWarehouse from './DispatchWarehouse';
 import OrderWarehouse from './OrderWarehouse';
 import transferApi from 'api/transfer.api';
 import TransferToWarehouse from './TransferToWarehouse';
+import TransferFromWarehouse from './TransferFromWarehouse';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -46,11 +45,22 @@ function InfoWarehouse({ warehouseId }) {
     enabled: !!warehouseId?.id
   });
 
-  const { data: TransferWarehosueData } = useQuery({
-    queryKey: ['userTransferWarehosue', warehouseId?.id],
+  const { data: FromTransferWarehosueData } = useQuery({
+    queryKey: ['userTransferfromWarehosue', warehouseId?.id],
     queryFn: () => {
       const headers = {
         'warehouse-transfer': 'fromWarehouseID'
+      };
+      return transferApi.getTransferByWarehouse(warehouseId?.id, headers);
+    },
+    enabled: !!warehouseId?.id
+  });
+
+  const { data: ToTransferWarehosueData } = useQuery({
+    queryKey: ['userTransfertoWarehosue', warehouseId?.id],
+    queryFn: () => {
+      const headers = {
+        'warehouse-transfer': 'toWarehouseID'
       };
       return transferApi.getTransferByWarehouse(warehouseId?.id, headers);
     },
@@ -93,11 +103,11 @@ function InfoWarehouse({ warehouseId }) {
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={3}>
-          <TransferToWarehouse transferData={TransferWarehosueData?.data?.result} />
+          <TransferToWarehouse transferData={FromTransferWarehosueData?.data?.result} />
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={4}>
-          {/* <TransferFromWarehouse transferData={TransferWarehosueData?.data?.result} /> */}
+          <TransferFromWarehouse transferData={ToTransferWarehosueData?.data?.result} />
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={5}>
