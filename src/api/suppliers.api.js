@@ -1,9 +1,8 @@
-/* eslint-disable prettier/prettier */
 import http from 'utils/http';
 
 const suppliersApi = {
-  getAllSuplliers(page) {
-    return http.get(`/supplier?page=${page || 1}`);
+  getAllSuplliers() {
+    return http.get(`/supplier`);
   },
   getSupplierById(id) {
     return http.get(`/supplier/${id}`);

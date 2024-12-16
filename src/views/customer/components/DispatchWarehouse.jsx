@@ -46,11 +46,15 @@ function DispatchWarehouse({ disPatchData }) {
     { field: 'recipient', headerName: 'Người nhận', width: 150 },
     {
       field: 'actions',
-      headerName: '',
+      headerName: 'Actions',
       width: 220,
       renderCell: ({ id, row }) => (
         <>
-          <IconButton onClick={() => handleOpenDrawer(row.products)}>
+          <IconButton
+            onClick={() => {
+              handleOpenDrawer(row.products);
+            }}
+          >
             <SearchIcon />
           </IconButton>
         </>

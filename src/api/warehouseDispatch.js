@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import http from 'utils/http';
 
 const warehouseDispatchApi = {
@@ -26,7 +25,7 @@ const warehouseDispatchApi = {
   getDispatchByWarehouse(id) {
     return http.get(`/warehouse_dispatchs/warehouse/${id}`);
   },
-  getDispatchByCustomer() {
+  getDispatchByCustomer(id) {
     return http.get(`/warehouse_dispatchs/customer/${id}`);
   }
 };

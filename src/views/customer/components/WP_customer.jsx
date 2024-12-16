@@ -1,5 +1,4 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import { Box, Typography, Grid, Divider } from '@mui/material';
 import DataTable from 'ui-component/DataTable';
 
@@ -16,13 +15,7 @@ const InfoSection = ({ title, content }) => (
   </Box>
 );
 
-function WPcustomer({ WCPDetail, userInfoFormat }) {
-  const columns = [
-    { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'productName', headerName: 'Tên sản phẩm', width: 450 },
-    { field: 'quantity', headerName: 'Số lượng', width: 100 }
-  ];
-
+function WPcustomer({ WCPDetail, userInfoFormat, columns }) {
   return (
     <Box sx={{ width: 1000, p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>

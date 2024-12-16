@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Box, Tabs, Tab, Grid, Typography } from '@mui/material';
 import CustomTabPanel from 'ui-component/CustomTabPanel';
@@ -24,6 +22,7 @@ const SupplierDetail = ({ data }) => {
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="Thông tin" {...a11yProps(0)} />
+            <Tab label="Đơn nhập" {...a11yProps(1)} />
           </Tabs>
         </Box>
 
@@ -55,6 +54,7 @@ const SupplierDetail = ({ data }) => {
             </Grid>
           </Grid>
         </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}></CustomTabPanel>
       </Box>
     </>
   );

@@ -122,20 +122,21 @@ function Customer() {
   };
 
   const getCustomerMutation = useMutation({
-    mutationFn: customerApi.getCustomer,
-    onSuccess: (data) => {
+    mutationFn: (body) => customerApi.getCustomer(body),
+    onSuccess: (customer) => {
+      const customerData = customer?.data?.simplifiedcustomerDetail;
       setIsEdit(true);
-      setcustomerInfo(data);
+      setcustomerInfo(customerData);
       setFormState({
-        userId: data?.data?.simplifiedcustomerDetail?.id,
-        name: data?.data?.simplifiedcustomerDetail?.name,
-        pm: data?.data?.simplifiedcustomerDetail?.pm,
-        location: data?.data?.simplifiedcustomerDetail?.location,
-        branch: data?.data?.simplifiedcustomerDetail?.branch,
-        representative: data?.data?.simplifiedcustomerDetail?.representative,
-        status: data?.data?.simplifiedcustomerDetail?.status,
-        phoneNumber: data?.data?.simplifiedcustomerDetail?.phoneNumber,
-        note: data?.data?.simplifiedcustomerDetail?.note
+        userId: customerData.id,
+        name: customerData.name,
+        pm: customerData.pm,
+        location: customerData.location,
+        branch: customerData.branch,
+        representative: customerData.representative,
+        status: customerData.status,
+        phoneNumber: customerData.phoneNumber,
+        note: customerData.note
       });
     }
   });

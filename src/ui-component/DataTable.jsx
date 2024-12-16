@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { DataGrid, useGridApiRef, GridToolbarContainer, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -124,7 +122,8 @@ const DataTable = ({ columns, data, totalRows, isLoading, page, pageSize, onPage
             onPageSizeChange(model.pageSize);
           }}
           slots={{
-            toolbar: () => <CustomToolbar apiRef={apiRef} />,  noRowsOverlay: CustomNoRowsOverlay
+            toolbar: () => <CustomToolbar apiRef={apiRef} />,
+            noRowsOverlay: CustomNoRowsOverlay
           }}
           slotProps={{
             toolbar: {

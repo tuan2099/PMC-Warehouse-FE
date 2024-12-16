@@ -1,10 +1,7 @@
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
 import { Button, IconButton, Box } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon, ModeEdit as ModeEditIcon, Search as SearchIcon } from '@mui/icons-material';
-
 import suppliersApi from 'api/suppliers.api';
 import MainCard from 'ui-component/cards/MainCard';
 import DataTable from 'ui-component/DataTable';
@@ -13,6 +10,7 @@ import SupplierDetail from './components/SupplierDetail';
 import AddItemDialog from 'ui-component/AddItemDialog';
 import SupplierForm from './components/supplierForm';
 import { toast } from 'react-toastify';
+
 const INITIAL_STATE = {
   name: '',
   phoneNumber: '',
@@ -24,8 +22,6 @@ const Suppliers = () => {
   const [openDialog, setOpenDialog] = useState();
   const [viewItem, setViewItem] = useState();
   const [isEdit, setIsEdit] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = searchParams.get('page');
   const [formState, setFormState] = useState({
     suppliersId: null,
     ...INITIAL_STATE
@@ -52,11 +48,9 @@ const Suppliers = () => {
           >
             <SearchIcon />
           </IconButton>
-          {/* Nút xóa dự án */}
           <IconButton aria-label="delete" variant="contained" color="secondary" onClick={() => handleDeleteSupliers(id)}>
             <DeleteIcon />
           </IconButton>
-          {/* Nút chỉnh sửa dự án */}
           <IconButton onClick={() => handleUpdateSupliers(id)}>
             <ModeEditIcon />
           </IconButton>
@@ -65,20 +59,17 @@ const Suppliers = () => {
     }
   ];
 
-  const { data: suppliersData, refetch } = useQuery({
-    queryKey: ['Suppliers', page],
-    queryFn: () => suppliersApi.getAllSuplliers(page),
-    onSuccess: (data) => {
-      // Kiểm tra xem trang hiện tại có vượt quá tổng số trang không, nếu có thì điều chỉnh lại
-      if (page && +page > data.data.meta.totalPages) {
-        setSearchParams({
-          ...Object.fromEntries([...searchParams]),
-          page: data.data.meta.totalPages.toString()
-        });
-      }
-    },
+  const {
+    data: suppliersData,
+    refetch,
+    isLoading
+  } = useQuery({
+    queryKey: ['Suppliers'],
+    queryFn: () => suppliersApi.getAllSuplliers(),
     keepPreviousData: true
   });
+
+  console.log(suppliersData);
 
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
@@ -106,13 +97,14 @@ const Suppliers = () => {
   const getSupplierMutation = useMutation({
     mutationFn: suppliersApi.getSupplierById,
     onSuccess: (data) => {
+      const suppliers = data?.data?.supplierDetail;
       setIsEdit(true);
       setFormState({
-        suppliersId: data?.data?.supplierDetail.id,
-        name: data?.data?.supplierDetail.name,
-        phoneNumber: data?.data?.supplierDetail.phoneNumber,
-        email: data?.data?.supplierDetail.email,
-        address: data?.data?.supplierDetail.address
+        suppliersId: suppliers.id,
+        name: suppliers.name,
+        phoneNumber: suppliers.phoneNumber,
+        email: suppliers.email,
+        address: suppliers.address
       });
     }
   });
@@ -124,7 +116,6 @@ const Suppliers = () => {
 
   const updateSuppliers = useMutation({
     mutationFn: ({ suppliersId, values }) => {
-      console.log(suppliersId, values);
       if (!suppliersId) {
         throw new Error('Không tìm thấy nhà cung câp');
       }
@@ -133,7 +124,7 @@ const Suppliers = () => {
     onSuccess: () => {
       toast.success('Cập nhật nhà cung cấp thành công!', {
         position: 'top-right',
-        autoClose: 3000, // Tự động đóng sau 3 giây
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -158,17 +149,19 @@ const Suppliers = () => {
   const deleteMutation = useMutation({
     mutationFn: suppliersApi.deleteSupplier,
     onSuccess: () => {
-      alert('Xóa dự án thành công!'); // Thông báo
-      refetch(); // Lấy lại danh sách khách hàng mới
+      alert('Xóa dự án thành công!');
+      refetch();
     }
   });
 
   const handleDeleteSupliers = (rowId) => {
-    deleteMutation.mutate(rowId);
+    if (window.confirm('Are you sure you want to delete')) {
+      deleteMutation.mutate(rowId);
+    }
   };
 
   return (
-    <MainCard title="Suppliers">
+    <MainCard title="Nhà cung cấp">
       <Button sx={{ mb: 2 }} onClick={() => handleOpenDialog('dialog1')} variant="outlined" startIcon={<AddIcon />}>
         Tạo Nhà cung cấp
       </Button>
@@ -186,8 +179,9 @@ const Suppliers = () => {
       <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
         <SupplierDetail data={viewItem} />
       </ViewDetailDialog>
+
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataTable columns={columns} data={suppliersData} />
+        <DataTable columns={columns} rows={suppliersData?.data} isLoading={isLoading} />
       </Box>
     </MainCard>
   );
