@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
 import React, { useEffect } from 'react';
 import { Box, Button, FormControl, Autocomplete, TextField, useTheme } from '@mui/material';
 import InputField from 'ui-component/InputField';
@@ -17,7 +15,7 @@ function DispatchItem({
   errors,
   values
 }) {
-  const theme = useTheme(); // theme setting
+  const theme = useTheme();
   const [searchParams] = useSearchParams();
   const isAddMode = searchParams.get('mode') === 'add';
   const ProductsData = ListProductFormWarehouse?.warehouse_inventories;

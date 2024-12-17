@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Button, IconButton, Box } from '@mui/material';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -33,8 +31,6 @@ function WarehouseDispatch() {
     { field: 'recipient', headerName: 'Người nhận', with: 200 },
     { field: 'exportDescription', headerName: 'Mô tả', with: 200 },
     { field: 'user', headerName: 'Người tạo', with: 200, valueGetter: (params) => params.name },
-    // { field: 'warehouse', headerName: 'Kho hàng', with: 200, valueGetter: (params) => params.name },
-    // { field: 'customer', headerName: 'Khách hàng', with: 200, valueGetter: (params) => params.name },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -129,7 +125,6 @@ function WarehouseDispatch() {
 
         <AddItemDialog onClose={() => handleCloseDialog('dialog1')} isOpen={openDialog === 'dialog1'}>
           <WarehouseDispatchForm
-            // formState={formState}
             createWarehouseMutation={createWarehouseMutation}
             userLogin={userLogin}
             handleCloseDialog={handleCloseDialog}

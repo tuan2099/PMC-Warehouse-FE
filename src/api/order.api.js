@@ -22,6 +22,9 @@ const orderApi = {
   },
   getOrderByWarehouse(id) {
     return http.get(`/order/warehouse/${id}`);
+  },
+  getOrderBySupplier(id) {
+    return http.get(`/order/supplier/${id}`);
   }
 };
 

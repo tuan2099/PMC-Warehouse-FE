@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Tabs, Tab, Grid, Typography } from '@mui/material';
 import CustomTabPanel from 'ui-component/CustomTabPanel';
+import { useQuery } from '@tanstack/react-query';
+import orderApi from 'api/order.api';
+import OrderSupllier from './OrderSupllier';
 
-const SupplierDetail = ({ data }) => {
+const SupplierDetail = ({ supplierId }) => {
   const [value, setValue] = useState(0);
-
   const handleChange = (_, newValue) => {
     setValue(newValue);
   };
@@ -15,6 +17,12 @@ const SupplierDetail = ({ data }) => {
       'aria-controls': `simple-tabpanel-${index}`
     };
   };
+
+  const { data: OrderDataBySupplier } = useQuery({
+    queryKey: ['orderSuppliers', supplierId?.id],
+    queryFn: () => orderApi.getOrderBySupplier(supplierId?.id),
+    enabled: !!supplierId?.id
+  });
 
   return (
     <>
@@ -30,31 +38,33 @@ const SupplierDetail = ({ data }) => {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Typography variant="h5">ID</Typography>
-              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{data?.id}</Typography>
+              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{supplierId?.id}</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="h5">Tên</Typography>
-              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{data?.name}</Typography>
+              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{supplierId?.name}</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="h5">Địa chỉ</Typography>
-              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{data?.address}</Typography>
+              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{supplierId?.address}</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="h5">Địa chỉ</Typography>
-              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{data?.email}</Typography>
+              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{supplierId?.email}</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="h5">Số điện thoại</Typography>
-              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{data?.phoneNumber}</Typography>
+              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{supplierId?.phoneNumber}</Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="h5">Ngày tạo</Typography>
-              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{data?.createdAt}</Typography>
+              <Typography sx={{ mt: 1, color: 'rgb(72, 70, 68)' }}>{supplierId?.createdAt}</Typography>
             </Grid>
           </Grid>
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}></CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          <OrderSupllier orderData={OrderDataBySupplier?.data?.result} />
+        </CustomTabPanel>
       </Box>
     </>
   );

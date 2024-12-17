@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
 import React, { useEffect, useState, useRef } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import * as Yup from 'yup';
@@ -8,11 +6,12 @@ import { Box, Typography, Grid, Button } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 import DispatchItem from './DispatchItem';
 import warehouseDispatchApi from 'api/warehouseDispatch';
+import warehouseApi from 'api/warehouse.api';
+import customerApi from 'api/customer.api';
 
 const INITIAL_STATE = {
   exportCode: '',
@@ -21,7 +20,7 @@ const INITIAL_STATE = {
   totalProductQuantity: 0,
   totalAmount: 0,
   exportDescription: '0',
-  recipient: '0',
+  recipient: '',
   userID: null,
   warehouseID: null,
   customerID: null,
@@ -34,12 +33,13 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
   const [searchParams] = useSearchParams();
   const isAddMode = searchParams.get('mode') === 'add';
   const WHDPid = searchParams.get('id');
-
+  const userIDFromLocalStr = JSON.parse(localStorage.getItem('auth_user'));
   const getCurrentDateTime = () => {
     const now = new Date();
     return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
   };
-  const exportCodeRef = useRef(null); // useRef để lưu mã xuất kho một lần
+
+  const exportCodeRef = useRef(null);
   if (!exportCodeRef.current) {
     exportCodeRef.current = getCurrentDateTime();
   }
@@ -89,6 +89,21 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
   const calculateTotalQuantity = (dispatches) =>
     Array.isArray(dispatches) ? dispatches.reduce((total, dispatch) => total + Number(dispatch.quantity || 0), 0) : 0;
 
+  const { data: UserWarehouseData } = useQuery({
+    queryKey: ['userWarehouses', userIDFromLocalStr.id],
+    queryFn: () => warehouseApi.getWarehouseByUser(userIDFromLocalStr.id),
+    enabled: !!userIDFromLocalStr?.id
+  });
+
+  const { data: UserCustomerData } = useQuery({
+    queryKey: ['userCustomer', userIDFromLocalStr.id],
+    queryFn: () => customerApi.getCustomerByUser(userIDFromLocalStr.id),
+    enabled: !!userIDFromLocalStr.id
+  });
+
+  const handleWarehouseSelect = (warehouseID) => {
+    console.log('Selected warehouse ID:', warehouseID);
+  };
   return (
     <Formik
       initialValues={formValue}
@@ -120,7 +135,7 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
               handleCloseDialog();
               toast.success('Tạo phiếu xuất kho thành công, vui lòng check mail của dự án để xác nhận đơn', {
                 position: 'top-right',
-                autoClose: 3000, // Tự động đóng sau 3 giây
+                autoClose: 3000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -189,10 +204,13 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
             <SelectField
               name="warehouseID"
               label="Chọn kho"
-              value={values.warehouseID} // Đảm bảo giá trị này được lấy từ Formik
+              value={values.warehouseID}
               handleBlur={handleBlur}
-              handleChange={handleChange}
-              options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))} // Đảm bảo các tùy chọn được hiển thị
+              handleChange={(e) => {
+                handleChange(e);
+                handleWarehouseSelect(e.target.value);
+              }}
+              options={UserWarehouseData?.data?.result?.map((item) => ({ value: item.id, label: item.warehouse_name }))}
               touched={touched}
               errors={errors}
             />
@@ -253,7 +271,7 @@ function WarehouseDispatchForm({ userLogin, createWarehouseMutation, handleClose
               value={values.customerID}
               handleBlur={handleBlur}
               handleChange={handleChange}
-              options={userLogin?.user_customers?.map((item) => ({ value: item.id, label: item.name }))}
+              options={UserCustomerData?.data?.result?.map((item) => ({ value: item.id, label: item.customer_name }))}
               touched={touched}
               errors={errors}
             />

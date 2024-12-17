@@ -42,8 +42,7 @@ const Suppliers = () => {
           <IconButton
             onClick={() => {
               handleOpenDialog('dialog2');
-              const chooseItem = suppliersData?.data?.data.find((item) => item.id === id);
-              setViewItem(chooseItem);
+              handleGetSuplier(id);
             }}
           >
             <SearchIcon />
@@ -68,8 +67,6 @@ const Suppliers = () => {
     queryFn: () => suppliersApi.getAllSuplliers(),
     keepPreviousData: true
   });
-
-  console.log(suppliersData);
 
   const handleOpenDialog = (dialogId) => {
     setOpenDialog(dialogId);
@@ -99,6 +96,7 @@ const Suppliers = () => {
     onSuccess: (data) => {
       const suppliers = data?.data?.supplierDetail;
       setIsEdit(true);
+      setViewItem(suppliers);
       setFormState({
         suppliersId: suppliers.id,
         name: suppliers.name,
@@ -160,6 +158,10 @@ const Suppliers = () => {
     }
   };
 
+  const handleGetSuplier = (rowId) => {
+    getSupplierMutation.mutate(rowId);
+  };
+
   return (
     <MainCard title="Nhà cung cấp">
       <Button sx={{ mb: 2 }} onClick={() => handleOpenDialog('dialog1')} variant="outlined" startIcon={<AddIcon />}>
@@ -177,7 +179,7 @@ const Suppliers = () => {
       </AddItemDialog>
 
       <ViewDetailDialog onClose={() => handleCloseDialog('dialog2')} isOpen={openDialog === 'dialog2'}>
-        <SupplierDetail data={viewItem} />
+        <SupplierDetail supplierId={viewItem} />
       </ViewDetailDialog>
 
       <Box sx={{ height: '100%', width: '100%' }}>
