@@ -19,6 +19,8 @@ import Transfer from 'views/Transfer';
 import Option from 'views/options';
 import Order from 'views/order';
 import Permission from 'views/permission';
+import Issue from 'views/Issue';
+import Incident from 'views/Incident';
 // sample page routing
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -112,6 +114,22 @@ const MainRoutes = {
       element: (
         <ProtectedRoute>
           <Permission />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: 'issue',
+      element: (
+        <ProtectedRoute>
+          <Issue />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: 'incident',
+      element: (
+        <ProtectedRoute>
+          <Incident />
         </ProtectedRoute>
       )
     }

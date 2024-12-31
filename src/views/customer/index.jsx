@@ -32,9 +32,6 @@ function Customer() {
 
   const [customerInfo, setcustomerInfo] = useState([]);
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = searchParams.get('page');
-
   const handleOpenDialog = (DialogId) => {
     setIsEdit(false);
     setOpenDialog(DialogId);
@@ -165,7 +162,7 @@ function Customer() {
 
   return (
     <>
-      <MainCard title="Quản lý Dự án">
+      <MainCard>
         <Button sx={{ mb: 2 }} onClick={() => handleOpenDialog('dialog1')} variant="outlined" startIcon={<AddIcon />}>
           Thêm dự án
         </Button>
