@@ -8,14 +8,22 @@ const icons = { IconDashboard };
 
 const dashboard = {
   id: 'dashboard',
-  title: 'Dashboard',
+  title: 'Báo Cáo Tổng',
   type: 'group',
   children: [
     {
       id: 'default',
-      title: 'Dashboard',
+      title: 'Báo cáo kho',
       type: 'item',
       url: '/',
+      icon: icons.IconDashboard,
+      breadcrumbs: false
+    },
+    {
+      id: 'resident',
+      title: 'Ý kiến cư dân',
+      type: 'item',
+      url: '/resident',
       icon: icons.IconDashboard,
       breadcrumbs: false
     }

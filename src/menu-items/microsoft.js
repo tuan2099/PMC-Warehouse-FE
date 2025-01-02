@@ -1,4 +1,10 @@
-// import {}
+import {
+  IconMoodHappy
+} from "@tabler/icons-react";
+
+const icons = {
+  IconMoodHappy
+};
 
 const microsoftServices = {
   id: 'microsoft',
@@ -8,15 +14,17 @@ const microsoftServices = {
   children: [
     {
       id: 'Issue',
-      title: 'Sự vụ',
+      title: 'Nhập ý kiến sự vụ',
       type: 'item',
-      url: '/issue'
+      url: '/issue',
+      icon: icons.IconMoodHappy
     },
     {
       id: 'Incident',
-      title: 'Sự cố',
+      title: 'Nhập ý kiến Sự cố',
       type: 'item',
-      url: '/incident'
+      url: '/incident',
+      icon: icons.IconMoodHappy
     }
   ]
 };
