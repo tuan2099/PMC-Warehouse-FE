@@ -6,74 +6,75 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import { Box } from '@mui/system';
 import { styled } from '@mui/material/styles';
+import PropTypes from 'prop-types';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-  '& .no-rows-primary': {
-    fill: theme.palette.mode === 'light' ? '#AEB8C2' : '#3D4751'
-  },
-  '& .no-rows-secondary': {
-    fill: theme.palette.mode === 'light' ? '#E8EAED' : '#1D2126'
-  }
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    '& .no-rows-primary': {
+        fill: theme.palette.mode === 'light' ? '#AEB8C2' : '#3D4751'
+    },
+    '& .no-rows-secondary': {
+        fill: theme.palette.mode === 'light' ? '#E8EAED' : '#1D2126'
+    }
 }));
 
 const CustomDensitySelector = ({ apiRef }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
-  const handleDensityChange = (density) => {
-    apiRef.current.setDensity(density);
-    handleClose();
-  };
+    const handleDensityChange = (density) => {
+        apiRef.current.setDensity(density);
+        handleClose();
+    };
 
-  return (
-    <>
-      <IconButton variant="contained" color="primary" onClick={handleClick}>
-        <ViewStreamIcon />
-      </IconButton>
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        <MenuItem onClick={() => handleDensityChange('compact')}>Nhỏ</MenuItem>
-        <MenuItem onClick={() => handleDensityChange('standard')}> bự</MenuItem>
-        <MenuItem onClick={() => handleDensityChange('comfortable')}>Siêu Bự</MenuItem>
-      </Menu>
-    </>
-  );
+    return (
+        <>
+            <IconButton variant="contained" color="primary" onClick={handleClick}>
+                <ViewStreamIcon />
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                <MenuItem onClick={() => handleDensityChange('compact')}>Nhỏ</MenuItem>
+                <MenuItem onClick={() => handleDensityChange('standard')}> bự</MenuItem>
+                <MenuItem onClick={() => handleDensityChange('comfortable')}>Siêu Bự</MenuItem>
+            </Menu>
+        </>
+    );
 };
 
 function CustomToolbar({ apiRef }) {
-  const handleExport = () => {
-    apiRef.current.exportDataAsCsv({ fileName: 'CustomFileName', utf8WithBom: true });
-  };
+    const handleExport = () => {
+        apiRef.current.exportDataAsCsv({ fileName: 'CustomFileName', utf8WithBom: true });
+    };
 
-  const handleFilterClick = () => {
-    apiRef.current.showFilterPanel(); // Open filter panel programmatically
-  };
+    const handleFilterClick = () => {
+        apiRef.current.showFilterPanel(); // Open filter panel programmatically
+    };
 
-  return (
-    <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between', padding: '20px 10px 30px' }}>
-      <GridToolbarQuickFilter sx={{ backgroundImage: '#000' }} />
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton variant="contained" color="primary" size="large" onClick={handleExport}>
-          <FileDownloadIcon />
-        </IconButton>
-        <IconButton variant="contained" size="large" color="primary" onClick={handleFilterClick}>
-          <FilterListIcon />
-        </IconButton>
-        <CustomDensitySelector apiRef={apiRef} />
-      </Box>
-    </GridToolbarContainer>
-  );
+    return (
+        <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between', padding: '20px 10px 30px' }}>
+            <GridToolbarQuickFilter sx={{ backgroundImage: '#000' }} />
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <IconButton variant="contained" color="primary" size="large" onClick={handleExport}>
+                    <FileDownloadIcon />
+                </IconButton>
+                <IconButton variant="contained" size="large" color="primary" onClick={handleFilterClick}>
+                  <FilterListIcon />
+                </IconButton>
+                <CustomDensitySelector apiRef={apiRef} />
+            </Box>
+        </GridToolbarContainer>
+    );
 }
 
 function CustomNoRowsOverlay() {
@@ -138,6 +139,42 @@ const DataTable = ({ columns, data, totalRows, isLoading, page, pageSize, onPage
       </div>
     </>
   );
+};
+
+DataTable.propTypes = {
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      field: PropTypes.string.isRequired,
+      headerName: PropTypes.string,
+      width: PropTypes.number,
+      sortable: PropTypes.bool,
+      filterable: PropTypes.bool
+    })
+  ).isRequired,
+  data: PropTypes.shape({
+    data: PropTypes.shape({
+      data: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+        })
+      )
+    })
+  }),
+  totalRows: PropTypes.number.isRequired,
+  isLoading: PropTypes.bool,
+  page: PropTypes.number.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  onPageSizeChange: PropTypes.func.isRequired,
+  props: PropTypes.object
+};
+
+CustomToolbar.propTypes = {
+  apiRef: PropTypes.object.isRequired
+};
+
+CustomDensitySelector.propTypes = {
+  apiRef: PropTypes.object.isRequired
 };
 
 export default DataTable;
