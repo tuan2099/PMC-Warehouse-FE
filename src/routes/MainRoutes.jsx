@@ -1,13 +1,8 @@
-/* eslint-disable prettier/prettier */
 import { lazy } from 'react';
-
-// project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 
-// dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
-
 const UserManager = Loadable(lazy(() => import('views/User/index')));
 const WarehouseManager = Loadable(lazy(() => import('views/warehouse/index')));
 const ProductsManager = Loadable(lazy(() => import('views/Products/index')));
@@ -32,7 +27,7 @@ const MainRoutes = {
     {
       path: '/',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <DashboardDefault />
         </ProtectedRoute>
       )
@@ -40,7 +35,7 @@ const MainRoutes = {
     {
       path: 'products',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <ProductsManager />
         </ProtectedRoute>
       )
@@ -48,7 +43,7 @@ const MainRoutes = {
     {
       path: 'users',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <UserManager />
         </ProtectedRoute>
       )
@@ -56,7 +51,7 @@ const MainRoutes = {
     {
       path: 'warehouses',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <WarehouseManager />
         </ProtectedRoute>
       )
@@ -64,7 +59,7 @@ const MainRoutes = {
     {
       path: 'warehouse-dispatch',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <WarehouseDispatch />
         </ProtectedRoute>
       )
@@ -72,7 +67,7 @@ const MainRoutes = {
     {
       path: 'customer',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <Customer />
         </ProtectedRoute>
       )
@@ -80,7 +75,7 @@ const MainRoutes = {
     {
       path: 'suppliers',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <Suppliers />
         </ProtectedRoute>
       )
@@ -88,7 +83,7 @@ const MainRoutes = {
     {
       path: 'transfer',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <Transfer />
         </ProtectedRoute>
       )
@@ -96,7 +91,7 @@ const MainRoutes = {
     {
       path: 'options',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <Option />
         </ProtectedRoute>
       )
@@ -104,7 +99,7 @@ const MainRoutes = {
     {
       path: 'orders',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <Order />
         </ProtectedRoute>
       )
@@ -112,7 +107,7 @@ const MainRoutes = {
     {
       path: 'permissions',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <Permission />
         </ProtectedRoute>
       )
@@ -120,7 +115,7 @@ const MainRoutes = {
     {
       path: 'issue',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <Issue />
         </ProtectedRoute>
       )
@@ -128,7 +123,7 @@ const MainRoutes = {
     {
       path: 'incident',
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermissions={['view']}>
           <Incident />
         </ProtectedRoute>
       )

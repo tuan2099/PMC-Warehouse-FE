@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import http from 'utils/http';
 
 const URL = 'warehouses';

@@ -97,7 +97,6 @@ function User() {
     },
     onSuccess: (data) => {
       setIsEdit(data?.data?.data);
-      console.log(data);
       setFormState({
         name: data?.data?.data?.name || '',
         email: data?.data?.data?.email || '',
@@ -147,7 +146,7 @@ function User() {
   });
 
   return (
-    <MainCard title="Quản lý người dùng">
+    <MainCard>
       <Button sx={{ mb: 2 }} onClick={() => handleOpenDialog('dialog1')} variant="outlined" startIcon={<AddIcon />}>
         Thêm người dùng
       </Button>

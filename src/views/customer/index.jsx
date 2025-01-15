@@ -56,21 +56,17 @@ function Customer() {
   } = useQuery({
     queryKey: ['customer'],
     queryFn: async () => {
-      const headers = {
-        role: userID.role,
-        id: userID.id
-      };
-      return customerApi.getAllCustomer(headers);
+      return customerApi.getCustomerByUser(userID.id);
     }
   });
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'name', headerName: 'Tên', width: 250 },
-    { field: 'pm', headerName: 'GĐTN', width: 250 },
-    { field: 'location', headerName: 'Địa chỉ', width: 150 },
-    { field: 'branch', headerName: 'Chi nhánh', width: 150 },
-    { field: 'status', headerName: 'Trạng thái', width: 150 },
+    { field: 'customer_name', headerName: 'Tên', width: 250 },
+    { field: 'customer_position', headerName: 'GĐTN', width: 250 },
+    { field: 'customer_address', headerName: 'Địa chỉ', width: 150 },
+    { field: 'customer_phone', headerName: 'Số điện thoại', width: 150 },
+    { field: 'representative', headerName: 'Người đại diện', width: 150 },
     {
       field: 'actions',
       headerName: '',
@@ -181,7 +177,7 @@ function Customer() {
         </ViewDetailDialog>
 
         <Box sx={{ width: '100%', height: '100%' }}>
-          <DataTable columns={columns} rows={customerData?.data} isLoading={isLoading} />
+          <DataTable columns={columns} rows={customerData?.data?.result} isLoading={isLoading} />
         </Box>
       </MainCard>
     </>

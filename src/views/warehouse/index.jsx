@@ -26,8 +26,8 @@ function Warehouse() {
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'name', headerName: 'Tên kho', width: 350 },
-    { field: 'address', headerName: 'Địa chỉ kho', width: 250 },
+    { field: 'warehouse_name', headerName: 'Tên kho', width: 350 },
+    { field: 'warehouse_address', headerName: 'Địa chỉ kho', width: 250 },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -95,11 +95,7 @@ function Warehouse() {
   } = useQuery({
     queryKey: ['warehouse'],
     queryFn: () => {
-      const headers = {
-        role: userID.role,
-        id: userID.id
-      };
-      return warehouseApi.getAllWarehouse(headers);
+      return warehouseApi.getWarehouseByUser(userID.id);
     }
   });
 
@@ -148,7 +144,7 @@ function Warehouse() {
   });
   return (
     <>
-      <MainCard title="Quản lý kho hàng">
+      <MainCard>
         <Button
           sx={{ mb: 2 }}
           variant="outlined"
@@ -175,7 +171,7 @@ function Warehouse() {
         </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable rows={WarehouseData?.data} columns={columns} isLoading={isLoading} />
+          <DataTable rows={WarehouseData?.data?.result} columns={columns} isLoading={isLoading} />
         </Box>
       </MainCard>
     </>
