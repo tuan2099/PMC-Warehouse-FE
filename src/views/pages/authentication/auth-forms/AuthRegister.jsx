@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -27,7 +26,6 @@ import { Formik } from 'formik';
 // project imports
 import Google from 'assets/images/icons/social-google.svg';
 import AnimateButton from 'ui-component/extended/AnimateButton';
-import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
 import Visibility from '@mui/icons-material/Visibility';
@@ -44,9 +42,6 @@ const AuthRegister = ({ ...others }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(true);
 
-  const [strength, setStrength] = useState(0);
-  const [level, setLevel] = useState();
-
   const googleHandler = async () => {
     console.error('Register');
   };
@@ -57,12 +52,6 @@ const AuthRegister = ({ ...others }) => {
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
-  };
-
-  const changePassword = (value) => {
-    const temp = strengthIndicator(value);
-    setStrength(temp);
-    setLevel(strengthColor(temp));
   };
 
   useEffect(() => {
