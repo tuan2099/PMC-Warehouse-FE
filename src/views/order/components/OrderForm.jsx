@@ -318,7 +318,6 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
               <Grid container spacing={2}>
                 <Grid item xs={8}></Grid>
 
-                {/* Tổng số tiền trước VAT */}
                 <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1">Tổng số tiền:</Typography>
                   <Typography variant="body1" sx={{ fontWeight: '700' }}>
@@ -328,7 +327,6 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                   </Typography>
                 </Grid>
 
-                {/* Tính VAT dựa trên tổng tiền trước VAT */}
                 <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1">VAT ({values.vat}%):</Typography>
                   <Typography variant="body1" sx={{ fontWeight: '700' }}>
@@ -338,7 +336,6 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                   </Typography>
                 </Grid>
 
-                {/* Tính tổng tiền sau VAT */}
                 <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1">Tổng tiền sau VAT:</Typography>
                   <Typography variant="body1" sx={{ fontWeight: '700' }}>

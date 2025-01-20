@@ -22,12 +22,11 @@ function Warehouse() {
   const [warehouseId, setWarehouseId] = useState();
   const [openDialog, setOpenDialog] = useState();
   const [formState, setFormState] = useState(INITIAL_STATE);
-  const userID = JSON.parse(localStorage.getItem('auth_user'));
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'warehouse_name', headerName: 'Tên kho', width: 350 },
-    { field: 'warehouse_address', headerName: 'Địa chỉ kho', width: 250 },
+    { field: 'name', headerName: 'Tên kho', width: 350 },
+    { field: 'address', headerName: 'Địa chỉ kho', width: 250 },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -89,13 +88,15 @@ function Warehouse() {
   const {
     data: WarehouseData,
     isLoading,
-    refetch,
-    isError,
-    error
+    refetch
   } = useQuery({
     queryKey: ['warehouse'],
     queryFn: () => {
-      return warehouseApi.getWarehouseByUser(userID.id);
+      const userID = JSON.parse(localStorage.getItem('auth_user'));
+      return warehouseApi.getAllWarehouse({
+        role: userID.role,
+        id: userID.id
+      });
     }
   });
 
@@ -171,7 +172,7 @@ function Warehouse() {
         </ViewDetailDialog>
 
         <Box sx={{ height: '100%', width: '100%' }}>
-          <DataTable rows={WarehouseData?.data?.result} columns={columns} isLoading={isLoading} />
+          <DataTable rows={WarehouseData?.data} columns={columns} isLoading={isLoading} />
         </Box>
       </MainCard>
     </>

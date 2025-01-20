@@ -6,6 +6,12 @@ import * as Yup from 'yup';
 import InputField from 'ui-component/InputField';
 import SelectField from 'ui-component/SelectField';
 
+const statusOptions = [
+  { value: 'available', label: 'Còn hàng' },
+  { value: 'unavailable', label: 'Hết hàng' },
+  { value: 'discontinued', label: 'Ngừng kinh doanh' }
+];
+
 function ProductForm({ formState, productID, isEdit, createProductMutation, updateProductMutation, handleCloseDialog }) {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Tên sản phẩm là bắt buộc'),
@@ -20,18 +26,13 @@ function ProductForm({ formState, productID, isEdit, createProductMutation, upda
     note: Yup.string().required('Ghi chú là bắt buộc')
   });
 
-  const statusOptions = [
-    { value: 'available', label: 'Còn hàng' },
-    { value: 'unavailable', label: 'Hết hàng' },
-    { value: 'discontinued', label: 'Ngừng kinh doanh' }
-  ];
-
   return (
     <Formik
       initialValues={formState}
       enableReinitialize
       validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting }) => {
+        console.log(123);
         setSubmitting(true);
         if (isEdit) {
           updateProductMutation.mutate({ productId: productID.id, values });

@@ -47,7 +47,7 @@ function Products() {
           <IconButton aria-label="delete" variant="contained" color="secondary" onClick={() => handleDeleteProduct(id)}>
             <DeleteIcon />
           </IconButton>
-          <IconButton onClick={() => handleGetProduct(id)}>
+          <IconButton onClick={() => handleUpdateProduct(id)}>
             <ModeEditIcon />
           </IconButton>
           <IconButton
@@ -154,6 +154,11 @@ function Products() {
 
   const handleGetProduct = (rowId) => {
     getProductMutation.mutate(rowId);
+  };
+
+  const handleUpdateProduct = (rowId) => {
+    getProductMutation.mutate(rowId);
+    handleOpenDialog('dialog1');
   };
 
   return (

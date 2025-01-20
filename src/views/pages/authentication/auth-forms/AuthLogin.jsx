@@ -1,6 +1,4 @@
-/* eslint-disable prettier/prettier */
 import { useState } from 'react';
-
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -62,14 +60,15 @@ const AuthLogin = ({ ...others }) => {
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required')
-          // password: Yup.string().max(255).required('Password is required')
+          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+          password: Yup.string().max(255).required('Password is required')
         })}
         onSubmit={(values, { setErrors, setSubmitting }) => {
           loginAccMutation.mutate(values, {
             onSuccess: (data) => {
               const token = data.data.token;
               const user = data.data.user;
+              console.log(data);
               localStorage.setItem('auth_token', token);
               localStorage.setItem('auth_user', JSON.stringify(user));
               navigate('/');
@@ -79,7 +78,6 @@ const AuthLogin = ({ ...others }) => {
               if (isAxiosUnprocessableEntityError(error)) {
                 const formError = error.response?.data.message;
                 if (formError) {
-                  // Nếu lỗi liên quan đến email hoặc password, đặt vào errors của Formik
                   if (formError.includes('email')) {
                     setErrors({ email: formError });
                   } else if (formError.includes('password')) {

@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Button, IconButton, Box } from '@mui/material';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -123,7 +121,7 @@ function Order() {
     }
   });
 
-  console.log('detail', userDetail)
+  console.log('detail', userDetail);
   const { data: suppliersData } = useQuery({
     queryKey: ['suppliers'],
     queryFn: () => suppliersApi.getAllSuplliers(),

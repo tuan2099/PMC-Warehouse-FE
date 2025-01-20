@@ -105,7 +105,6 @@ function CustomNoRowsOverlay() {
 
 const DataTable = ({ columns, data, isLoading, ...props }) => {
   const apiRef = useGridApiRef();
-  console.log(data);
   return (
     <>
       <div style={{ width: '100%', overflowX: 'auto', height: '65vh' }}>
