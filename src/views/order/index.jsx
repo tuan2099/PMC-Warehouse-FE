@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { Button, IconButton, Box } from '@mui/material';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Add as AddIcon, Search as SearchIcon, ModeEdit as ModeEditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-
 import MainCard from 'ui-component/cards/MainCard';
 import DataTable from 'ui-component/DataTable';
 import AddItemDialog from 'ui-component/AddItemDialog';
@@ -15,14 +13,13 @@ import userApi from 'api/auth.api';
 import OrderDetail from './components/OrderDetail';
 import OrderForm from './components/OrderForm';
 import suppliersApi from 'api/suppliers.api';
-
+import warehouseApi from 'api/warehouse.api';
 function Order() {
   const [openDialog, setOpenDialog] = useState();
   const [viewItem, setViewItem] = useState();
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const page = searchParams.get('page');
   const userDataLogin = JSON.parse(localStorage.getItem('auth_user'));
+  const userID = JSON.parse(localStorage.getItem('auth_user'));
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -75,8 +72,8 @@ function Order() {
   ];
 
   const { data: OrderData, refetch } = useQuery({
-    queryKey: ['order', page],
-    queryFn: () => orderApi.getAllOrders(page),
+    queryKey: ['order'],
+    queryFn: () => orderApi.getAllOrders(),
     keepPreviousData: true
   });
 
@@ -114,14 +111,16 @@ function Order() {
     setOpenDialog(null);
   };
 
-  const { data: userDetail } = useQuery({
-    queryKey: ['user'],
+  const { data: WarehouseData } = useQuery({
+    queryKey: ['warehouse'],
     queryFn: () => {
-      return userApi.getUserById(userDataLogin.id);
+      return warehouseApi.getAllWarehouse({
+        role: userID.role,
+        id: userID.id
+      });
     }
   });
 
-  console.log('detail', userDetail);
   const { data: suppliersData } = useQuery({
     queryKey: ['suppliers'],
     queryFn: () => suppliersApi.getAllSuplliers(),
@@ -129,19 +128,14 @@ function Order() {
   });
 
   const { data: ProductsData } = useQuery({
-    queryKey: ['products', page],
-    queryFn: async () => await productsApi.getAllProducts(page),
-    onSuccess: (data) => {
-      if (page && +page > data.data.meta.totalPages) {
-        setSearchParams({ ...Object.fromEntries([...searchParams]), page: data.data.meta.totalPages.toString() });
-      }
-    },
+    queryKey: ['products'],
+    queryFn: async () => await productsApi.getAllProducts(),
     keepPreviousData: true
   });
-
-  const userLogin = userDetail?.data?.data;
+  console.log(suppliersData);
+  const userLogin = userID.name;
   return (
-    <MainCard title="Thông tin nhập kho">
+    <MainCard>
       <Button
         sx={{ mb: 2 }}
         variant="outlined"
@@ -163,6 +157,7 @@ function Order() {
           suppliersData={suppliersData}
           ProductsData={ProductsData}
           refetch={refetch}
+          WarehouseData={WarehouseData?.data}
         />
       </AddItemDialog>
 
@@ -171,7 +166,7 @@ function Order() {
       </ViewDetailDialog>
 
       <Box sx={{ height: '100%', width: '100%' }}>
-        <DataTable columns={columns} data={OrderData} />
+        <DataTable columns={columns} data={OrderData?.data} />
       </Box>
     </MainCard>
   );

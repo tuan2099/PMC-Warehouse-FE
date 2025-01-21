@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
 import React, { useEffect } from 'react';
 import { Box, Button, FormControl, Autocomplete, TextField, useTheme } from '@mui/material';
 import InputField from 'ui-component/InputField';
@@ -9,7 +7,6 @@ function OrderItem({ dispatch, index, handleBlur, handleChange, setFieldValue, r
   const theme = useTheme(); // theme setting
   const [searchParams] = useSearchParams();
   const isAddMode = searchParams.get('mode') === 'add';
-
   const product = ProductsData.find((item) => item.id === dispatch.product);
 
   useEffect(() => {

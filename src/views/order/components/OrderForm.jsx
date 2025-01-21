@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { Formik, FieldArray } from 'formik';
@@ -38,11 +36,21 @@ const INITIAL_STATE = {
   ]
 };
 
-function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, suppliersData, ProductsData, refetch, updateOrderMutation }) {
+function OrderForm({
+  userLogin,
+  handleCloseDialog,
+  createOrderMutation,
+  suppliersData,
+  ProductsData,
+  refetch,
+  updateOrderMutation,
+  WarehouseData
+}) {
   const [formState, setFormState] = useState(INITIAL_STATE);
   const [searchParams] = useSearchParams();
   const isAddMode = searchParams.get('mode') === 'add';
   const ODid = searchParams.get('id');
+
   const getCurrentDateTime = () => {
     const now = new Date();
     return `PN-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
@@ -91,9 +99,9 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
   }, [OrderData]);
 
   const handleSubmitForm = (values) => {
-    const totalBeforeVAT = values.orderDetail.reduce((acc, item) => acc + Number(item.totalPriceProduct || 0), 0); // Tổng tiền trước VAT
-    const vatAmount = (totalBeforeVAT * (values.purchaseVATAmount || 0)) / 100; // Tính số tiền VAT
-    const totalAfterVAT = totalBeforeVAT + vatAmount; // Tổng tiền sau VAT
+    const totalBeforeVAT = values.orderDetail.reduce((acc, item) => acc + Number(item.totalPriceProduct || 0), 0);
+    const vatAmount = (totalBeforeVAT * (values.purchaseVATAmount || 0)) / 100;
+    const totalAfterVAT = totalBeforeVAT + vatAmount;
 
     const formattedData = {
       purchaseOd: {
@@ -106,10 +114,10 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
         purchaseTotalAmountAfterVAT: totalAfterVAT,
         note: values.note,
         paymentStatus: values.paymentStatus,
-        userId: userLogin.id,
+        userId: values.userLogin,
         warehouseID: values.warehouseID,
         supplierID: values.supplierId,
-        orderDetail: values.orderDetail.map((dispatch) => ({
+        orderDetail: (values.orderDetail || []).map((dispatch) => ({
           quantity: dispatch.quantity,
           product: dispatch.product
         })),
@@ -160,20 +168,8 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                 handleBlur={handleBlur}
                 handleChange={(event) => {
                   handleChange(event);
-                  const warehouse = userLogin?.user_warehouses.find((wh) => wh.id === event.target.value);
-                  if (warehouse) {
-                    setFieldValue(
-                      'orderDetail',
-                      warehouse.warehouse_inventories.map((inventory) => ({
-                        quantity: '',
-                        product: inventory.id,
-                        price: inventory.salePrice,
-                        totalPriceProduct: 0
-                      }))
-                    );
-                  }
                 }}
-                options={userLogin?.user_warehouses?.map((item) => ({ value: item.id, label: item.name }))}
+                options={(WarehouseData || []).map((item) => ({ value: item.id, label: item.name }))}
                 touched={touched}
                 errors={errors}
               />
@@ -216,17 +212,6 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                 errors={errors}
               />
               <InputField
-                name="totalProductQuantity"
-                label="Tổng số lượng sản phẩm"
-                type="number"
-                value={calculateTotalQuantity(values.orderDetail)}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-                touched={touched}
-                errors={errors}
-                disabled
-              />
-              <InputField
                 name="note"
                 label="Mô tả nhập kho"
                 type="text"
@@ -247,7 +232,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                 value={values.supplierId}
                 handleBlur={handleBlur}
                 handleChange={handleChange}
-                options={suppliersData?.data?.data.map((item) => ({ value: item.id, label: item.name }))}
+                options={(suppliersData?.data || []).map((item) => ({ value: item.id, label: item.name }))}
                 touched={touched}
                 errors={errors}
               />
@@ -275,7 +260,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                 name="userID"
                 label="Người nhập kho"
                 type="text"
-                value={userLogin?.name}
+                value={userLogin}
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 touched={touched}
@@ -302,7 +287,7 @@ function OrderForm({ userLogin, handleCloseDialog, createOrderMutation, supplier
                       remove={remove}
                       touched={touched}
                       errors={errors}
-                      ProductsData={ProductsData?.data?.data}
+                      ProductsData={ProductsData?.data}
                       vat={values.vat}
                       orderDetail={values.orderDetail}
                     />
